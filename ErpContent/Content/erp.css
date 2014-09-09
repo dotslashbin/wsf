@@ -1,0 +1,231 @@
+html, body {
+    height: 100%;
+    margin: 0px;
+    padding: 0px;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.nav > li > a {
+    position: relative;
+    display: block;
+    padding: 5px 5px;
+}
+
+
+
+#footer_content {
+    text-align: center;
+    background: #f9f9f8;
+    color: #000;
+    border: 1px solid #ccc;
+    padding: 5px;
+    margin-top: -80px; /* negative value of footer height */
+    height: 80px;
+    clear: both;
+}
+
+.navbar {
+    position: relative;
+    z-index: 1000;
+    min-height: 30px;
+    margin-bottom: 5px;
+    border: 1px solid transparent;
+}
+
+#pgTtl {
+    color: white;
+}
+
+#wrap {
+    min-height: 100%;
+}
+
+#main {
+    overflow: auto;
+    padding-bottom: 80px;
+    min-height: 100%;
+}
+/* must be same height as the footer */
+
+.container-fluid {
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.panel-heading {
+    padding: 2px 2px;
+    border-bottom: 1px solid transparent;
+    border-top-right-radius: 3px;
+    border-top-left-radius: 3px;
+}
+
+.col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-sm-10, .col-sm-11, .col-sm-12 {
+    padding-right: 2px;
+    padding-left: 2px;
+}
+
+.col-md-1, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-md-10, .col-md-11, .col-md-12 {
+    padding-right: 2px;
+    padding-left: 2px;
+}
+
+.control-label {
+    font-weight: normal;
+}
+
+
+
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+    font-weight: 500;
+    line-height: 1.1;
+}
+
+.input-sm {
+    height: 25px;
+    padding: 2px 5px;
+    font-size: 12px;
+    line-height: 1.5;
+    border-radius: 2px;
+}
+
+.form-group {
+    margin: 3px;
+    margin-bottom: 10px;
+}
+
+.checkbox {
+    margin-left: 10px;
+}
+
+
+.ui-widget, .ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button {
+    font-size: 12px;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.row {
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-top: 3px;
+    margin-bottom: 3px;
+}
+
+#clmnTtl {
+    color: #080f8d;
+}
+
+.table-sel tbody tr:hover td, .table-sel tbody tr:hover th {
+    background-color: #f8f6c1;
+    color: maroon;
+}
+
+.ui-widget-header {
+    background: #428bca;
+    color: white;
+}
+
+.table-condensed > tbody > tr > td, .table-condensed > tfoot > tr > td {
+    padding: 2px;
+}
+
+.navbar-inverse {
+    background-color: #428bca;
+    color: white;
+}
+
+    .navbar-inverse .navbar-nav > li > a {
+        color: #fff;
+       
+    }
+#tdRow {
+    background-color:white; 
+    color:#428bca;
+    padding-left:15px;
+
+}
+
+/* Inner Window Buttons */
+.inner-window-button {
+    margin-bottom: 2px;
+}
+
+.custom-errors-container, label.error {
+    font-weight: bold; 
+    color: red; 
+}
+
+input.error, .field-with-error{
+    border: 1px solid red; 
+}
+
+
+/* Breadcrumbs*/
+        .erp-breadcrumb { 
+			list-style: none; 
+			overflow: hidden; 
+			font: 18px Helvetica, Arial, Sans-Serif;
+		}
+		.erp-breadcrumb li { 
+			float: left; 
+		}
+		.erp-breadcrumb li a {
+			color: white;
+			text-decoration: none; 
+			padding: 10px 0 10px 55px;
+			background: white;                   /* fallback color */
+			background: hsla(209, 85%, 35%, 1); 
+			position: relative; 
+			display: block;
+			float: left;
+		}
+		.erp-breadcrumb li a:after { 
+			content: " "; 
+			display: block; 
+			width: 0; 
+			height: 0;
+			border-top: 50px solid transparent;           /* Go big on the size, and let overflow hide */
+			border-bottom: 50px solid transparent;
+			border-left: 30px solid hsla(209, 85%, 35%, 1);
+			position: absolute;
+			top: 50%;
+			margin-top: -50px; 
+			left: 100%;
+			z-index: 2; 
+		}	
+		.erp-breadcrumb li a:before { 
+			content: "        ";   
+			display: block; 
+			width: 0; 
+			height: 0;
+			border-top: 50px solid transparent;           /* Go big on the size, and let overflow hide */
+			border-bottom: 50px solid transparent;
+			border-left: 30px solid white;
+			position: absolute;
+			top: 50%;
+			margin-top: -50px; 
+			margin-left: 1px;
+			left: 100%;
+			z-index: 1; 
+		}	
+		.erp-breadcrumb li:first-child a {
+			padding-left: 10px;
+		}
+		.erp-breadcrumb li:nth-child(2) a       { background:        hsla(209, 85%, 44%, 1); }
+		.erp-breadcrumb li:nth-child(2) a:after { border-left-color: hsla(209, 85%, 44%, 1); }
+		.erp-breadcrumb li:nth-child(3) a       { background:        hsla(209, 85%, 54%, 1); }
+		.erp-breadcrumb li:nth-child(3) a:after { border-left-color: hsla(209, 85%, 54%, 1); }
+		.erp-breadcrumb li:nth-child(4) a       { background:        hsla(209, 85%, 63%, 1); }
+		.erp-breadcrumb li:nth-child(4) a:after { border-left-color: hsla(209, 85%, 63%, 1); }
+		.erp-breadcrumb li:nth-child(5) a       { background:        hsla(209, 85%, 70%, 1); }
+		.erp-breadcrumb li:nth-child(5) a:after { border-left-color: hsla(209, 85%, 70%, 1); }
+		.erp-breadcrumb li:last-child a {
+			background: white !important;
+			color: black;
+			pointer-events: none;
+ 			cursor: default;
+		}
+		.erp-breadcrumb li:last-child a:after { border: 0; }
+		.erp-breadcrumb li a:hover { background: hsla(211, 85%, 78%, 1); }
+		.erp-breadcrumb li a:hover:after { border-left-color: hsla(211, 85%, 78%, 1) !important; }

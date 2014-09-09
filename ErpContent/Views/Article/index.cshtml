@@ -1,0 +1,66 @@
+﻿@{
+    ViewBag.Title = "Index";
+    ViewBag.PageTitle = "Articles";
+    Layout = "~/Views/Shared/_LayoutBootstrap.cshtml";
+}
+
+<h2>Articles</h2>
+
+<div id="table-with-header" style="height: 550px; overflow: scroll;">
+    <table id="list-of-articles" class="table-condensed table-responsive table-sel" style="width: 100%" data-bind="visible: articles.length > 0">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Options</th>
+            </tr>
+        </thead>
+        <tbody data-bind="foreach: articles">
+            <tr data-bind="click: showArticle(ID); ">
+                <td data-bind="text: Title"></td>
+                <td data-bind="text: Author"></td>
+                <td><a href="#" data-bind="click: deleteArticle(ID)">Delete</a>&nbsp;/&nbsp;<a href="#" data-bind="click: editArticle()">Edit Article</a></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<script type="text/html">
+
+</script>
+
+<script id="article-form-template" type="text/html">
+    <br />
+    <div>
+        This will contain the form
+    </div>
+</script>
+
+@section scripts
+{
+    <script type="text/javascript">
+
+
+        $(document).ready(
+            
+            function () {
+
+                $.ajax(
+                    {
+                        url: "/Article/GetArticles",
+                    }
+                ).done(
+                    function (articles) {
+                        ko.applyBindings(
+                            {
+                                articles:articles
+                            }
+                        ); 
+                    }    
+                );
+
+            }
+        );
+
+    </script>
+}

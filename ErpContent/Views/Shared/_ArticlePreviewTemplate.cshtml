@@ -1,0 +1,24 @@
+﻿
+<script id="article-preview-template" type="text/html">
+
+    <div class="row">
+        <div class="col-sm-7">
+            <h2 data-bind="text: Title"></h2>
+            <h4 data-bind="text: ShortTitle"></h4>
+            <div>
+                by: <span data-bind="text: Author"></span>
+            </div>
+        </div>
+
+        <div class="col-sm-3 pull-right">
+            <a href="#" class="btn btn-xs pull-right" data-bind="click: $root.drillUp , clickBubble: false"><span class='glyphicon glyphicon-arrow-left' title="Back to Publication List"></span>&nbsp;Go Back to Assignment</a><br />
+            <a href="#" data-bind="click: editArticle" class="btn btn-xs pull-right" style="margin-left: 30px;"><span class="glyphicon glyphicon-pencil"></span>&nbsp;Edit aticle</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div data-bind="html: Notes;" id="notes-display"></div>
+    </div>
+
+
+</script>

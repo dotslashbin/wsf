@@ -1,0 +1,54 @@
+<project name="ErpContent" default="DEV">
+  <property name="configuration" value="debug" unless="${property::exists('configuration')}"/>
+  <property name="vsproject" value="./ErpContent.csproj" unless="${property::exists('vsproject')}" />
+  <property name="MSBuildPath" value="C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe" unless="${property::exists('MSBuildPath')}" />
+  <property name="OutputDir" value="../Deployment" unless="${property::exists('OutputDir')}"/>
+  <property name="LibFolderLocation" value="../" unless="${property::exists('LibFolderLocation')}"></property>
+
+  <target name="Clean" description="Delete all previously compiled binaries.">
+    <delete>
+      <fileset>
+        <include name="**/bin/**" />
+        <include name="**/obj/**" />
+        <include name="**/*.suo" />
+        <include name="**/*.user" />
+      </fileset>
+    </delete>
+  </target>      
+    
+  <target name="Rebuild" depends="Clean, Build" />
+
+
+  <target name="DEV" depends="Rebuild" >
+    <copy file="web.dev.config"
+          tofile="${OutputDir}\web.config" overwrite="true" />
+  </target>
+
+
+  <target name="PROD" depends="Rebuild" >
+    <!--Copy over and rename the appropriate Web.config file-->
+    <copy file="web.prod.config"
+          tofile="${OutputDir}\web.config" overwrite="true" />
+  </target>
+
+  <target name="Build">
+
+    <!--Build the Project and Publish it-->
+    <exec program="${MSBuildPath}">
+          <arg line='"${vsproject}"' />
+          <arg value="/verbosity:minimal" />
+          <arg value="/nologo" />
+          <arg value="/property:Configuration=Release;DeployOnBuild=true;_packageTempDir=${OutputDir}" />
+    </exec>
+
+
+    <!--Copy over all the dependencies from the LiB folder-->
+    <copy todir ="${OutputDir}\bin">
+      <fileset basedir ="${LibFolderLocation}\lib">
+        <include name="**/*" />
+      </fileset>
+    </copy>
+    
+  </target>
+      
+</project>

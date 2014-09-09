@@ -1,0 +1,40 @@
+﻿<script  type="text/javascript"  >
+
+
+    function TastingEventModel() {
+        var self = this;
+
+
+        self.id = 0;
+        self.assignmentId = 0;
+        self.title = ko.observable('');
+        self.location = ko.observable('');
+        self.comments = ko.observable('');
+
+
+        self.copy = function (dbitem) {
+
+            self.id = dbitem.id;
+            self.assignmentId = dbitem.assignmentId;
+            self.title(dbitem.title);   
+            self.location(dbitem.location);
+            self.comment(dbitem.comments);
+
+        }
+
+
+    };
+
+
+
+
+    function initTastingEventEditForm(model) {
+
+        var self = this;
+        self.model = model;
+
+    }
+
+
+
+</script>

@@ -1,0 +1,87 @@
+﻿@Model EditorsCommon.Publication.IssueComplete
+@using ErpContent.Views.Helpers;
+ 
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<style>
+    html * {
+        font-family: "Times New Roman";
+    }
+
+    p.notes-container {
+    }
+    p.notes-container-retired {
+        line-height: 100%;
+        text-indent: 4em;
+        column-count: 2;
+    }
+</style>
+
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" charset="utf-8" />
+    <title>Export2Doc</title>
+</head>
+<body>
+    <div> 
+
+        @foreach (var a in Model.assignments)
+        {
+            //
+            // iterate thru all assignments, tasting records, notes for an issue 
+            // 
+            //
+            <br />
+            <br />
+            Assignment:<div>@a.title</div>
+            
+            if( a.tastingEvents != null ){
+                
+                foreach (var t in a.tastingEvents)
+                {
+            
+                    if (t.tastingNotes != null && t.tastingNotes.Count > 0)
+                    {
+                        <br />
+                        foreach (var n in t.tastingNotes)
+                        {
+                            <div><b>@n.producer.ToUpper()
+                                &#09;@n.vintage.ToUpper()
+                                &#09;@n.wineName.ToUpper()
+                                &#09;@t.NoteAppellation(n).ToUpper()
+                                &#09;(@t.NotePrice(n).ToUpper())
+                                &#09;@n.color.ToUpper()
+                                &#09;@n.rating.ToUpper()</b></div>
+                        }
+                        <br />
+                    }
+                    if (t.tastingNotes != null && t.tastingNotes.Count > 0)
+                    {
+                        <!--
+                        <div style="text-indent: 4em; column-count: 2; -moz-column-count: 2; /* Firefox */ -webkit-column-count: 2; /* Safari and Chrome */ ">
+                        -->
+                        <div>
+                                @foreach (var n in t.tastingNotes)
+                                {
+                                    string output = NotesHelper.applyFormatting(n.note);
+                                    
+                                    <p style="text-indent: 4em;">@output</p>
+                                }
+                                @if(  !String.IsNullOrEmpty( t.comments )){
+                                    <br />
+                                    <div>Comments:</div>
+                                    <p>@NotesHelper.applyFormatting(t.comments)</p>
+                                }
+                        </div>
+                    }
+                }
+            }
+        }
+    </div>
+</body>
+</html>

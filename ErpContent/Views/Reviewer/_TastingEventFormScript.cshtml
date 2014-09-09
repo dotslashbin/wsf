@@ -1,0 +1,183 @@
+﻿<script  type="text/javascript"  >
+    function TastingEventModel(src) {
+        var self = this;
+
+        var dt2js = function (options) { return erp.utils.Json2Date(options.data) };
+
+        self.title = ko.observable('');
+        self.location = ko.observable('');
+        self.comments = ko.observable('');
+        self.notes = ko.observableArray();
+
+
+
+        self.toObject = function () {
+            return ko.mapping.toJS(self);
+        }
+
+
+        self.fromObject = function (o) {
+            ko.mapping.fromJS(o,
+                {
+                    'copy': ["id", "assignmentId"]
+                    , 'created': { create: dt2js }
+                },
+                self);
+        }
+
+        self.fromObject(src);
+
+        self.createNote = function (tastingEvent,event, vin, vintage) {
+
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/TastingNote/GetNewNoteForEvent")',
+                data:
+                    {
+                        eventId: tastingEvent.id
+                    },
+                success: function (r) {
+                    //
+                    // use return value as template
+                    //
+                    //
+                    var m = new TastingNoteModel(r);
+
+                    if ( vin ) {
+                        m.loadFromVin(vin);
+                        m.vinEditable(false);
+                        m.vintageEditable(true);
+                    }
+
+                    if ( vintage) {
+                        m.vintage(vintage.vintage());
+                        m.vintageEditable(false);
+                    }
+
+                    m.init = function (elements) {
+                        initNoteEditForm(elements, m, '@Url.Content("~")');
+
+
+                        m.validator = $("#tasting-note-form-validation").validate(
+                            {
+                                debug: true,
+                                rules:
+                                    {
+
+                                        'note-edit-rating': {
+                                            required: false,
+                                            rating: true
+                                        },
+
+                                        'note-edit-drink-from': {
+                                            required: true,
+                                            range: [2000, 2400]
+                                        },
+                                        'note-edit-drink-to': {
+                                            required: true,
+                                            range: [2000, 2400]
+                                        }
+                                }
+                            }
+                            );
+                    };
+
+                    m.validate = function () {
+                        var validationResult = true;
+                        validationResult = m.validator.form();
+                        if (!validationResult)
+                            m.validator.showErrors();
+                        return validationResult;
+                    }
+
+
+                    m.save = function (o) {
+
+                        if (!m.validate())
+                            return;
+
+                        $.ajax({
+                            type: 'POST',
+                            url: '@Url.Content("~/TastingNote/AddTastingNote")',
+                            data:
+                                {
+                                    str: JSON.stringify(o.toObject())
+                                },
+                            success: function (r) {
+
+
+                                var result = new TastingNoteModel(r);
+                                result.editNote = editNoteCallback;
+                                result.setReadyNote = setReadyNoteCallback;
+
+
+                                tastingEvent.notes.unshift(result);
+                                pageData.drillUp();
+
+                            },
+                            error: function (request, status, error) {
+
+                                var dlg = pageData.OpenErrorDialog({ error: request.responseText }, null, "error-view-template");
+
+                                dlg.dialog("option", "title", "Server Error").
+                                    dialog("option", "width", 600).
+                                    dialog("option", "height", 300);
+
+                            }
+                        });
+
+                    };
+
+                    pageData.drillDown("tasting-note-template-window", m);
+
+                },
+                error: function (request, status, error) {
+
+                    var dlg = pageData.OpenErrorDialog({ error: request.responseText }, null, "error-view-template");
+
+                    dlg.dialog("option", "title", "Server Error").
+                        dialog("option", "width", 600).
+                        dialog("option", "height", 300);
+
+                }
+            });
+
+        }
+
+        self.deleteTastingNote = function (item) {
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/TastingNote/DeleteTastingNote")',
+                            data:
+                                {
+                                    str: JSON.stringify( item.toObject())
+                                },
+                            success: function (r) {
+                                if( r )
+                                    self.notes.remove(item);
+                            },
+                            error: function (request, status, error) {
+
+                                var dlg = pageData.OpenErrorDialog({ error: request.responseText }, null, "error-view-template");
+
+                                dlg.dialog("option", "title", "Server Error").
+                                    dialog("option", "width", 600).
+                                    dialog("option", "height", 300);
+
+                            }
+                        });
+
+        };
+
+    };
+
+    function initTastingEventEditForm(model) {
+
+        var self = this;
+        self.model = model;
+
+    }
+
+</script>

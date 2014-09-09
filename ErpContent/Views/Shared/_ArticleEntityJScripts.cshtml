@@ -1,0 +1,148 @@
+﻿<script type="text/javascript">
+
+    // Represents an article entity
+    function ArticleEditModel() {
+        self.ID = 0;
+        self.PublicationID = 0;
+        self.Publication = '';
+        self.AuthorId = 0;
+        self.AuthorName = '';
+        self.Author = '';
+        self.Title = '';
+        self.ShortTitle = '';
+        // self.Datetime = ''; 
+        self.Notes = '';
+        self.MetaTags = '';
+        self.Event = '';
+        self.CuisineID = 0;
+        self.Cuisine = '';
+        self.LocCountryID = 0;
+        self.LocRegionID = 0;
+        self.locLocationID = 0;
+        self.WF_StatusID = 0;
+        self.OldArticleIdN = 0;
+        self.OldArticleId = 0;
+        self.OldArticleIdNKey = '';
+    }
+
+    //
+    // Joshua see my comments below
+    function ArticleModel(source) {
+
+        var self = this;
+        //
+        // this is a helper function, acutally wrapper around erp.utils.Json2Date(options.data)
+        // jus to make call of that function shorter
+        //
+        var dt2js = function (options) { return erp.utils.Json2Date(options.data) };
+
+        //
+        // this is a helper function and we have to use it before calling ajax or when we need object without observables
+        //
+        //
+        self.toObject = function () {
+            return ko.mapping.toJS(self);
+        }
+
+        //
+        // helper function. it transform plain java script object into object where members will be trasform into
+        // observables. see http://knockoutjs.com/documentation/plugins-mapping.html for details
+        //
+        // in the following example, all members from supplied object will be transformed into obeservable.
+        // if supplied object has "Date","Created","Updated" member they will be converted from .net json date into javascript date
+        //
+        //  Let assume that you are getting Article object in JSON format from server. Declaration of the class is like
+        //
+        // public class Article
+        // {
+        //  public int? ID { get; set; }
+        //  public int? PublicationID { get; set; }
+        //  public string Publication { get; set; }
+        //  public int? AuthorId { get; set; }
+        //  public string Author { get; set; }
+        //  public string Title { get; set; }
+        //  public string ShortTitle { get; set; }
+        //  ....
+        //
+        //  if we call
+        //   var v = ko.mapping.fromJS(o);
+        //
+        //   it creates for us object where all members will be presented as observables
+        //
+        //
+        //
+        //
+
+        self.fromObject = function (o) {
+
+            ko.mapping.fromJS(o  // source
+                , {
+                    // "Date": { create: dt2js }
+                    "Created": { create: dt2js }
+                    , "Updated": { create: dt2js }
+                }
+                , self    // target
+                );
+        }
+
+
+        //
+        // here we call our transformation plain java script object to object with observables
+        //
+        self.fromObject(source);
+
+        self.editArticle = function () {
+
+            self.init = function () {
+
+                self.validator = $("#article-form").validate({ debug: true });
+            };
+
+            self.validate = function () {
+                var validationResult = true;
+                validationResult = self.validator.form();
+                if (!validationResult)
+                    self.validator.showErrors();
+                return validationResult;
+            }
+
+            self.save = function (self) {
+
+                var objectToSave = self.toObject();
+
+                objectToSave.Notes = escape(CKEDITOR.instances.Notes.getData());
+
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Content("~/Article/UpdateArticle")',
+                    data: { article: JSON.stringify(objectToSave) },
+                    success: function (result) {
+
+                        var notesContainer = unescape(result.Notes);
+                        result.Notes = notesContainer;
+
+                        var articleModelObject = ArticleModel(result);
+
+                        pageData.drillDown("article-preview-template", articleModelObject);
+
+                    },
+                    error: function (request, status, error) {
+
+                        PAGE_CONTEXT.error(request, status, error)
+                    }
+                });
+            }
+
+            var dialogBox = pageData.OpenDialog(self, self, "article-form-template");
+
+            dialogBox.dialog("option", "title", "Edit Article");
+            dialogBox.dialog("option", "width", 850);
+            dialogBox.dialog("option", "height", 700);
+
+            CKEDITOR.replace("Notes");
+        }
+
+        self.loaded = false;
+    }
+
+</script>

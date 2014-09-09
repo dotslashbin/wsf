@@ -1,0 +1,139 @@
+﻿
+@{
+    ViewBag.Title = "Users";
+    ViewBag.PageTitle = "ADMIN DASHBOARD: Users";
+    Layout = "~/Views/Shared/_LayoutBootstrap.cshtml";
+}
+
+
+
+@section LeftMenu{
+   @Html.Partial("_AdminMenuPartial")
+ }
+
+
+
+<h2>Users</h2>
+
+
+<div data-bind="template: { name: mv().view, data: mv().model, afterRender: $root.modelInit } ">
+... loading
+</div>
+
+<div id="dialog-placeholder" 
+    data-bind="template: { name: dmv().view, data: dmv().model, afterRender: $root.dialogInit }">
+</div>
+
+<div id="error-dialog-placeholder" 
+    data-bind="  template: { name: dmvError().view, data: dmvError().model, afterRender: $root.errorDialogInit }">
+</div>
+
+
+
+@section scripts {
+
+<script  src="~/Scripts/models/PageDataModel.js"></script>
+
+<script id="user-list-template" type="text/html">
+         <div class="row" style=" background-color: white;border-bottom: solid 1px gray;">
+                <div class='col-sm-1' >ID</div>
+                <div class='col-sm-2' >Name</div>
+                <div class='col-sm-3' >Full Name</div> 
+                <div class='col-sm-1' >Available</div> 
+            </div>
+        <!-- ko foreach: users -->
+            <div class="row" style=" background-color: white">
+                <div class='col-sm-1' data-bind="text: userId"></div>
+                <div class='col-sm-2' data-bind="text: userName"></div>
+                <div class='col-sm-3' data-bind="text: fullName"></div> 
+                <div class='col-sm-1' data-bind="text: isAvailable"></div> 
+            </div>
+        <!-- /ko -->
+</script>
+
+
+
+<script type="text/javascript">
+
+    function UsersModel() {
+
+        var self = this;
+
+        self.users = ko.observableArray();
+
+        self.load = function () {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/CachedUser/List")',
+                data: {},
+                success: function (r) {
+                    var t = ko.mapping.fromJS(
+                           { 'children': r },
+                           {
+                               'children':
+                                    {
+                                        create: function (options) {
+                                            return ko.mapping.fromJS(options.data);
+                                        }
+                                    }
+                           }, {});
+
+                    self.users(t.children());
+                },
+                error: function (request, status, error) {
+                    var dlg = pageData.OpenErrorDialog({ error: request.responseText }, null, "error-view-template");
+
+                    dlg.dialog("option", "title", "Server Error").
+                        dialog("option", "width", 600).
+                        dialog("option", "height", 300);
+                }
+            });
+
+        };
+
+
+        self.load();
+
+    }
+
+    var PAGE_CONTEXT = {};
+
+    var pageData = new PageData();
+
+    pageData.init = function () {
+    }
+
+    ko.applyBindings(pageData);
+
+
+
+
+    $(document).ready(function () {
+
+        //
+        // if session expires
+        //
+        $(function () {
+            $(document).ajaxError(
+            function (e, xhr, settings) {
+
+                if (xhr.status == 401) {
+                    var newLocation = '@Url.Action("Login", "Account")';
+                     window.location = newLocation;
+                 }
+             });
+
+         });
+
+
+
+         pageData.init();
+         pageData.drillDown('user-list-template', new UsersModel());
+
+         $("#page-left-menu #users").addClass("active");
+
+     });
+
+</script>
+
+}

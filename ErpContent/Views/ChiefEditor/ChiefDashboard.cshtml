@@ -1,0 +1,1801 @@
+﻿@{
+
+    ViewBag.Title = "Index";
+    ViewBag.PageTitle = "EDITOR IN CHIEF DASHBOARD";
+    Layout = "~/Views/Shared/_LayoutBootstrap.cshtml";
+}
+
+
+
+
+<div class="row panel-heading">
+<!-- ko foreach: treeItemArray -->
+        <b>
+            <button type="button" class="btn " data-bind="text: name, click: $root.drillDownTo, attr: { 'class': $index() == ($parent.treeItemArray().length - 1) ? 'btn-info' : 'btn-primary' } "></button>
+        </b>
+<!-- /ko -->
+</div>
+
+
+<div data-bind="template: { name: mv().view, data: mv().model, afterRender: $root.modelInit } "></div>
+
+<div id="dialog-placeholder" data-bind="template: { name: dmv().view, data: dmv().model, afterRender: $root.dialogInit }"></div>
+
+<!--
+<div id="dialog-publish-placeholder" data-bind="template: { name: dmv().view, data: dmv().model, afterRender: $root.dialogInit }"></div>
+-->
+<div id="error-dialog-placeholder" data-bind="template: { name: dmvError().view, data: dmvError().model, afterRender: $root.errorDialogInit }"></div>
+
+
+@section scripts {
+
+<script src="~/Scripts/models/PageDataModel.js"></script>
+
+    <script id="issue-edit-template" type="text/html">
+
+        <form name="issue-edit-template-form" id="issue-edit-template-form" action="#">
+            <br />
+            <div class="row form-group">
+                <div class="col-sm-3">Publication</div>
+                <div class="col-sm-6">
+                    <select class="form-control input-sm"
+                            data-bind="options: PAGE_CONTEXT.publications,
+                    optionsText: 'name',
+                    value: selPublication,
+                    valueUpdate: 'blur'"></select>
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <div class="col-sm-3">Issue</div>
+                <div class="col-sm-6">
+                    <input type="text" data-bind="value: title, valueUpdate: 'blur'"
+                           class="form-control input-sm" placeholder="Title" id="title" name="title" required />
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <div class="col-sm-3">Created</div>
+                <div class="col-sm-3">
+                    <input type="text" name="issue-edit-dialog-create-date" id="issue-edit-dialog-create-date" data-bind="value: createdDate, valueUpdate: 'blur'"
+                           class="form-control input-sm" placeholder="create date" required />
+                </div>
+            </div>
+
+
+            <div class="row form-group">
+                <div class="col-sm-3">Published</div>
+                <div class="col-sm-3">
+                    <input type="text" name="issue-edit-dialog-publish-date" id="issue-edit-dialog-publish-date" data-bind="value: publicationDate, valueUpdate: 'blur'"
+                           class="form-control input-sm" placeholder="published" required />
+                    <span id="add-issue-published-field" class="custom-errors-container"></span>
+                </div>
+
+            </div>
+
+
+
+            <div class="row form-group">
+                <div class="col-sm-3">Comments</div>
+                <div class="col-sm-9">
+                    <textarea data-bind="value: Notes, valueUpdate: 'blur'"
+                              rows="5"
+                              class="form-control input-sm" id="issue-edit-dialog-proof-notes" name="issue-edit-dialog-proof-notes" placeholder="notes" />
+                </div>
+            </div>
+        </form>
+    </script>
+
+
+
+    <script id="issue-list-template" type="text/html">
+        <div>
+            <div class="well">
+                <form class="form-horizontal" role="form">
+                    <div class="form-group">
+                        <div class="col-sm-8">
+                            <label for="publications" class="col-sm-2 control-label">Publications:</label>
+                            <div class="col-sm-4">
+                                <select class="form-control input-sm" id="publications"
+                                        data-bind="options: publications,
+                                        optionsText: 'name',
+                                        optionsValue: 'id',
+                                        value: publicationId,
+                                        valueUpdate: 'blur',
+                                        optionsCaption: 'ALL'"></select>
+
+                            </div>
+                            <div class="col-sm-2">
+                                <select class="form-control input-sm col-sm-4" data-bind="options: stateGroups,
+                                optionsText: 'name',
+                                optionsValue: 'id',
+                                value: stateGroupId,
+                                valueUpdate: 'blur'"></select>
+                            </div>
+                            <div class="col-sm-2 input-group-md">
+                                <button class="btn btn-sm" data-bind="click: loadIssues">Load</button>
+                            </div>
+
+                        </div>
+
+                        <div class="col-sm-2 pull-right">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                   <a href="#" class="btn btn-xs" data-bind="click: addPublication"><span class='glyphicon glyphicon-plus' title="Add New Publication"></span>&nbsp;Add New Publication</a><br />
+                                </div>
+                                <div class="col-sm-12">
+                                   <a href="#" class="btn btn-xs" data-bind="click: addIssue"><span class='glyphicon glyphicon-plus' title="Add New Issue"></span>&nbsp;Add New Issue</a>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- list of selected issues-->
+        <div id="table-with-header" style="height: 550px; overflow: scroll;">
+            <table id="list-of-notes-header" data-bind="visible : issueList().length > 0" class="table table-condensed table-responsive table-sel">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Publication</th>
+                        <th>Issue</th>
+                        <th># Reports</th>
+                        <th># Notes</th>
+                        <th>Created</th>
+                        <th>Publish</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                </thead>
+
+                <tbody data-bind="foreach: issueList">
+                    <tr style="cursor:pointer" data-bind=" style: { color: wfState() != 100  ? 'red' : 'black'}">
+                        <td ><span data-bind="click: edit" class='glyphicon glyphicon-pencil' title="Start editing"></span></td>
+                        <td data-bind="text: publicationName, click: drillDown"></td>
+                        <td data-bind="text: title, click: drillDown"></td>
+                        <td><span class="label label-info " data-bind="text: articlesCnt">0</span></td>
+                        <td><span class="label label-info " data-bind="text: tasteNotesCnt">0</span></td>
+                         <td data-bind="text: createdDate"></td>
+                        <td data-bind="text: publicationDate"></td>
+                        <td ><span data-bind="click: $parent.deleteIssue, visible : wfState() != 100 && tasteNotesCnt() == 0 && articlesCnt() == 0" class='glyphicon glyphicon-trash' title="Delete Issue (if empty)"></span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+
+
+    </script>
+
+
+<script id="publish-dialog-template" type="text/html">
+    <div class="row">
+        <div class="row">
+            <span class="col-sm-3">Publicaction :</span>
+            <b><span class="col-sm-9" data-bind="text: publication"></span></b>
+        </div>
+        <div class="row">
+            <span class="col-sm-3">Who Create It :</span>
+            <b><span class="col-sm-9" data-bind="text: author"></span></b>
+        </div>
+        <div class="row">
+            <span class="col-sm-3">Title :</span>
+            <b><span class="col-sm-9" data-bind="text: title"></span></b>
+        </div>
+        <br />
+        <div class="row">
+            <span class="col-sm-4">Total Notes Count :</span>
+            <b><span class="col-sm-8" data-bind="text: notesTotal"></span></b>
+        </div>
+        <div class="row">
+            <span class="col-sm-4">Notes Already Published :</span>
+            <b><span class="col-sm-8" data-bind="text: notesPublished"></span></b>
+        </div>
+        <div class="row">
+            <span class="col-sm-4">Notes Approved For Publishing :</span>
+            <b><span class="col-sm-8" data-bind="text: notesApproved"></span></b>
+        </div>
+        <div class="row">
+            <span class="col-sm-4">Notes Waiting For Approval :</span>
+            <b><span class="col-sm-8" data-bind="text: notesWaitingForApproval"></span></b>
+        </div>
+        <br />
+        <div class="alert alert-warning">Please be patient. After you click "Save Changes", it make take up to one minute to complete operation</div>
+
+    </div>
+</script>
+
+
+    <script id="assignment-details-template" type="text/html">
+        <div class="row">
+            <div class="col-sm-10">
+                <h4><span data-bind="text: $data.assignment.title"></span></h4>
+                <span>Author : </span><span data-bind="text: $data.assignment.author.name"></span><br />
+                <span>Submission Deadline : </span><span data-bind="text: $data.assignment.submitDate"></span><br />
+                <span>Approval Deadline : </span><span data-bind="text: $data.assignment.approveDate"></span><br />
+            </div>
+            <div class="col-sm-2 pull-right">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <!--
+                        <a data-toggle="modal" href="#" class="btn btn-xs" data-bind="click: $data.edit, visible: $data.assignment.wfState() != 100"><span class='glyphicon glyphicon-pencil' title="Start editing"></span>&nbsp;Edit Assignment</a>
+                        --> 
+                        <a data-toggle="modal" href="#" class="btn btn-xs" data-bind="click: $data.edit"><span class='glyphicon glyphicon-pencil' title="Start editing"></span>&nbsp;Edit Assignment</a>
+                    </div>
+                </div>
+                <!-- commented by Sergey 05.07.2014
+                <a style="display: none;" id="add-new-article-link" data-toggle="modal" href="#" class="btn btn-xs" data-bind="click: addArticle"><span class='glyphicon glyphicon-pencil' title="Add new article"></span>&nbsp;Add Article</a>
+                <a style="display: none;" id="view-article-link" data-toggle="modal" href="#" class="btn btn-xs" data-bind="click: viewArticle"><span class='glyphicon glyphicon-pencil' title="View article in detail"></span>&nbsp;View Article</a>
+                -->
+            </div>
+        </div>
+
+        <br />
+        <div class="row">
+
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    Tasting Records:
+
+                    <div class="pull-right">Total Notes: <span data-bind="text: assignment.notesCount()"></span></div>
+                </div>
+                <div class="panel-body" data-bind="visible: assignment.events().length > 0">
+                    <!-- ko foreach: assignment.events -->
+                    <div class="row" data-bind="click: showNotes" style="cursor: pointer">
+                        <span data-bind="attr:{class : open() ? 'glyphicon glyphicon-arrow-up' : 'glyphicon glyphicon-arrow-down'}"></span>
+                        <strong><span data-bind="text: title"></span></strong>
+                        (Location :<span data-bind="text: location"></span>),
+                        <span data-bind="text: notesCount"></span> notes
+                    </div>
+
+                    <div class="row panel panel-success" data-bind="visible: open">
+                        <!-- ko foreach: notes -->
+                        <div class="row panel-heading">
+                            <h5>
+                                <b>
+                                    <span data-bind="text: vintage"></span>
+                                    <span data-bind="text: producer"></span>,
+                                    <span data-bind="text: wineName.length == 0 ? '' : wineName + ',' "></span>
+                                    <span data-bind="text: variety"></span>,
+                                    <span data-bind="text: color"></span>,
+                                    <span data-bind="text: dryness"></span> (<span data-bind="text: rating"></span>)
+                                </b>
+                            </h5>
+                        </div>
+
+                        <div class="row" style="border-bottom: solid 1px gray;">
+                            <span data-bind="html: erp.utils.Str2Html($data.note)"></span>
+                        </div>
+                        <!-- /ko -->
+                    </div>
+                    <!-- /ko  -->
+                </div>
+            </div>
+
+        </div>
+
+
+    </script>
+
+    <script id="add-publication-template" type="text/html">
+
+        <form name="add-publication-template-form" id="add-publication-template-form" action="#">
+
+            <div class="row form-group">
+                <div class="col-sm-3">Name</div>
+                <div class="col-sm-6">
+                    <input type="text" data-bind="value: Name, valueUpdate: 'blur'"
+                           class="form-control input-sm" placeholder="Name" id="name" name="name" required />
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <div class="col-sm-3">Created</div>
+                <div class="col-sm-3">
+                    <input type="text" name="add-publication-dialog-create-date" id="add-publication-dialog-create-date" data-bind="value: Created, valueUpdate: 'blur'"
+                           class="form-control input-sm" placeholder="create date" />
+                </div>
+            </div>
+
+
+        </form>
+    </script>
+
+
+    <script id="issue-details-template" type="text/html">
+
+        <div class="row">
+            <div class="col-sm-10">
+                <h4><span data-bind="text: publicationName"></span>&nbsp;<span data-bind="text: title"></span></h4>
+                Publishing Date: <span data-bind="html: publicationDate"></span>
+            </div>
+            <div class="col-sm-2 pull-right">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <a href="#" class="btn btn-xs" data-bind="click: OpenDialogNewAssgnmt, visible : wfState() != 100"><span class='glyphicon glyphicon-plus' title="Add New Assignment">&nbsp;</span>Add New Assignment</a>
+                    </div>
+                    <div class="col-sm-12">
+                        <a href="#" class="btn btn-xs" data-bind="click: Publish"><span class='glyphicon glyphicon-refresh' title="Publish">&nbsp;</span>Publish</a>
+                    </div>
+                    <div class="col-sm-12">
+                        <a href="#" class="btn btn-xs" data-bind="click: PublishRollack"><span class='glyphicon glyphicon-refresh' title="Rollback">&nbsp;</span>Rollback Publish</a>
+                    </div>
+                    <div class="col-sm-12">
+                        <a href="#" class="btn btn-xs" data-bind="click: Export"><span class='glyphicon glyphicon-list-alt' title="Export to Doc">&nbsp;</span>Export to Doc</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+
+            <div class="panel panel-success">
+                <!-- Default panel contents -->
+                <div class="panel-heading">Assignments:</div>
+                <div class="panel-body">
+                    <!-- Table -->
+                    <table id="list-of-assignments" data-bind="visible: assignmentList().length > 0" class="table table-condensed table-responsive table-sel">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Title</th>
+                                <th>Author</th>
+                                <th>Editor</th>
+                                <th>ProofReader</th>
+                                <th>#Notes Total</th>
+                                <th>#Approved</th>
+                                <th>#Waiting for Approval</th>
+                                <th>Approval</th>
+                                <th>Proofread</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+
+                        <tbody data-bind="foreach: assignmentList">
+                            <tr data-bind="attr: {id:'assignment_' + id}">
+                                <td><span data-bind="click: edit " class='glyphicon glyphicon-pencil' style="cursor:pointer" title="Edit Assignment"></span></td>
+
+                                <td data-bind="text:title, click: goToAssignmentDetails.bind($data, $parent)"></td>
+                                <td data-bind="text: author.name, click: goToAssignmentDetails.bind($data, $parent)"></td>
+                                <td data-bind="text: editor.name, click: goToAssignmentDetails.bind($data, $parent)"></td>
+                                <td data-bind="text: proofread.name, click: goToAssignmentDetails.bind($data, $parent)">reader</td>
+                                <td data-bind="text: notesCount, click: goToAssignmentDetails.bind($data, $parent)">#notes?</td>
+                                <td data-bind="">#notes?</td>
+                                <td data-bind="">#notes?</td>
+                                <td data-bind="text: approveDate"></td>
+                                <td data-bind="text: proofreadDate">proofread?</td>
+
+
+                                <td><span data-bind="click: $parent.deleteAssignment, visible: notesCount() == 0 " class='glyphicon glyphicon-trash' style="cursor:pointer" title="Delete Assignment (if empty)"></span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+    </script>
+
+
+    <script id="assignment-edit-template" type="text/html">
+        <br />
+
+        <form name="assignment-edit-template-form" id="assignment-edit-template-form" action="#">
+            <div class="row form-group">
+                <div class="col-sm-3">Publication: </div>
+                <div class="col-sm-3"><span data-bind="text: publication"></span></div>
+            </div>
+            <div class="row form-group">
+                <div class="col-sm-3">Issue#: </div>
+                <div class="col-sm-3"><span data-bind="text: issue"></span></div>
+            </div>
+
+            <br />
+            <div class="row form-group">
+                <div class="col-sm-3">Assignment Title: </div>
+                <div class="col-sm-6">
+                    <input class="form-control input-sm" id="assgnmtTitle" name="assgnmtTitle" data-bind="value:title, valueUpdate: 'blur'" placeholder="Title" required />
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <div class="col-sm-3">Author</div>
+                <div class="col-sm-3">
+
+                    <select class="form-control input-sm" id="assignment_form_author" name="assignment_form_author"
+                            data-bind="options: PAGE_CONTEXT.authors,
+                        optionsText:  'name',
+                        value: author,
+                        valueUpdate: 'blur',
+                        optionsCaption: ''"></select>
+                    <span class="dropdown-error custom-errors-container" id="author-error-container"></span>
+                </div>
+
+            </div>
+
+            <div class="row form-group">
+                <div class="col-sm-3">Editor</div>
+                <div class="col-sm-3">
+
+                    <select class="form-control input-sm" id="assignment_form_editor" name="assignment_form_editor"
+                            data-bind="options: PAGE_CONTEXT.editors,
+                        optionsText: 'name',
+                        value: editor,
+                        valueUpdate: 'blur',
+                        optionsCaption: ''"></select>
+                    <span class="dropdown-error custom-errors-container" id="editor-error-container"></span>
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <div class="col-sm-3">ProofReader:</div>
+                <div class="col-sm-3">
+
+                    <select class="form-control input-sm" id="assignment_form_proofread" name="assignment_form_proofread"
+                            data-bind="options: PAGE_CONTEXT.proofreaders,
+                            optionsText: 'name',
+                            value: proofread,
+                            valueUpdate: 'blur',
+                            optionsCaption: ''"></select>
+                    <span class="dropdown-error custom-errors-container" id="proofread-error-container"></span>
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <div class="col-sm-3">Submission Deadline: </div>
+                <div class="col-sm-3">
+                    <input class="form-control input-sm" id="assgnmtSbmtDate" name="assgnmtSbmtDate" required data-bind="value: submitDate, valueUpdate: 'blur'" required />
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <div class="col-sm-3">Proofread Deadline: </div>
+                <div class="col-sm-3">
+                    <input class="form-control input-sm" id="assgnmtPRDate" name="assgnmtPRDate" required data-bind="value: proofreadDate, valueUpdate: 'blur'" required />
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <div class="col-sm-3">Approval Deadline: </div>
+                <div class="col-sm-3">
+                    <input class="form-control input-sm" id="assgnmtAppDate" name="assgnmtAppDate" required data-bind="value: approveDate, valueUpdate: 'blur'" required />
+                </div>
+            </div>
+        </form>
+    </script>
+
+    @{
+        @Html.Partial("_ArticleFormTemplate")
+    }
+
+
+    @{
+        @Html.Partial("_ArticlePreviewTemplate");
+    }
+
+    <script id="error-view-template" type="text/html">
+
+        <div data-bind="html : error "></div>
+
+    </script>
+
+    @{
+        @Html.Partial("_ArticleEntityJScripts");
+    }
+
+    <script type="text/javascript">
+
+        function IssueModel(src) {
+            var self = this;
+
+            var dt2js = function (options) { return erp.utils.Json2Date(options.data) };
+
+            self.toObject = function () {
+                return ko.mapping.toJS(self);
+            }
+
+            self.fromObject = function (o) {
+
+                ko.mapping.fromJS(o  // source
+                    ,{
+                        "publicationDate" : {create: dt2js}
+                    ,"createdDate" : {create: dt2js}
+                    ,"dateCreated" : {create: dt2js}
+                    ,"dateUpdated" : {create: dt2js}
+                    }
+                    , self    // target
+                    );
+            }
+
+            self.fromObject(src);
+
+
+            self.loaded = false;
+            self.assignmentList = ko.observableArray();
+            self.workflow = ko.observable(0);
+
+
+            self.Publish = function () {
+
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Content("~/Issue/IssueInfo")',
+                    data: { id: self.id() },
+                    success: function (r) {
+
+
+                        var m = {};
+
+                        m.init = function (elements) {
+                        };
+
+                        m.save = function (o) {
+
+                            if( o.notesApproved > 0 ){
+                                    $.ajax({
+                                        type: 'POST',
+                                        url: '@Url.Content("~/Issue/Publish")',
+                                        data: { id: self.id() },
+                                        success: function (r) {
+                                            self.wfState(100);
+
+                                            ko.utils.arrayForEach(self.assignmentList(), function (item) {
+                                                item.wfState(100);
+                                            });
+
+                                        },
+                                        error: function (request, status, error) {
+
+                                            PAGE_CONTEXT.error(request, status, error);
+                                        }
+                                    });
+                                }
+                            return true;
+                        };
+
+
+                        var d = pageData.OpenDialogWithName("#dialog-placeholder", r, m, "publish-dialog-template");
+                        d.dialog("option", "title", "Publish Issue");
+
+                    },
+                    error: function (request, status, error) {
+
+                        PAGE_CONTEXT.error(request, status, error)
+                    }
+                });
+
+
+
+
+            };
+
+
+            self.PublishRollack = function(){
+
+
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Content("~/Issue/IssueInfo")',
+                    data: { id: self.id() },
+                    success: function (r) {
+
+
+                        var m = {};
+
+                        m.init = function (elements) {
+                        };
+
+                        m.save = function (o) {
+
+                            if( o.notesPublished > 0 ){
+                                    $.ajax({
+                                        type: 'POST',
+                                        url: '@Url.Content("~/Issue/RollbackPublish")',
+                                        data: { id: self.id() },
+                                        success: function (r) {
+                                            self.wfState(0);
+                                            ko.utils.arrayForEach(self.assignmentList(), function (item) {
+                                                item.wfState(0);
+                                            });
+                                        },
+                                        error: function (request, status, error) {
+
+                                            PAGE_CONTEXT.error(request, status, error);
+                                        }
+                                    });
+                                }
+                            return true;
+                        };
+
+
+                        var d = pageData.OpenDialogWithName("#dialog-placeholder", r, m, "publish-dialog-template");
+                        d.dialog("option", "title", "Rollback Issue Publishing");
+
+                    },
+                    error: function (request, status, error) {
+
+                        PAGE_CONTEXT.error(request, status, error)
+                    }
+                });
+
+
+            };
+
+
+
+            self.Export = function(){
+
+                erp.utils.ajaxDownload('@Url.Content("~/Issue/Export")',{id : self.id()});
+
+            };
+            // *******************
+            // ******************* Add New Assignment *****************************
+            // *******************
+            self.OpenDialogNewAssgnmt = function () {
+
+                // 1. request template from server
+                // 2. open dialog (supply model and callback model
+                // 3. send/save new assignment
+                //
+                //
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Content("~/Assignment/GetNewAssignment")',
+                    data: {},
+                    success: function (r) {
+                        //
+                        // use return value as template
+                        //
+                        //
+                        var m = new AssignmentModel(r);
+                        
+                        m.issue(self.title());
+                        m.issueId(self.id());
+                        m.publicationId(self.publicationID());
+                        m.publication(self.publicationName());
+
+
+                        m.init = function (elements) {
+                            $(elements).find("#assgnmtSbmtDate").datepicker();
+                            $(elements).find("#assgnmtPRDate").datepicker();
+                            $(elements).find("#assgnmtAppDate").datepicker();
+
+                            m.validator =   $("#assignment-edit-template-form").validate();
+                        };
+
+                        m.validate = function(){
+                            var result = true;
+                            result =  m.validator.form();
+                            if( ! result ){
+                                m.validator.showErrors();
+                            }
+                            return result;
+                        }
+
+
+                        m.save = function (o) {
+
+                            if (!m.validate()) {
+                                return false;
+                            }
+
+                            $('.dropdown-error').html(''); 
+
+                            if (o.author == null) {
+                                $('#author-error-container').html("* Please select an author"); 
+                                return false; 
+                            }
+
+                            if(o.editor == null) {
+                                $('#editor-error-container').html("* Please select an editor"); 
+                                return false;
+                            }
+
+                            if (o.proofread == null) {
+                                $('#proofread-error-container').html("* Please select a proof reader"); 
+                                return false;
+                            }
+
+                            if(checkDeadlineValidities(o)) {
+                                $.ajax({
+                                    type: 'POST',
+                                    url: '@Url.Content("~/Assignment/AddAssignment")',
+                                    data:
+                                        {
+                                            str: JSON.stringify(m.toObject())
+                                        },
+                                    success: function (r)
+                                    {
+                                        var v = new AssignmentModel(r);
+                                        self.assignmentList.unshift(v);
+                                    },
+                                    error: function (request, status, error) {
+
+                                        PAGE_CONTEXT.error(request, status, error)
+                                    }
+                                });
+
+                                return true;
+                            }
+
+                            return false;
+
+                        };
+
+
+
+                        var d = pageData.OpenDialog(m, m, "assignment-edit-template");
+                        d.dialog("option", "title", "Create New assignment");
+
+
+                    },
+                    error: function (request, status, error) {
+
+                        PAGE_CONTEXT.error(request, status, error)
+
+                    }
+                });
+
+
+
+
+            }
+
+            self.deleteAssignment = function (objectToEvaluate) {
+
+                var confirmation = confirm('Are you sure you want to delete this assignment?');
+
+                if (confirmation == true) {
+
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Content("~/Assignment/DeleteAssignment")',
+                        data: { assignmentID: objectToEvaluate.id },
+                        success: function (r) {
+                            $('#assignment_' + objectToEvaluate.id).remove();
+                        },
+                        error: function (request, status, error) {
+
+                            PAGE_CONTEXT.error(request, status, error)
+
+                        }
+                    });
+
+                }
+
+                return false; 
+            }
+
+
+            self.edit = function () {
+                var m = new IssueModel(self.toObject());
+
+
+                //
+                // will be call after dialog initialization
+                //
+                m.init = function (elements) {
+
+                            $(elements).find("#issue-edit-dialog-create-date").datepicker();
+                            $(elements).find("#issue-edit-dialog-publish-date").datepicker();
+                            $(elements).find("#issue-edit-dialog-proof-date").datepicker();
+
+                           m.validator =   $("#issue-edit-template-form").validate({debug : true});
+
+                };
+
+                m.validate = function(){
+
+                    var result = true;
+                    result =  m.validator.form();
+
+                    if( ! result )
+                        m.validator.showErrors();
+
+                    return result;
+                }
+
+
+                m.save = function (o) {
+
+
+                    if( !m.validate()){
+                        return false;
+                    }
+
+                    o.publicationID(o.selPublication().id);
+                    o.publicationName(o.selPublication().name)
+    
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Content("~/Issue/EditIssue")',
+                        data: { str: JSON.stringify(o.toObject()) },
+                        success: function (r) {
+                            self.fromObject(r);
+                        },
+                        error: function (request, status, error) {
+
+                            PAGE_CONTEXT.error(request, status, error)
+
+                        }
+                    });
+                    return true;
+                };
+
+
+                m.selPublication = ko.observable( erp.utils.FindItemById(m.publicationID(), PAGE_CONTEXT.publications));
+
+                var d = pageData.OpenDialog(m, m, "issue-edit-template");
+
+                d.dialog("option", "title", "Edit Issue");
+
+            }
+
+            self.drillDown = function () {
+
+                if (!self.loaded) {
+                    self.loaded = !self.loaded;
+                    $.get('@Url.Content("~/Assignment/GetAssignmentsByIssue")', { issueId: self.id() },
+                         function (result) {
+
+                             var t = ko.mapping.fromJS(
+                                     {'children' : result},
+                                     {'children':
+                                         {
+                                             create: function(options) {
+                                                 var result = new AssignmentModel(options.data);
+                                                 return result;
+                                             }
+                                         }},{});
+
+                             self.assignmentList(t.children());
+                         });
+
+                }
+                pageData.drillDownExt('issue-details-template', self,self.title());
+            }
+        }
+
+
+        function NotesModel (issue, assignment) {
+            var self = this;
+
+            self.issue = issue;
+            self.assignment = assignment;
+
+            self.viewArticle = function() {
+
+                $.ajax({
+                    type:'POST',
+                    url:'@Url.Content("~/Article/ViewArticle")',
+                    data: { ID:self.assignment.id, fieldNameToMatch: "assignmentID" },
+                    success: function(result) {
+
+                        delete result.Date;
+
+                        var notesContainer = unescape(result.Notes);
+                        result.Notes = notesContainer;
+
+                        var articleModelObject = ArticleModel(result);
+
+                        pageData.drillDown("article-preview-template", articleModelObject);
+                    }
+                });
+            }
+
+            self.addArticle = function() {
+
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Content("~/Article/GetNewArticle")',
+                    data: {},
+                    success: function (result) {
+                        //
+                        // use return value as template
+                        var articleModel = new ArticleModel(result);
+
+                        //
+                        // will be called after dialog initialization
+                        //
+                        articleModel.init = function () {
+                            articleModel.validator =   $("#article-form").validate({debug : true});
+                        };
+
+                        //
+                        // R&D
+                        //
+                        articleModel.validate = function(){
+                            var validationResult = true;
+                            validationResult =  articleModel.validator.form();
+                            if( ! validationResult )
+                                articleModel.validator.showErrors();
+                            return validationResult;
+                        }
+
+                        articleModel.save = function(objectToSave) {
+
+                            objectToSave.Notes          = escape(CKEDITOR.instances.Notes.getData());
+                            objectToSave.assignmentId   = self.assignment.id;
+                            objectToSave.PublicationID  = self.assignment.publicationId();
+
+                            delete objectToSave.Date;
+
+                            $.ajax({
+                                type: 'POST',
+                                url: '@Url.Content("~/Article/AddArticle")',
+                                data: { article: JSON.stringify(objectToSave.toObject()), assignmentID: self.assignment.id },
+                                success: function (result) {
+                                    if (result != null) {
+                                        $('#add-new-article-link').hide();
+                                        $('#view-article-link').show();
+                                    }
+                                },
+                                error: function (request, status, error) {
+
+                                    PAGE_CONTEXT.error(request, status, error)
+
+                                }
+                            });
+
+                            return true;
+                        }
+
+                        var d = pageData.OpenDialog(articleModel, articleModel, "article-form-template");
+
+                        d.dialog("option", "title", "Add Article").
+                        dialog("option", "width", 860).
+                        dialog("option", "height", 600);
+
+                        CKEDITOR.replace("Notes");
+                    },
+                    error: function (request, status, error) {
+
+                        PAGE_CONTEXT.error(request, status, error)
+
+                    }
+                });
+            }
+
+
+
+            self.edit = function () {
+
+
+
+                var m = new AssignmentModel(self.assignment.toObject());
+
+
+                m.init = function (elements) {
+                    $(elements).find("#assgnmtSbmtDate").datepicker();
+                    $(elements).find("#assgnmtPRDate").datepicker();
+                    $(elements).find("#assgnmtAppDate").datepicker();
+
+                    m.validator = $('#assignment-edit-template-form').validate(); 
+                };
+
+                m.validate = function () {
+                    var result = true;
+                    result = m.validator.form();
+                    if (!result) {
+                        m.validator.showErrors(); 
+                    }
+
+                    return result; 
+                }
+
+                var cbm = {
+                    save: function (m) {
+                        //
+                        // update assignment
+                        //
+
+                        if (!m.validate()) {
+                            return false; 
+                        }
+
+                        $('.dropdown-error').html('');
+
+                        if (m.author == null) {
+                            $('#author-error-container').html("* Please select an author");
+                            return false;
+                        }
+
+                        if (m.editor == null) {
+                            $('#editor-error-container').html("* Please select an editor");
+                            return false;
+                        }
+
+                        if (m.proofread == null) {
+                            $('#proofread-error-container').html("* Please select a proof reader");
+                            return false;
+                        }
+
+                        if( !checkDeadlineValidities(m)){
+                            return false;
+                        }
+
+
+                        $.ajax({
+                            type: 'POST',
+                            url: '@Url.Content("~/Assignment/UpdateAssignment")',
+                            data:
+                                {
+                                    str: JSON.stringify(m.toObject())
+                                },
+                            success: function (r)
+                            {
+                                self.assignment.fromObject(r);
+                            },
+                            error: function (request, status, error) {
+                                PAGE_CONTEXT.error(request, status, error)
+                            }
+                        });
+
+                        return true;
+                    }
+
+
+                };
+
+
+                m.author = erp.utils.FindItemById(m.author ? m.author.id() : 0, PAGE_CONTEXT.authors);
+                m.editor = erp.utils.FindItemById(m.editor ? m.editor.id() : 0, PAGE_CONTEXT.editors);
+                m.proofread = erp.utils.FindItemById(m.proofread ? m.proofread.id() : 0, PAGE_CONTEXT.proofreaders);
+
+                var d = pageData.OpenDialog(m, cbm, "assignment-edit-template");
+
+                d.dialog("option", "title", "Edit Assignment");
+            }
+
+
+        }
+
+        function AssignmentEditModel() {
+            var self = this;
+
+            self.id = 0;
+            self.title = '';
+            self.notes = '';
+
+
+            self.issueId = 0;
+            self.issue = '';
+            self.publicationId = 0;
+            self.publication = '';
+
+            self.author = null;
+            self.editor = null;
+            self.proofread = null;
+
+            self.submitDate = '';
+            self.proofreadDate = '';
+            self.approveDate = '';
+        }
+
+
+        function AssignmentModel(src) {
+            var self = this;
+
+            self.loaded = false;
+            self.events = ko.observableArray();
+
+
+            var dt2js = function (options) { return erp.utils.Json2Date(options.data) };
+            //
+            //
+            //
+
+            self.toObject = function () {
+                return ko.mapping.toJS(self);
+            }
+
+            self.fromObject = function (o) {
+                ko.mapping.fromJS(o,
+                    {
+                        'copy': ["id"]
+                        , "submitDate": { create: dt2js }
+                        , "proofreadDate": { create: dt2js }
+                        , "approveDate": { create: dt2js }
+                        , "publishDate": { create: dt2js }
+                        , "CreatedDate": { create: dt2js }
+                        , "UpdatedDate": { create: dt2js }
+                    }, self);
+            }
+
+            //
+            self.fromObject(src);
+
+
+            self.goToAssignmentDetails = function (issue) {
+
+                // TODO: Figure out where it is best to implemement this <-- joshua
+
+                $('#add-new-article-link').hide();
+                $('#view-article-link').hide();
+
+                /**
+                 * This routine fetches and article based on the assignment ID. If there is
+                 * then the "view article" link is shown, otherwise, it will be the "Add article" link that will be displayed
+                 * author: Joshua Fuentes
+                 */
+                $.get('@Url.Content("~/Article/SearchArticlesByAssignment")', { ID: self.id }, function(result) {
+
+
+                    if(result == "" || result == null) {
+                        // This means that there is no article, therefore an "Add Article" link is to be displayed
+                        $('#add-new-article-link').show();
+                        $('#view-article-link').hide();
+                    } else {
+                        // This means that there is an article, therefore a "View Article" link is to be displayed
+                        $('#add-new-article-link').hide();
+                        $('#view-article-link').show();
+                    }
+                });
+
+                if (!self.loaded) {
+                    self.loaded = !self.loaded;
+
+                    $.get('@Url.Content("~/TastingEvent/GetTastingEventByAssignment")', { assignmentId: self.id },
+                     function (result) {
+
+                         for (var i = 0; i < result.length; i++) {
+                             result[i].notes = ko.observableArray();
+                             result[i].open = ko.observable(false);
+                             result[i].loaded = ko.observable(false);
+
+                             result[i].showNotes = function (item) {
+                                 if (!item.loaded()) {
+                                     $.get('@Url.Content("~/TastingNote/GetNotesByTastingEvent")', { eventId: item.id },
+                                      function (result) {
+                                          item.notes(result);
+                                          item.open(!item.open());
+                                      });
+                                 } else {
+                                     item.open(!item.open());
+                                 }
+                             }
+                         }
+
+                         self.events(result);
+
+                         pageData.drillDownExt('assignment-details-template', new NotesModel(issue,self),self.title());
+                     });
+
+                }else{
+                    pageData.drillDownExt('assignment-details-template', new NotesModel(issue, self),self.title());
+                }
+            }
+
+            self.edit = function () {
+
+
+
+                var m = new AssignmentModel(self.toObject());
+
+
+                m.init = function (elements) {
+                    $(elements).find("#assgnmtSbmtDate").datepicker();
+                    $(elements).find("#assgnmtPRDate").datepicker();
+                    $(elements).find("#assgnmtAppDate").datepicker();
+
+                    m.validator = $('#assignment-edit-template-form').validate();
+                };
+
+                m.validate = function () {
+                    var result = true;
+                    result = m.validator.form();
+                    if (!result) {
+                        m.validator.showErrors();
+                    }
+
+                    return result;
+                }
+
+                var cbm = {
+                    save: function (m) {
+                        //
+                        // update assignment
+                        //
+
+                        if (!m.validate()) {
+                            return false;
+                        }
+
+                        $('.dropdown-error').html('');
+
+                        if (m.author == null) {
+                            $('#author-error-container').html("* Please select an author");
+                            return false;
+                        }
+
+                        if (m.editor == null) {
+                            $('#editor-error-container').html("* Please select an editor");
+                            return false;
+                        }
+
+                        if (m.proofread == null) {
+                            $('#proofread-error-container').html("* Please select a proof reader");
+                            return false;
+                        }
+
+                        if (!checkDeadlineValidities(m)) {
+                            return false;
+                        }
+
+
+                        $.ajax({
+                            type: 'POST',
+                            url: '@Url.Content("~/Assignment/UpdateAssignment")',
+                            data:
+                                {
+                                    str: JSON.stringify(m.toObject())
+                                },
+                            success: function (r) {
+                                self.fromObject(r);
+                            },
+                            error: function (request, status, error) {
+                                PAGE_CONTEXT.error(request, status, error)
+                            }
+                        });
+
+                        return true;
+                    }
+
+
+                };
+
+
+                m.author = erp.utils.FindItemById(m.author ? m.author.id() : 0, PAGE_CONTEXT.authors);
+                m.editor = erp.utils.FindItemById(m.editor ? m.editor.id() : 0, PAGE_CONTEXT.editors);
+                m.proofread = erp.utils.FindItemById(m.proofread ? m.proofread.id() : 0, PAGE_CONTEXT.proofreaders);
+
+                var d = pageData.OpenDialog(m, cbm, "assignment-edit-template");
+
+                d.dialog("option", "title", "Edit Assignment");
+            }
+        }
+
+        function PublicationModel(src) {
+            var self = this;
+            self.loaded = false;
+            self.events = ko.observableArray();
+
+
+            var dt2js = function (options) { return erp.utils.Json2Date(options.data) };
+            //
+            //
+            //
+
+            self.toObject = function () {
+                return ko.mapping.toJS(self);
+            }
+
+            self.fromObject = function (o) {
+                ko.mapping.fromJS(o,
+                    {
+                        'copy': ["id"]
+                        , "Created": { create: dt2js }
+                    }, self);
+            }
+
+            //
+            //
+            //
+            self.fromObject(src);
+
+
+        }
+
+
+        function IssueTable() {
+
+            var self = this;
+
+            self.currSelection = ko.observable(null);
+            self.prevSelection = ko.observable(null);
+
+
+            self.issueList = ko.observableArray();
+
+            self.publications = ko.observableArray();
+            self.publicationId = ko.observable(0);
+
+
+            self.stateGroupId = ko.observable(0);
+            self.stateGroups = ko.observableArray();
+
+
+            self.initOnce = false;
+            self.init = function () {
+
+                if( ! self.initOnce ){
+
+                    self.stateGroups([
+                        {name:'ALL',id:'@EditorsCommon.WorkFlowState.STATE_GROUP_ALL'},
+                        {name:'In Process',id:'@EditorsCommon.WorkFlowState.STATE_GROUP_IN_PROCESS'},
+                        {name:'Published',id:'@EditorsCommon.WorkFlowState.STATE_GROUP_PUBLISHED'},
+                    ]);
+
+                    self.stateGroupId(@EditorsCommon.WorkFlowState.STATE_GROUP_IN_PROCESS);
+
+
+                    self.loadPublications();
+                    self.loadIssues();
+                    self.initOnce = !self.initOnce;
+                }
+
+            }
+
+            self.loadPublications = function () {
+
+                $.get('@Url.Content("~/ChiefEditor/Publications")', {},
+                            function (result) {
+                                self.publications(result);
+                                PAGE_CONTEXT.publications = result;
+                            });
+            }
+
+
+
+            self.loadIssues = function () {
+
+                var publicationId = self.publicationId() || 0;
+                var stateGroup = self.stateGroupId();
+
+                self.load(publicationId,stateGroup );
+            }
+
+            self.addPublication = function () {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Content("~/Publication/GetPublications")',
+                    data: {},
+                    success: function (r) {
+
+
+                        var m = new PublicationModel(r);
+
+                        m.init = function () {
+                            //Romel -edited June 18,2014
+                            //fixed the date picker issue
+                            $("#add-publication-dialog-create-date").datepicker();
+                            m.validator =   $("#add-publication-template-form").validate({debug : true});
+                        };
+
+
+                        m.validate = function () {
+                            var validationresult = true;
+                            validationresult =  m.validator.form();
+                            if( ! validationresult )
+                                m.validator.showerrors();
+                            return validationresult;
+                        }
+
+                        //Save
+
+                        m.save = function (o) {
+
+                            //Romel -edited June 18,2014
+                            //fixed the date picker issue
+                            if (!m.validate()) {
+                                return false;
+                            }
+
+                            o.PublisherId('1');
+                            o.ID('0');
+                            $.ajax({
+                                type: 'POST',
+                                url: '@Url.Content("~/Publication/AddPublication")',
+                                data: {PublicationData: JSON.stringify(o.toObject())},
+                                success: function (result) {
+                                    if (result != null) {
+                                        if (!result.Errorexist) {
+                                            $.get('@Url.Content("~/ChiefEditor/Publications")', {},
+                                               function (result) {
+                                                   self.publications(result);
+                                                   PAGE_CONTEXT.publications = result;
+                                               });
+                                        } else {
+                                            //show error message
+                                            if (result.ErrorMessage != "") {
+                                                alert(result.ErrorMessage);
+                                                page_context.error(request, status, error)
+                                                return false;
+                                            }
+                                        }
+                                    }
+                                },
+                                error: function (request, status, error) {
+                                    alert(error)
+                                    page_context.error(request, status, error)
+                                }
+                            });
+                            return true;
+                        }
+
+
+                        var d = pageData.OpenDialog(m, m, "add-publication-template");
+
+                        d.dialog("option", "title", "Create New Publication").
+                        dialog("option", "width", 760).
+                        dialog("option", "height", 400);
+
+                    },
+                    error: function (request, status, error) {
+
+                        PAGE_CONTEXT.error(request, status, error)
+
+                    }
+                });
+            };
+
+            self.addIssue = function () {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Content("~/Issue/GetNewIssue")',
+                    data: {},
+                    success: function (r) {
+                        //
+                        // use return value as template
+                        //
+                        //
+                        var m = new IssueModel(r);
+
+                        m.initCount = 0;
+                        //
+                        // will be called after dialog initialization
+                        //
+                        m.init = function (elements) {
+
+                            $(elements).find("#issue-edit-dialog-create-date").datepicker();
+                            $(elements).find("#issue-edit-dialog-publish-date").datepicker();
+                            $(elements).find("#issue-edit-dialog-proof-date").datepicker();
+
+                            m.validator =   $("#issue-edit-template-form").validate({debug : true});
+                        };
+
+
+                        m.validate = function(){
+                            var validationResult = true;
+                            validationResult =  m.validator.form();
+                            if( ! validationResult )
+                                m.validator.showErrors();
+                            return validationResult;
+
+                            return true;
+                        }
+
+                        //
+                        // will be called after "save changes" clicked
+                        //
+                        m.save = function (o) {
+
+                            $('#add-issue-published-field').html(''); 
+                            $('#issue-edit-dialog-publish-date').removeClass('error'); 
+
+                            if( !m.validate()){
+                                return false;
+                            }
+
+                            if (Date.parse(o.createdDate) > Date.parse(o.publicationDate)) {
+                                $('#issue-edit-dialog-publish-date').addClass('error');
+                                $('#add-issue-published-field').html("Invalid Date Range!\nCreate Date cannot be after Publish Date!"); 
+                                return false;
+                            }
+
+                            o.publicationID(o.selPublication().id);
+                            o.publicationName(o.selPublication().name)
+                            
+                            $.ajax({
+                                type: 'POST',
+                                url: '@Url.Content("~/Issue/AddIssue")',
+                                data: { str: JSON.stringify(o.toObject()) },
+                                success: function (r) {
+                                    if (r != null) {
+
+                                        var v = new IssueModel(r);
+                                        self.issueList.unshift(v);
+                                    }
+                                },
+                                error: function (request, status, error) {
+
+                                    PAGE_CONTEXT.error(request, status, error)
+
+                                }
+                            });
+
+                            return true;
+
+                        }
+
+                        m.selPublication = ko.observable(null);
+
+                        var d = pageData.OpenDialog(m, m, "issue-edit-template");
+
+                        d.dialog("option", "title", "Create New Issue").
+                        dialog("option", "width", 760).
+                        dialog("option", "height", 400);
+
+
+                    },
+                    error: function (request, status, error) {
+
+                        PAGE_CONTEXT.error(request, status, error)
+
+                    }
+                });
+            };
+
+
+            self.deleteIssue = function(item)
+            {
+                if( window.confirm("Do you want delete issue '" + item.title() + "'?" ) ) {
+                    //alert("Whoops. Not Implemented");
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Content("~/Issue/DeleteIssue")',
+                        data:
+                            {
+                                str: JSON.stringify(item.toObject())
+                            },
+                        success: function (r)
+                        {
+                            self.issueList.remove(item);
+                        },
+                        error: function (request, status, error) {
+                            PAGE_CONTEXT.error(request, status, error)
+                        }
+                    });
+                }
+            }
+
+
+            self.load = function (publicationId, state) {
+
+                $.get('@Url.Content("~/Issue/Issues")', { publicationId: publicationId, state : state },
+                         function (result) {
+
+                             var t = ko.mapping.fromJS(
+                                 {'children' : result},
+                                 {'children':
+                                     {
+                                         create: function(options) {
+                                             return new IssueModel(options.data);
+                                         }
+                                     }},{});
+
+
+                             self.issueList(t.children());
+
+                         });
+            }
+
+        }
+
+
+
+
+
+        var PAGE_CONTEXT = {};
+
+
+        var pageData = new PageData();
+
+        pageData.loadAuthors = function () {
+            if (typeof self.authors === 'undefined') {
+                $.get('@Url.Content("~/ChiefEditor/GetReviewers")', {},
+              function (result) {
+                  //PAGE_CONTEXT.authors = result;
+
+                  PAGE_CONTEXT.authors = [];
+                  for(var i=0; i < result.length; i++){
+                      PAGE_CONTEXT.authors.push({ id: result[i].id, name: result[i].name, role :'@EditorsCommon.Publication.ActorRole.reviewer'});
+                  }
+
+              });
+            }
+        }
+
+        pageData.loadEditors = function () {
+
+            if (typeof self.editors === 'undefined') {
+                $.get('@Url.Content("~/ChiefEditor/GetEditors")', {},
+                      function (result) {
+                          //PAGE_CONTEXT.editors = result;
+
+                          PAGE_CONTEXT.editors = [];
+                          for (var i = 0; i < result.length; i++) {
+                              PAGE_CONTEXT.editors.push({ id: result[i].id, name: result[i].name, role: '@EditorsCommon.Publication.ActorRole.editor' });
+                          }
+
+                      });
+                  }
+        }
+
+        pageData.loadSubEditors = function () {
+
+            if (typeof self.proofreaders === 'undefined') {
+                $.get('@Url.Content("~/ChiefEditor/GetSubEditors")', {},
+                      function (result) {
+
+                          PAGE_CONTEXT.proofreaders = [];
+                          for (var i = 0; i < result.length; i++) {
+                              PAGE_CONTEXT.proofreaders.push({ id: result[i].id, name: result[i].name, role: '@EditorsCommon.Publication.ActorRole.proofread' });
+                          }
+
+                      });
+                  }
+        }
+
+        //
+        // do all init here
+        //
+        pageData.init = function () {
+            //self.loadPublications();
+            pageData.loadAuthors();
+            pageData.loadEditors();
+            pageData.loadSubEditors();
+        }
+
+
+
+
+
+
+        PAGE_CONTEXT.error =  function (request, status, error) {
+            var dlg = pageData.OpenErrorDialog({ error: request.responseText }, null, "error-view-template");
+
+            dlg.dialog("option", "title", "Server Error").
+                dialog("option", "width", 600).
+                dialog("option", "height", 300);
+        }
+
+
+        ko.applyBindings(pageData);
+
+        $(document).ready(function () {
+            //
+            // if session expires
+            //
+            $(function () {
+                $(document).ajaxError(
+                function (e, xhr, settings) {
+                    if (xhr.status == 401) {
+                        var newLocation = '@Url.Action("Login", "Account")';
+                        window.location = newLocation;
+                    }
+                });
+            });
+
+
+            $("#dialog-publish-placeholder").dialog({
+                autoOpen: false,
+                height: 500,
+                width: 800,
+                modal: true,
+                AutoPostBack: "false",
+                buttons: {
+                    "Execute": {
+                        text: "Execute",
+                        class: "save_button",
+                        click: function () {
+                            if (pageData.CloseDialog()) {
+                                $(this).dialog("close");
+                            }
+                        }
+                    },
+                    Cancel: function () {
+                        pageData.CancelDialog();
+                        $(this).dialog("close");
+                    }
+                },
+                close: function () {
+                }
+            });
+
+
+
+            $("#dialog-placeholder").dialog({
+                autoOpen: false,
+                height: 500,
+                width: 800,
+                modal: true,
+                AutoPostBack: "false",
+                buttons: {
+                    "Save Changes": {
+                        text: "Save Changes",
+                        class: "save_button",
+                        click: function () {
+                            if (pageData.CloseDialog()) {
+                                $(this).dialog("close");
+                            }
+                        }
+                    },
+                    Cancel: function () {
+                        pageData.CancelDialog();
+                        $(this).dialog("close");
+                    }
+                },
+                close: function () {
+                }
+            });
+
+
+            $("#error-dialog-placeholder").dialog({
+                autoOpen: false,
+                height: 500,
+                width: 800,
+                modal: true,
+                buttons: {
+                    Close: function () {
+                        pageData.CancelErrorDialog();
+                        $(this).dialog("close");
+                    }
+                },
+                close: function () {
+                }
+            });
+
+            pageData.init();
+            pageData.drillDownExt('issue-list-template', new IssueTable(),"Issues");
+
+        });
+
+        /**
+        * This mehtod will check if the given deadlines are valid. It will return
+        * TRUE if they are , and FALSE otherwise.
+        */
+        function checkDeadlineValidities(assignment) {
+            var submissionDeadline  = new Date(assignment.submitDate);
+            var proofreadDeadline   = new Date(assignment.proofreadDate);
+            var approvalDeadline = new Date(assignment.approveDate);
+
+
+            resetDeadlineFields(assignment); 
+            
+
+            if( submissionDeadline < proofreadDeadline ) {
+                // Checking for proof read deadline
+                // This means that it is true, therefore it will proceed to check for approval deadline
+                if (proofreadDeadline < approvalDeadline) {
+                    return true;
+                } else {
+                    var container = $('#assgnmtAppDate').parent();
+                    if ($(container).find('span').length == 0) {
+                        $('#assgnmtAppDate').addClass('field-with-error'); 
+                        $(container).append("<span class=\"custom-errors-container\">* Please choose a later date<span>");
+                    }
+
+                    assignment.validator.showerrors();
+                    return false;
+                }
+
+            } else {
+                // This means that the proof read deadline is invalid, and an error is to be displayed
+                var container = $('#assgnmtPRDate').parent();
+
+                // Check if message already exists
+
+                if ($(container).find('span').length == 0) {
+                    $('#assgnmtPRDate').addClass('field-with-error');
+                    $(container).append( "<span class=\"custom-errors-container\">* Please choose a later date<span>");
+                }
+
+                assignment.validator.showerrors();
+                return false;
+            }
+        }
+
+        function resetDeadlineFields() {
+            // Removes class , if it exists on the element
+            $('#assgnmtAppDate').removeClass('field-with-error');
+            $('#assgnmtPRDate').removeClass('field-with-error');
+
+            $('.custom-errors-container').remove();
+        }
+
+    </script>
+}

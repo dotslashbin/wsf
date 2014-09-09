@@ -1,0 +1,46 @@
+﻿
+<div >
+    <br />
+    <div class="tab-pane active" id="new-note-tabs-props">
+
+        <div class="row">
+            <div class="col-sm-2 input-group-md">
+                <label for="note-edit-producer" class="control-label">Title:</label>
+            </div>
+            <div class="col-sm-10  input-group-md">
+                <input type="text" 
+                    data-bind="value: title, valueUpdate: 'blur'" 
+                    class="form-control" 
+                    id="note-edit-producer" 
+                    name="note-edit-producer" placeholder="Title" required />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-2 input-group-md">
+                <label for="note-edit-label" class="control-label">Location:</label>
+            </div>
+            <div class="col-sm-10 input-group-md">
+                <input type="text" 
+                    data-bind="value: location, valueUpdate: 'blur'" 
+                    class="form-control" 
+                    id="note-edit-label" 
+                    placeholder="Location" />
+            </div>
+        </div>
+
+       <div class="row">
+            <div class="col-sm-2 input-group-md">
+                <label for="note-edit-label" class="control-label">Comments:</label>
+            </div>
+       </div>
+       <div class="row">
+            <div class="col-sm-12 input-group-md">
+                <textarea rows="5"  class="col-sm-12 input-group-md" data-bind="value: comments, valueUpdate: 'blur'"></textarea>
+            </div>
+        </div>
+
+
+
+</div>
+
+

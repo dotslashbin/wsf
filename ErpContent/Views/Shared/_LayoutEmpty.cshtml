@@ -1,0 +1,45 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>@ViewBag.Title - ERP Content Portal</title>
+        <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+        <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+        @Styles.Render("~/Content/css")
+        @RenderSection("styles", required: false)
+    </head>
+    <body>
+        <header>
+            <div class="content-wrapper">
+                <div class="float-left">
+                    <p class="site-title"><img src="@Url.Content("~/images/erp_logo.gif")" /></p>
+                </div>
+            </div>
+        </header>
+        <div id="body">
+            @RenderSection("featured", required: false)
+            <section class="content-wrapper main-content clear-fix">
+               @RenderBody()
+            </section>
+        </div>
+        <footer>
+            <div class="content-wrapper">
+                <div style="max-width: 600px; margin : 0 auto; text-align:center " >
+                    eRobertParker.com<sup>SM</sup> is a service of The Wine Advocate, Inc<br />
+                    Email: <a href="mailto:info@erobertparker.com">info@erobertparker.com</a><br />
+                    Copyright © 2001-2013  - The Wine Advocate, Inc.
+                    <br /> <br />
+                    <i>Except as otherwise expressly permitted under the <a href="info/subagree.asp#Copyrights">
+                        Subscription Agreement</a> or copyright law,<br />
+                        no copying, redistribution, retransmission, publication or commercial exploitation
+                        of this material is permitted<br />
+                        without the prior written consent of The Wine Advocate, Inc.</i>
+                </div>
+            </div>
+        </footer>
+
+        @Scripts.Render("~/bundles/jquery")
+        @Scripts.Render("~/bundles/modernizr")
+        @RenderSection("scripts", required: false)
+    </body>
+</html>

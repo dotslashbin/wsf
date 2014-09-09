@@ -1,0 +1,58 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ErpContent", "ErpContent\ErpContent.csproj", "{8000A528-7D61-4225-8E4D-A5C3218DC6EE}"
+	ProjectSection(ProjectDependencies) = postProject
+		{60D2638C-97DD-4B7D-887C-4A9BA186C4CE} = {60D2638C-97DD-4B7D-887C-4A9BA186C4CE}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ErpContent.Tests", "ErpContent.Tests\ErpContent.Tests.csproj", "{3D5D29B5-6150-4AA7-A6B0-854E784C3B12}"
+	ProjectSection(ProjectDependencies) = postProject
+		{60D2638C-97DD-4B7D-887C-4A9BA186C4CE} = {60D2638C-97DD-4B7D-887C-4A9BA186C4CE}
+		{B4DB78FD-CF64-4C88-BB0B-468F810F0B7A} = {B4DB78FD-CF64-4C88-BB0B-468F810F0B7A}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{8342E2CD-710A-4695-BC0D-62EBCDE21A48}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorsCommon", "EditorsCommon\EditorsCommon.csproj", "{B4DB78FD-CF64-4C88-BB0B-468F810F0B7A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorsDbLayer", "EditorsDbLayer\EditorsDbLayer.csproj", "{60D2638C-97DD-4B7D-887C-4A9BA186C4CE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorsDbLayer.Tests", "EditorsDbLayer.Tests\EditorsDbLayer.Tests.csproj", "{E2E407AE-B7B6-439A-8CC3-FE7E5F63D6D5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8000A528-7D61-4225-8E4D-A5C3218DC6EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8000A528-7D61-4225-8E4D-A5C3218DC6EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8000A528-7D61-4225-8E4D-A5C3218DC6EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8000A528-7D61-4225-8E4D-A5C3218DC6EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D5D29B5-6150-4AA7-A6B0-854E784C3B12}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D5D29B5-6150-4AA7-A6B0-854E784C3B12}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D5D29B5-6150-4AA7-A6B0-854E784C3B12}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D5D29B5-6150-4AA7-A6B0-854E784C3B12}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4DB78FD-CF64-4C88-BB0B-468F810F0B7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4DB78FD-CF64-4C88-BB0B-468F810F0B7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4DB78FD-CF64-4C88-BB0B-468F810F0B7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4DB78FD-CF64-4C88-BB0B-468F810F0B7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{60D2638C-97DD-4B7D-887C-4A9BA186C4CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60D2638C-97DD-4B7D-887C-4A9BA186C4CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60D2638C-97DD-4B7D-887C-4A9BA186C4CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60D2638C-97DD-4B7D-887C-4A9BA186C4CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E2E407AE-B7B6-439A-8CC3-FE7E5F63D6D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2E407AE-B7B6-439A-8CC3-FE7E5F63D6D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E2E407AE-B7B6-439A-8CC3-FE7E5F63D6D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2E407AE-B7B6-439A-8CC3-FE7E5F63D6D5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -251,6 +251,9 @@
                     </div>
 
                     <div class="row panel panel-success" data-bind="visible: open">
+                         <div class="row" style="border-bottom: solid 1px gray;">
+                                <span class="col-sm-11  pull-right" data-bind="html: erp.utils.Str2Html(comments)"></span>
+                         </div>
                         <!-- ko foreach: notes -->
                         <div class="row panel-heading">
                             <h5>

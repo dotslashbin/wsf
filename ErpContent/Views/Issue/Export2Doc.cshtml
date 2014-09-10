@@ -1,5 +1,4 @@
-﻿@Model EditorsCommon.Publication.IssueComplete
-@using ErpContent.Views.Helpers;
+﻿@using ErpContent.Views.Helpers;
  
 @{
     Layout = null;
@@ -68,9 +67,16 @@
                         <div>
                                 @foreach (var n in t.tastingNotes)
                                 {
-                                    string output = NotesHelper.applyFormatting(n.note);
+                                    var vintagePlusWineName = n.vintage.ToUpper() + ' ' + n.wineName;
+                                    var vintagePlusWineNameBold = "<b>" + vintagePlusWineName + "</b>";
+                                    string noteText = n.note;
+
+                                    noteText = noteText.Replace(vintagePlusWineName, vintagePlusWineNameBold); 
                                     
-                                    <p style="text-indent: 4em;">@output</p>
+                                    
+                                    string output = NotesHelper.applyFormatting(noteText);
+                                    
+                                    <p style="text-indent: 4em;">@(new HtmlString(output)) </p>
                                 }
                                 @if(  !String.IsNullOrEmpty( t.comments )){
                                     <br />

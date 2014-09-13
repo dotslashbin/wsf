@@ -216,7 +216,7 @@ namespace ErpContent.Controllers
         {
             var o = new JavaScriptSerializer().Deserialize<TastingNote>(str);
 
-            o.userId = (int)Membership.GetUser(User.Identity.Name).ProviderUserKey;
+           // o.userId = (int)Membership.GetUser(User.Identity.Name).ProviderUserKey;
 
             var maturityId = o.maturityId;
 

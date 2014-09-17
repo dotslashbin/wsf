@@ -78,7 +78,7 @@ namespace EditorsDbLayer
             if (String.IsNullOrEmpty(searchString))
                 return res;
 
-            searchString = "%" + searchString.Replace("%", "") + "%";
+            searchString = "%" + searchString.Trim().Replace("%", "") + "%";
 
 
 

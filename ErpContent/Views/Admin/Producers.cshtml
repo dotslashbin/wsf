@@ -6,7 +6,388 @@
 }
 
 
+@section LeftMenu{
+   @Html.Partial("_AdminMenuPartial")
+ }
+
 
 
 <h2>Producers</h2>
 
+
+<div data-bind="template: { name: mv().view, data: mv().model, afterRender: $root.modelInit } ">
+... loading
+</div>
+
+<div id="dialog-placeholder" 
+    data-bind="template: { name: dmv().view, data: dmv().model, afterRender: $root.dialogInit }">
+</div>
+
+<div id="error-dialog-placeholder" 
+    data-bind="  template: { name: dmvError().view, data: dmvError().model, afterRender: $root.errorDialogInit }">
+</div>
+
+
+
+@section scripts {
+
+
+    <script id="search-wine-template" type="text/html">
+
+         <div class="row">
+            <div class="col-sm-4  input-group-md">
+                <input type="text" 
+                    data-bind="value: searchString, valueUpdate: 'blur'" 
+                    class="form-control" 
+                    id="note-edit-producer-search" 
+                    placeholder="Search String" required />
+            </div>
+            <div class="col-sm-1 input-group-md">
+                <button class="btn btn-sm" data-bind="click: search" >Search</button>
+            </div>
+
+
+            <div class="col-sm-2">
+                <select class="form-control input-sm col-sm-4" data-bind="options: stateGroups,
+    optionsText: 'name',
+    optionsValue: 'id',
+    value: stateGroupId,
+    valueUpdate: 'blur'">
+
+                </select>
+            </div>
+
+        </div>
+        <br />
+        <div class="row" style="height: 550px; overflow:auto">
+            <!-- ko foreach: items -->
+            <div class="row"  style="border-bottom: solid 1px gray;">
+                <div class='col-sm-7' >
+                        <span  data-bind="style: { color: erp.utils.statusColor($data.workflow()) }">
+                           <span data-bind="text: name, style: { color: erp.utils.statusColor($data.workflow()) }"></span>
+                           <span data-bind="text: nameToShow"></span>
+                            </span>
+                </div>
+               <div class='col-sm-1' >
+                  <button class="btn btn-primary btn-xs" style="cursor:pointer" data-bind="click: approve, visible: needApprove() == true">Approve</button>
+               </div>
+            </div>
+            <!-- /ko -->
+        </div>
+    </script>
+
+
+
+
+<script type="text/javascript">
+
+
+
+    function PageData() {
+
+        var self = this;
+
+        self.treeItem = null;
+
+        self.drillDown = function (view, model) {
+            var nextTreeItem = {
+                previous: self.treeItem,
+                viewname: view,
+                model: model
+            }
+            self.treeItem = nextTreeItem;
+            self.updateViewModel();
+
+        };
+
+        self.drillUp = function () {
+            if (self.treeItem.previous != null) {
+                self.treeItem = self.treeItem.previous;
+                self.updateViewModel();
+            }
+        };
+
+
+        self.mvInit = { view: null, model: null };
+        self.mv = ko.observable(self.mvInit);
+
+
+        self.modelInit = function (elements) {
+            if (self.mv() != null && self.mv().model != null && self.mv().model.init !== undefined) {
+                self.mv().model.init(elements);
+            } else {
+
+            }
+        }
+
+
+        self.updateViewModel = function () {
+            self.mv({ model: self.treeItem.model, view: self.treeItem.viewname });
+        }
+
+        //
+        // do all init here
+        //
+        self.init = function () {
+        }
+
+
+
+        self.dmvInit = { view: null, model: null, callback: null };
+        self.dmv = ko.observable(self.dmvInit);
+
+
+        self.dialogInit = function (elements) {
+            if (self.dmv().model != null && self.dmv().model.init !== undefined) {
+                self.dmv().model.init(elements);
+            }
+            else {
+            }
+        }
+
+
+        self.OpenDialog = function (model, callback, view) {
+
+            self.dmv({ model: model, view: view, callback: callback });
+
+            return $("#dialog-placeholder").dialog("open");
+        }
+
+
+
+        self.CloseDialog = function () {
+            if (self.dmv().callback != null && self.dmv().callback.save != null)
+                self.dmv().callback.save(self.dmv().model);
+            return true;
+        }
+
+        self.CancelDialog = function () {
+            return true;
+        }
+
+
+        self.dmvErrorInit = { view: null, model: null, callback: null };
+        self.dmvError = ko.observable(self.dmvErrorInit);
+
+
+        self.errorDialogInit = function (elements) {
+            if (self.dmvError().model != null && self.dmvError().model.init !== undefined) {
+                self.dmvError().model.init(elements);
+            }
+            else {
+            }
+        }
+
+        self.OpenErrorDialog = function (model, callback, view) {
+
+            self.dmvError({ model: model, view: view, callback: callback });
+
+            return $("#error-dialog-placeholder").dialog("open");
+        }
+
+        self.CancelErrorDialog = function () {
+            return true;
+        }
+
+    }
+
+    function ProducerModel(src) {
+        var self = this;
+
+
+        self.toObject = function () {
+            var o = ko.mapping.toJS(self);
+            return o;
+        }
+
+        self.fromObject = function (o) {
+            ko.mapping.fromJS(o,
+                {
+
+                }, self);
+        }
+        //
+        //
+        //
+        if (src)
+            self.fromObject(src);
+
+        self.needApprove = function(){
+            if( self.workflow() < 100 )
+                return true;
+
+
+            return false;
+        }
+
+        self.approve = function(){
+            alert('approve');
+            return;
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/???????????")',
+                data:
+                    {   id: self.id()},
+                success: function (result) {
+
+                    if(result > 0 ){
+
+                        self.wfState(100);
+
+                    }
+                },
+                error: function (request, status, error) {
+
+                    alert("server error. report to admin");
+
+                }
+            });
+
+        }
+
+    }
+
+
+    function PageModel() {
+        var self = this;
+
+        self.items = ko.observableArray();
+        self.searchString = ko.observable();
+
+
+        self.search = function () {
+            // do nothing at the moment
+            //
+            $.get('@Url.Content("~/Producer/SearchProducer")', { term: self.searchString(), state : self.stateGroupId() },
+                function (result) {
+
+                    var t = ko.mapping.fromJS(
+                        { 'children': result },
+                        {
+                            'children':
+                            {
+                                create: function (options) {
+
+                                    var result = new ProducerModel(options.data);
+                                    return result;
+                                }
+                            }
+                        }, {});
+
+                    self.items(t.children());
+                });
+        }
+
+        self.stateGroupId = ko.observable(0);
+        self.stateGroups = ko.observableArray();
+
+
+        self.initOnce = false;
+        self.init = function () {
+
+            if( ! self.initOnce ){
+
+                self.stateGroups([
+                    {name:'ALL',id:@EditorsCommon.WorkFlowState.STATE_GROUP_ALL},
+                   {name:'In Process',id:@EditorsCommon.WorkFlowState.STATE_GROUP_IN_PROCESS},
+                   {name:'Published',id:@EditorsCommon.WorkFlowState.STATE_GROUP_PUBLISHED},
+                ]);
+
+                self.stateGroupId(@EditorsCommon.WorkFlowState.STATE_GROUP_ALL);
+                self.initOnce = !self.initOnce;
+            }
+
+        }
+    }
+
+
+
+
+    var PAGE_CONTEXT = {};
+
+    var pageData = new PageData();
+
+
+    ko.applyBindings(pageData);
+
+    PAGE_CONTEXT.sortByOptions =
+        [
+            { name: 'Producer', id: 0 },
+            { name: 'Label', id: 1 },
+            { name: 'Vintage', id: 2 }
+        ];
+
+    PAGE_CONTEXT.sortByOptionsVin =
+        [
+            { name: 'Producer', id: 0 },
+            { name: 'Label', id: 1 },
+        ];
+
+
+    function wineColor(color) {
+        if (color == "Red" || color == "red")
+            return 'maroon';
+
+        if (color == "White" || color == "white")
+            return 'yellow';
+
+        if (color == "Rose" || color == "rose")
+            return 'red';
+
+        return 'maroon';
+    };
+
+
+
+    $(document).ready(function () {
+
+        $("#dialog-placeholder").dialog({
+            autoOpen: false,
+            height: 500,
+            width: 800,
+            modal: true,
+            buttons: {
+                "Save Changes": function () {
+
+                    if (pageData.CloseDialog()) {
+                        $(this).dialog("close");
+                    }
+                },
+                Cancel: function () {
+                    pageData.CancelDialog();
+                    $(this).dialog("close");
+                }
+            },
+            close: function () {
+            }
+        });
+
+
+        $("#error-dialog-placeholder").dialog({
+            autoOpen: false,
+            height: 500,
+            width: 800,
+            modal: true,
+            buttons: {
+                Close: function () {
+                    pageData.CancelErrorDialog();
+                    $(this).dialog("close");
+                }
+            },
+            close: function () {
+            }
+        });
+
+
+        pageData.init();
+        pageData.drillDown('search-wine-template', new PageModel());
+
+        $("#page-left-menu #producers").addClass("active");
+
+
+    });
+
+</script>
+
+}}

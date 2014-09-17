@@ -7,26 +7,23 @@ using System.Threading.Tasks;
 using EditorsCommon;
 using System.Data.SqlClient;
 using System.Data;
-using EditorsCommon.Wine;
 
-namespace EditorsDbLayer.Data.Wine
+namespace EditorsDbLayer
 {
     #region ----- WineProducerStorage -----
-    public class WineProducerStorage : IWineProducer 
+    public class WineProducerStorage : IWineProducerStorage 
     
     {
         string _auditUserName = "";
         ISqlConnectionFactory _connFactory;
 
-        public WineProducerStorage(ISqlConnectionFactory connFactory, string auditUserName = "") {
+        public WineProducerStorage(ISqlConnectionFactory connFactory) {
             _connFactory = connFactory;
-            _auditUserName = auditUserName;
         
         }
 
    
 
-        #region --- IWineProducer Members ---
 
         /// <summary>
         /// 
@@ -53,7 +50,7 @@ namespace EditorsDbLayer.Data.Wine
         /// <param name="wineProducer"></param>
         /// <returns></returns>
         public WineProducer Delete(WineProducer wineProducer) {
-            int id = wineProducer.ID;
+            int id = wineProducer.id;
 
             if (id < 1) {
                 throw new ArgumentException("Wine Producer must have a positive id to be deleted.");
@@ -73,58 +70,142 @@ namespace EditorsDbLayer.Data.Wine
             return id;
         }
 
+
+        public IEnumerable<WineProducer> SearchByName(string searchString)
+        {
+            List<WineProducer> res = new List<WineProducer>();
+
+            if (String.IsNullOrEmpty(searchString))
+                return res;
+
+            searchString = "%" + searchString.Replace("%", "") + "%";
+
+
+
+            using (SqlConnection conn = _connFactory.GetConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("", conn))
+                {
+                    cmd.CommandText = @"
+            select top(300)
+	            ID = wp.ID, 
+	            Name = wp.Name, 
+	            NameToShow = wp.NameToShow,
+	            WF_StatusID = wp.WF_StatusID,
+	            SortOrder = case when wp.NameToShow like right(@SearchString, len(@SearchString)-1) then 0 else 20 end
+            from WineProducer wp (nolock)
+            where wp.Name like @SearchString
+            order by SortOrder, NameToShow, ID
+";
+
+
+                    cmd.Parameters.AddWithValue("@SearchString", searchString);
+
+
+                    using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.CloseConnection))
+                    {
+                            while (dr.Read())
+                            {
+                                WineProducer item = new WineProducer();
+                                item.id = dr.GetInt32(0);
+                                item.name = dr.GetString(1);
+                                item.nameToShow = dr.GetString(2);
+                                item.workflow = (dr.IsDBNull(3) ? (short)0 : dr.GetInt16(3));
+
+                                res.Add(item);
+                            } 
+                        }
+                } 
+            } 
+
+            return res;
+        }
+
+
+        public IEnumerable<WineProducer> SearchByWorkflowStatus(int status)
+        {
+            List<WineProducer> res = new List<WineProducer>();
+
+            using (SqlConnection conn = _connFactory.GetConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("", conn))
+                {
+                    cmd.CommandText = @"
+            select top(300)
+	            ID = wp.ID, 
+	            Name = wp.Name, 
+	            NameToShow = wp.NameToShow,
+	            WF_StatusID = wp.WF_StatusID
+            from WineProducer wp (nolock)
+            where wp.WF_StatusID = @Status
+            order by NameToShow, ID
+";
+
+
+                    cmd.Parameters.AddWithValue("@Status", status);
+                    using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.CloseConnection))
+                    {
+                        while (dr.Read())
+                        {
+                            WineProducer item = new WineProducer();
+                            item.id = dr.GetInt32(0);
+                            item.name = dr.GetString(1);
+                            item.nameToShow = dr.GetString(2);
+                            item.workflow = (dr.IsDBNull(3) ? (short)0 : dr.GetInt16(3));
+
+                            res.Add(item);
+                        }
+                    }
+                }
+            }
+
+            return res;
+        }
+
+
+
         public IEnumerable<WineProducer> Search(WineProducer wineProducer) 
         {
-            if (wineProducer == null || string.IsNullOrWhiteSpace(wineProducer.Name))
+            if (wineProducer == null || string.IsNullOrWhiteSpace(wineProducer.name))
                 throw new ArgumentException("wineProducer with populated Name is required.");
 
             List<WineProducer> res = new List<WineProducer>();
 
-            // WineProducer_GetList	@ID int, @Name nvarchar(100) = NULL,
-                //  @StartRow int = NULL, @EndRow int = NULL,
-                //  @SortBy varchar(20) = NULL, @SortOrder varchar(3) = NULL
-                // Returns (nullable values are allowed):
-                //  ID, Name, NameToShow, WebSiteURL, 
-                //  locCountry, locRegion, locLocation, locLocale, locSiteID,
-                //  Profile, ContactInfo, WF_StatusID, WF_StatusName, created, updated, CreatorName, EditorName,
-                //  RowNumber, TotalRows -- true values only if @StartRow and @EndRow are specified, otherwise 0.
-                using (SqlConnection conn = _connFactory.GetConnection()) {
+
+            using (SqlConnection conn = _connFactory.GetConnection()) {
                     using (SqlCommand cmd = new SqlCommand("WineProducer_GetList", conn)) {
                         cmd.CommandType = CommandType.StoredProcedure;
-                        #region -- parameters --
-                        cmd.Parameters.AddWithValue("@Name", wineProducer.Name);
-                        #endregion -- parameters --
+
+                        cmd.Parameters.AddWithValue("@Name", wineProducer.name);
+
 
                         using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.CloseConnection)) {
                             if (dr != null && dr.HasRows) {
 
                                 while (dr.Read()) {
                                     WineProducer item = new WineProducer();
-                                    item.ID = dr.GetInt32(0);
-                                    item.Name = dr.GetString(1);
-                                    item.NameToShow = dr.GetString(2);
-                                    item.WebSiteURL = (dr.IsDBNull(3) ? "" : dr.GetString(3));
+                                    item.id = dr.GetInt32(0);
+                                    item.name = dr.GetString(1);
+                                    item.nameToShow = dr.GetString(2);
+                                    item.webSiteURL = (dr.IsDBNull(3) ? "" : dr.GetString(3));
 
-                                    item.Country = (dr.IsDBNull(4) ? "" : dr.GetString(4));
-                                    item.Region = (dr.IsDBNull(5) ? "" : dr.GetString(5));
-                                    item.Location = (dr.IsDBNull(6) ? "" : dr.GetString(6));
-                                    item.Locale = (dr.IsDBNull(7) ? "" : dr.GetString(7));
-                                    item.Site = (dr.IsDBNull(8) ? "" : dr.GetString(8));
+                                    item.country = (dr.IsDBNull(4) ? "" : dr.GetString(4));
+                                    item.region = (dr.IsDBNull(5) ? "" : dr.GetString(5));
+                                    item.location = (dr.IsDBNull(6) ? "" : dr.GetString(6));
+                                    item.locale = (dr.IsDBNull(7) ? "" : dr.GetString(7));
+                                    item.site = (dr.IsDBNull(8) ? "" : dr.GetString(8));
 
-                                    item.Profile = (dr.IsDBNull(9) ? "" : dr.GetString(9));
-                                    item.ContactInfo = (dr.IsDBNull(10) ? "" : dr.GetString(10));
+                                    item.profile = (dr.IsDBNull(9) ? "" : dr.GetString(9));
+                                    item.contactInfo = (dr.IsDBNull(10) ? "" : dr.GetString(10));
 
-                                    item.WF_StatusID = (dr.IsDBNull(11) ? (short)0 : dr.GetInt16(11));
-                                    item.WF_StatusName = (dr.IsDBNull(12) ? "" : dr.GetString(12));
+                                    item.workflow = (dr.IsDBNull(11) ? (short)0 : dr.GetInt16(11));
 
                                     if (!dr.IsDBNull(13))
-                                        item.DateCreated = dr.GetDateTime(13);
+                                        item.dateCreated = dr.GetDateTime(13);
 
                                     if (!dr.IsDBNull(14))
-                                        item.DateUpdated = dr.GetDateTime(14);
+                                        item.dateUpdated = dr.GetDateTime(14);
 
-                                    item.CreatorName = (dr.IsDBNull(15) ? "" : dr.GetString(15));
-                                    item.EditorName = (dr.IsDBNull(16) ? "" : dr.GetString(16));
 
                                     res.Add(item);
                                 } // while
@@ -142,7 +223,6 @@ namespace EditorsDbLayer.Data.Wine
         {
             return Load(id);
         } // GetByID
-        #endregion --- IWineProducer Members ---
 
         #region --- protected ---
         /// <summary>
@@ -161,36 +241,34 @@ namespace EditorsDbLayer.Data.Wine
             using (SqlConnection conn = _connFactory.GetConnection()) {
                     using (SqlCommand cmd = new SqlCommand("WineProducer_GetList", conn)) {
                         cmd.CommandType = CommandType.StoredProcedure;
-                        #region -- parameters --
+
                         cmd.Parameters.AddWithValue("@ID", id);
-                        #endregion -- parameters --
+
 
                         using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.CloseConnection)) {
                             if (dr != null && dr.HasRows && dr.Read()) {
                                 res = new WineProducer();
-                                res.ID = dr.GetInt32(0);
-                                res.Name = dr.GetString(1);
-                                res.NameToShow = dr.GetString(2);
-                                res.WebSiteURL = (dr.IsDBNull(3) ? "" : dr.GetString(3));
+                                res.id = dr.GetInt32(0);
+                                res.name = dr.GetString(1);
+                                res.nameToShow = dr.GetString(2);
+                                res.webSiteURL = (dr.IsDBNull(3) ? "" : dr.GetString(3));
 
-                                res.Country = (dr.IsDBNull(4) ? "" : dr.GetString(4));
-                                res.Region = (dr.IsDBNull(5) ? "" : dr.GetString(5));
-                                res.Location = (dr.IsDBNull(6) ? "" : dr.GetString(6));
-                                res.Locale = (dr.IsDBNull(7) ? "" : dr.GetString(7));
-                                res.Site = (dr.IsDBNull(8) ? "" : dr.GetString(8));
+                                res.country = (dr.IsDBNull(4) ? "" : dr.GetString(4));
+                                res.region = (dr.IsDBNull(5) ? "" : dr.GetString(5));
+                                res.location = (dr.IsDBNull(6) ? "" : dr.GetString(6));
+                                res.locale = (dr.IsDBNull(7) ? "" : dr.GetString(7));
+                                res.site = (dr.IsDBNull(8) ? "" : dr.GetString(8));
 
-                                res.Profile = (dr.IsDBNull(9) ? "" : dr.GetString(9));
-                                res.ContactInfo = (dr.IsDBNull(10) ? "" : dr.GetString(10));
+                                res.profile = (dr.IsDBNull(9) ? "" : dr.GetString(9));
+                                res.contactInfo = (dr.IsDBNull(10) ? "" : dr.GetString(10));
 
-                                res.WF_StatusID = (dr.IsDBNull(11) ? (short) 0 : dr.GetInt16(11));
-                                res.WF_StatusName = (dr.IsDBNull(12) ? "" : dr.GetString(12));
+                                res.workflow = (dr.IsDBNull(11) ? (short) 0 : dr.GetInt16(11));
+
                                 if (!dr.IsDBNull(13))
-                                    res.DateCreated = dr.GetDateTime(13);
+                                    res.dateCreated = dr.GetDateTime(13);
                                 if (!dr.IsDBNull(14))
-                                    res.DateUpdated = dr.GetDateTime(14);
+                                    res.dateUpdated = dr.GetDateTime(14);
 
-                                res.CreatorName = (dr.IsDBNull(15) ? "" : dr.GetString(15));
-                                res.EditorName = (dr.IsDBNull(16) ? "" : dr.GetString(16));
 
                             }
                             if (dr != null && !dr.IsClosed)
@@ -227,25 +305,24 @@ namespace EditorsDbLayer.Data.Wine
                 //  @WF_StatusID smallint = NULL, @UserName varchar(50), @ShowRes smallint = 1
                 //
                 using (SqlConnection conn = _connFactory.GetConnection()) {
-                    using (SqlCommand cmd = new SqlCommand((wineProducer.ID > 0 ? "WineProducer_Update" : "WineProducer_Add"), conn)) {
+                    using (SqlCommand cmd = new SqlCommand((wineProducer.id > 0 ? "WineProducer_Update" : "WineProducer_Add"), conn)) {
                         cmd.CommandType = CommandType.StoredProcedure;
-                        #region -- parameters --
-                        if (wineProducer.ID > 0)
-                            cmd.Parameters.AddWithValue("@ID", wineProducer.ID);
-                        cmd.Parameters.AddWithValue("@Name", wineProducer.Name);
-                        cmd.Parameters.AddWithValue("@NameToShow", wineProducer.NameToShow);
-                        cmd.Parameters.AddWithValue("@WebSiteURL", wineProducer.WebSiteURL);
-                        cmd.Parameters.AddWithValue("@Profile", wineProducer.Profile);
-                        cmd.Parameters.AddWithValue("@ContactInfo", wineProducer.ContactInfo);
-                        cmd.Parameters.AddWithValue("@WF_StatusID", wineProducer.WF_StatusID);
+
+                        if (wineProducer.id > 0)
+                            cmd.Parameters.AddWithValue("@ID", wineProducer.id);
+                        cmd.Parameters.AddWithValue("@Name", wineProducer.name);
+                        cmd.Parameters.AddWithValue("@NameToShow", wineProducer.nameToShow);
+                        cmd.Parameters.AddWithValue("@WebSiteURL", wineProducer.webSiteURL);
+                        cmd.Parameters.AddWithValue("@Profile", wineProducer.profile);
+                        cmd.Parameters.AddWithValue("@ContactInfo", wineProducer.contactInfo);
+                        cmd.Parameters.AddWithValue("@WF_StatusID", wineProducer.workflow);
                         cmd.Parameters.AddWithValue("@UserName", _auditUserName);
                         cmd.Parameters.AddWithValue("@ShowRes", 1);
-                        #endregion -- parameters --
 
                         using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.CloseConnection)) {
                             if (dr != null && dr.HasRows && dr.Read()) {
-                                if (wineProducer.ID < 1)
-                                    wineProducer.ID = dr.GetInt32(0);
+                                if (wineProducer.id < 1)
+                                    wineProducer.id = dr.GetInt32(0);
                             }
                             if (dr != null && !dr.IsClosed)
                                 dr.Close();

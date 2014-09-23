@@ -186,6 +186,7 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\CachedUserController.cs" />
+    <Compile Include="Controllers\ImporterController.cs" />
     <Compile Include="Controllers\ProducerController.cs" />
     <Compile Include="Controllers\ProofreaderAreaController.cs" />
     <Compile Include="Controllers\PublicationController.cs" />
@@ -576,7 +577,6 @@
     <Content Include="Views\Article\index.cshtml" />
     <Content Include="Views\Admin\AdminDashboard.cshtml" />
     <Content Include="Views\Admin\Articles.cshtml" />
-    <Content Include="Views\Admin\ProducerProfile.cshtml" />
     <Content Include="Views\Admin\Producers.cshtml" />
     <Content Include="Views\Admin\Reviewers.cshtml" />
     <Content Include="Views\Admin\VintageProfile.cshtml" />
@@ -597,6 +597,7 @@
     <Content Include="Views\ProofreaderArea\_TastingEventForm.cshtml" />
     <Content Include="Views\ProofreaderArea\_TastingEventFormScript.cshtml" />
     <Content Include="Views\ProofreaderArea\ProofreaderDashboard.cshtml" />
+    <Content Include="Views\Admin\Importers.cshtml" />
     <None Include="Web.Prod.config" />
   </ItemGroup>
   <ItemGroup>
@@ -604,6 +605,7 @@
     <Folder Include="Filters\" />
     <Folder Include="obj\Debug\" />
     <Folder Include="Views\CachedUser\" />
+    <Folder Include="Views\Importer\" />
     <Folder Include="Views\Producer\" />
     <Folder Include="Views\Vin\" />
   </ItemGroup>

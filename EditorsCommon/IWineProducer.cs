@@ -15,23 +15,13 @@ namespace EditorsCommon
         public int id;
         public string name;
         public string nameToShow;
-        public string webSiteURL;
-
-        public string country;
-        public string region;
-        public string location;
-        public string locale;
-        public string site;
-
-        public string profile;
-        public string contactInfo;
 
         public DateTime dateCreated;
         public DateTime dateUpdated;
 
 
         // WF
-        public short workflow;
+        public short wfState;
     }
 
     public interface IWineProducerStorage : IStorage<WineProducer>
@@ -59,5 +49,11 @@ namespace EditorsCommon
         IEnumerable<WineProducer> SearchByWorkflowStatus(int status);
 
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        bool SetProducerStatus(int id, int status);
     }
 }

@@ -32,7 +32,7 @@ namespace EditorsDbLayer
         /// <returns></returns>
         public WineProducer Create(WineProducer producer)
         {
-            return Save(producer);
+            throw new Exception();
         }
 
         /// <summary>
@@ -41,7 +41,30 @@ namespace EditorsDbLayer
         /// <param name="wineProducer"></param>
         /// <returns></returns>
         public WineProducer Update(WineProducer wineProducer) {
-            return Save(wineProducer);
+           // return Save(wineProducer);
+
+
+            using (SqlConnection conn = _connFactory.GetConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("", conn))
+                {
+                    cmd.CommandText = @"
+    update WineProducer set
+		Name = @Name, 
+		NameToShow = @NameToShow 
+	where ID = @ID";
+
+
+                    cmd.Parameters.AddWithValue("@Name", wineProducer.name);
+                    cmd.Parameters.AddWithValue("@NameToShow", wineProducer.nameToShow);
+                    cmd.Parameters.AddWithValue("@ID", wineProducer.id);
+
+                    if (cmd.ExecuteNonQuery() != 1)
+                        return null;
+                }
+            }
+
+            return wineProducer;
         }
 
         /// <summary>
@@ -102,7 +125,7 @@ namespace EditorsDbLayer
                     cmd.Parameters.AddWithValue("@SearchString", searchString);
 
 
-                    using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.CloseConnection))
+                    using (SqlDataReader dr = cmd.ExecuteReader())
                     {
                             while (dr.Read())
                             {
@@ -110,7 +133,7 @@ namespace EditorsDbLayer
                                 item.id = dr.GetInt32(0);
                                 item.name = dr.GetString(1);
                                 item.nameToShow = dr.GetString(2);
-                                item.workflow = (dr.IsDBNull(3) ? (short)0 : dr.GetInt16(3));
+                                item.wfState = (dr.IsDBNull(3) ? (short)0 : dr.GetInt16(3));
 
                                 res.Add(item);
                             } 
@@ -151,7 +174,7 @@ namespace EditorsDbLayer
                             item.id = dr.GetInt32(0);
                             item.name = dr.GetString(1);
                             item.nameToShow = dr.GetString(2);
-                            item.workflow = (dr.IsDBNull(3) ? (short)0 : dr.GetInt16(3));
+                            item.wfState = (dr.IsDBNull(3) ? (short)0 : dr.GetInt16(3));
 
                             res.Add(item);
                         }
@@ -187,18 +210,8 @@ namespace EditorsDbLayer
                                     item.id = dr.GetInt32(0);
                                     item.name = dr.GetString(1);
                                     item.nameToShow = dr.GetString(2);
-                                    item.webSiteURL = (dr.IsDBNull(3) ? "" : dr.GetString(3));
 
-                                    item.country = (dr.IsDBNull(4) ? "" : dr.GetString(4));
-                                    item.region = (dr.IsDBNull(5) ? "" : dr.GetString(5));
-                                    item.location = (dr.IsDBNull(6) ? "" : dr.GetString(6));
-                                    item.locale = (dr.IsDBNull(7) ? "" : dr.GetString(7));
-                                    item.site = (dr.IsDBNull(8) ? "" : dr.GetString(8));
-
-                                    item.profile = (dr.IsDBNull(9) ? "" : dr.GetString(9));
-                                    item.contactInfo = (dr.IsDBNull(10) ? "" : dr.GetString(10));
-
-                                    item.workflow = (dr.IsDBNull(11) ? (short)0 : dr.GetInt16(11));
+                                    item.wfState = (dr.IsDBNull(11) ? (short)0 : dr.GetInt16(11));
 
                                     if (!dr.IsDBNull(13))
                                         item.dateCreated = dr.GetDateTime(13);
@@ -251,18 +264,8 @@ namespace EditorsDbLayer
                                 res.id = dr.GetInt32(0);
                                 res.name = dr.GetString(1);
                                 res.nameToShow = dr.GetString(2);
-                                res.webSiteURL = (dr.IsDBNull(3) ? "" : dr.GetString(3));
 
-                                res.country = (dr.IsDBNull(4) ? "" : dr.GetString(4));
-                                res.region = (dr.IsDBNull(5) ? "" : dr.GetString(5));
-                                res.location = (dr.IsDBNull(6) ? "" : dr.GetString(6));
-                                res.locale = (dr.IsDBNull(7) ? "" : dr.GetString(7));
-                                res.site = (dr.IsDBNull(8) ? "" : dr.GetString(8));
-
-                                res.profile = (dr.IsDBNull(9) ? "" : dr.GetString(9));
-                                res.contactInfo = (dr.IsDBNull(10) ? "" : dr.GetString(10));
-
-                                res.workflow = (dr.IsDBNull(11) ? (short) 0 : dr.GetInt16(11));
+                                res.wfState = (dr.IsDBNull(11) ? (short) 0 : dr.GetInt16(11));
 
                                 if (!dr.IsDBNull(13))
                                     res.dateCreated = dr.GetDateTime(13);
@@ -280,58 +283,6 @@ namespace EditorsDbLayer
             return res;
         } // Load
 
-        /// <summary>
-        /// Saves all WineProducer attributes.
-        /// </summary>
-        /// <param name="auditUserName">User Name used for Audit purposes. Usually, System.Security.Principal.Identity.Name.</param>
-        /// <returns></returns>
-        protected WineProducer Save(WineProducer wineProducer) {
-            if (wineProducer == null)
-                throw new ArgumentException("wineProducer is required.");
-
-            // WineProducer_Add
-                //  @Name nvarchar(100), @NameToShow nvarchar(100), @WebSiteURL nvarchar(255) = NULL,
-                //  --@locCountry nvarchar(50) = NULL, @locRegion nvarchar(50) = NULL, 
-                //  --@locLocation nvarchar(50) = NULL, @locLocale nvarchar(50) = NULL, @locSite nvarchar(50) = NULL,
-                //  @Profile nvarchar(max) = NULL, @ContactInfo nvarchar(max) = NULL, 
-                //  @WF_StatusID smallint = NULL, @UserName varchar(50), @ShowRes smallint = 1
-                //
-                // WineProducer_Update
-                //  @ID int, 
-                //  @Name nvarchar(100) = NULL, @NameToShow nvarchar(100) = NULL, @WebSiteURL nvarchar(255) = NULL,
-                //  --@locCountry nvarchar(50) = NULL, @locRegion nvarchar(50) = NULL, 
-                //  --@locLocation nvarchar(50) = NULL, @locLocale nvarchar(50) = NULL, @locSite nvarchar(50) = NULL,
-                //  @Profile nvarchar(max) = NULL, @ContactInfo nvarchar(max) = NULL, 
-                //  @WF_StatusID smallint = NULL, @UserName varchar(50), @ShowRes smallint = 1
-                //
-                using (SqlConnection conn = _connFactory.GetConnection()) {
-                    using (SqlCommand cmd = new SqlCommand((wineProducer.id > 0 ? "WineProducer_Update" : "WineProducer_Add"), conn)) {
-                        cmd.CommandType = CommandType.StoredProcedure;
-
-                        if (wineProducer.id > 0)
-                            cmd.Parameters.AddWithValue("@ID", wineProducer.id);
-                        cmd.Parameters.AddWithValue("@Name", wineProducer.name);
-                        cmd.Parameters.AddWithValue("@NameToShow", wineProducer.nameToShow);
-                        cmd.Parameters.AddWithValue("@WebSiteURL", wineProducer.webSiteURL);
-                        cmd.Parameters.AddWithValue("@Profile", wineProducer.profile);
-                        cmd.Parameters.AddWithValue("@ContactInfo", wineProducer.contactInfo);
-                        cmd.Parameters.AddWithValue("@WF_StatusID", wineProducer.workflow);
-                        cmd.Parameters.AddWithValue("@UserName", _auditUserName);
-                        cmd.Parameters.AddWithValue("@ShowRes", 1);
-
-                        using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.CloseConnection)) {
-                            if (dr != null && dr.HasRows && dr.Read()) {
-                                if (wineProducer.id < 1)
-                                    wineProducer.id = dr.GetInt32(0);
-                            }
-                            if (dr != null && !dr.IsClosed)
-                                dr.Close();
-                        } // datareader
-                    } // sqlCommand
-                } // sqlConn
-
-            return wineProducer;
-        } // Save
 
         /// <summary>
         /// Deletes WineProducer by internal ID.
@@ -372,6 +323,26 @@ namespace EditorsDbLayer
         } // Del
         #endregion --- protected ---
 
+
+
+
+
+        public bool SetProducerStatus(int id, int status)
+        {
+            List<WineProducer> res = new List<WineProducer>();
+
+            using (SqlConnection conn = _connFactory.GetConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("", conn))
+                {
+                    cmd.CommandText = @" update WineProducer set WF_StatusID = @Status where ID = @ID";
+
+                    cmd.Parameters.AddWithValue("@Status", status);
+                    cmd.Parameters.AddWithValue("@ID", id);
+                    return cmd.ExecuteNonQuery() == 1;
+                }
+            }
+        }
 
 
     }

@@ -31,6 +31,8 @@
 
 @section scripts {
 
+    <script  src="~/Scripts/models/PageDataModel.js"></script>
+
 
     <script id="search-wine-template" type="text/html">
 
@@ -60,13 +62,25 @@
         </div>
         <br />
         <div class="row" style="height: 550px; overflow:auto">
+            <div class="row"  style="border-bottom: solid 1px gray;">
+                <div class='col-sm-1'>&nbsp;</div>
+                <div class='col-sm-4'>
+                      Name
+                </div>
+                <div class='col-sm-4'>
+                      Name To Show
+                </div>
+            </div>
             <!-- ko foreach: items -->
             <div class="row"  style="border-bottom: solid 1px gray;">
-                <div class='col-sm-7' >
-                        <span  data-bind="style: { color: erp.utils.statusColor($data.workflow()) }">
-                           <span data-bind="text: name, style: { color: erp.utils.statusColor($data.workflow()) }"></span>
-                           <span data-bind="text: nameToShow"></span>
-                            </span>
+                <div class='col-sm-1'>
+                      <span data-bind="click: edit" class='glyphicon glyphicon-pencil' style="cursor:pointer" title="Start editing"></span>
+                </div>  
+                <div class='col-sm-4' data-bind="style: { color: erp.utils.statusColor($data.wfState()) }">
+                      <span data-bind="text: name"></span>
+                </div>
+                <div class='col-sm-4' data-bind="style: { color: erp.utils.statusColor($data.wfState()) }">
+                      <span data-bind="text: nameToShow"></span>
                 </div>
                <div class='col-sm-1' >
                   <button class="btn btn-primary btn-xs" style="cursor:pointer" data-bind="click: approve, visible: needApprove() == true">Approve</button>
@@ -77,119 +91,44 @@
     </script>
 
 
+    <script id="edit-producer-template"  type="text/html">
+        <br />
+        <form name="edit-producer-template-form" id="edit-producer-template-form" action="#">
+            <div class="row form-group">
+                <div class="col-sm-3">Name To Show: </div>
+                <div class="col-sm-6">
+                    <input class="form-control input-sm" 
+                        id="producerNameToShow" 
+                        name="producerNameToShow" 
+                        data-bind="value:nameToShow, valueUpdate: 'blur'" placeholder="Name To Show" required />
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-sm-3"></div>
+                <div class="col-sm-6">'Name To Show' field presents a producer name how it would be shown on web site
+                </div>
+            </div>
 
+            <br />
+            <div class="row form-group">
+                <div class="col-sm-3">Name: </div>
+                <div class="col-sm-6">
+                    <input class="form-control input-sm" 
+                        id="producerName" 
+                        name="producerName" 
+                        data-bind="value:name, valueUpdate: 'blur'" placeholder="Name To Sort" required />
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-sm-3"></div>
+                <div class="col-sm-6">'Name' field presents a producer name how it would be used while soritng producer by name
+                </div>
+            </div>
+        </form>
+    </script>
 
 <script type="text/javascript">
 
-
-
-    function PageData() {
-
-        var self = this;
-
-        self.treeItem = null;
-
-        self.drillDown = function (view, model) {
-            var nextTreeItem = {
-                previous: self.treeItem,
-                viewname: view,
-                model: model
-            }
-            self.treeItem = nextTreeItem;
-            self.updateViewModel();
-
-        };
-
-        self.drillUp = function () {
-            if (self.treeItem.previous != null) {
-                self.treeItem = self.treeItem.previous;
-                self.updateViewModel();
-            }
-        };
-
-
-        self.mvInit = { view: null, model: null };
-        self.mv = ko.observable(self.mvInit);
-
-
-        self.modelInit = function (elements) {
-            if (self.mv() != null && self.mv().model != null && self.mv().model.init !== undefined) {
-                self.mv().model.init(elements);
-            } else {
-
-            }
-        }
-
-
-        self.updateViewModel = function () {
-            self.mv({ model: self.treeItem.model, view: self.treeItem.viewname });
-        }
-
-        //
-        // do all init here
-        //
-        self.init = function () {
-        }
-
-
-
-        self.dmvInit = { view: null, model: null, callback: null };
-        self.dmv = ko.observable(self.dmvInit);
-
-
-        self.dialogInit = function (elements) {
-            if (self.dmv().model != null && self.dmv().model.init !== undefined) {
-                self.dmv().model.init(elements);
-            }
-            else {
-            }
-        }
-
-
-        self.OpenDialog = function (model, callback, view) {
-
-            self.dmv({ model: model, view: view, callback: callback });
-
-            return $("#dialog-placeholder").dialog("open");
-        }
-
-
-
-        self.CloseDialog = function () {
-            if (self.dmv().callback != null && self.dmv().callback.save != null)
-                self.dmv().callback.save(self.dmv().model);
-            return true;
-        }
-
-        self.CancelDialog = function () {
-            return true;
-        }
-
-
-        self.dmvErrorInit = { view: null, model: null, callback: null };
-        self.dmvError = ko.observable(self.dmvErrorInit);
-
-
-        self.errorDialogInit = function (elements) {
-            if (self.dmvError().model != null && self.dmvError().model.init !== undefined) {
-                self.dmvError().model.init(elements);
-            }
-            else {
-            }
-        }
-
-        self.OpenErrorDialog = function (model, callback, view) {
-
-            self.dmvError({ model: model, view: view, callback: callback });
-
-            return $("#error-dialog-placeholder").dialog("open");
-        }
-
-        self.CancelErrorDialog = function () {
-            return true;
-        }
-
-    }
 
     function ProducerModel(src) {
         var self = this;
@@ -200,9 +139,14 @@
             return o;
         }
 
+        var dt2js     = function (options) { return erp.utils.Json2Date(options.data) };
+  
+
         self.fromObject = function (o) {
             ko.mapping.fromJS(o,
                 {
+                    "dateCreated": { create: dt2js },
+                    "dateUpdated": { create: dt2js }
 
                 }, self);
         }
@@ -213,32 +157,113 @@
             self.fromObject(src);
 
         self.needApprove = function(){
-            if( self.workflow() < 100 )
+            if( self.wfState() < 100 )
                 return true;
 
 
             return false;
         }
 
+
+        self.edit = function(item){
+            //
+            // use return value as template
+            //
+            //
+            var m = new ProducerModel(item.toObject());
+                        
+            m.init = function (elements) {
+                m.validator =   $("#edit-producer-template-form").validate({debug:true});
+            };
+
+            m.validate = function(){
+
+                var result = true;
+                result =  m.validator.form();
+                if( ! result ){
+                    m.validator.showErrors();
+                }
+                return result;
+            }
+
+
+            m.save = function (o) {
+
+                if (!m.validate()) {
+                    return false;
+                }
+
+
+                if(m.nameToShow().trim() != item.nameToShow().trim()){
+
+                    var exsitingProducer = null;
+                    $.ajax({
+                        type: 'POST',
+                        async: false,
+                        url: '@Url.Content("~/Producer/SearchName")',
+                        data:
+                            {
+                                name: m.nameToShow().trim()
+                            },
+                        success: function (r)
+                        {
+                            if( r != null && r.name ){
+                                exsitingProducer = new ProducerModel(r);
+                            }
+                        },
+                        error: function (request, status, error) {
+                            alert('error while checking for existing name');
+                        }
+                    });
+
+                    if( exsitingProducer != null ){
+                        alert("Such producer '" + exsitingProducer.nameToShow() + "' already recorder into DB ");
+                        return;
+                    }
+                }
+
+
+
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Content("~/Producer/Update")',
+                    data:
+                        {
+                            str: JSON.stringify(m.toObject())
+                        },
+                    success: function (r)
+                    {
+                        item.fromObject(r);
+                    },
+                    error: function (request, status, error) {
+                        alert('error while updating producer record');
+                        //PAGE_CONTEXT.error(request, status, error)
+                    }
+                });
+
+                return true;
+            };
+
+
+
+            var d = pageData.OpenDialog(m, m, "edit-producer-template");
+            d.dialog("option", "title", "Create New assignment");
+        }
+
+
         self.approve = function(){
-            alert('approve');
-            return;
 
             $.ajax({
                 type: 'POST',
-                url: '@Url.Content("~/???????????")',
+                url: '@Url.Content("~/Producer/Approve")',
                 data:
                     {   id: self.id()},
                 success: function (result) {
-
                     if(result > 0 ){
-
                         self.wfState(100);
-
                     }
                 },
                 error: function (request, status, error) {
-
                     alert("server error. report to admin");
 
                 }
@@ -307,6 +332,9 @@
     var PAGE_CONTEXT = {};
 
     var pageData = new PageData();
+
+    pageData.init = function () {
+    }
 
 
     ko.applyBindings(pageData);
@@ -390,4 +418,4 @@
 
 </script>
 
-}}
+}

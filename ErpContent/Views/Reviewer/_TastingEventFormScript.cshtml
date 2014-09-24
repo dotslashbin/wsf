@@ -57,8 +57,6 @@
 
                     m.init = function (elements) {
                         initNoteEditForm(elements, m, '@Url.Content("~")');
-
-
                         m.validator = $("#tasting-note-form-validation").validate(
                             {
                                 debug: true,
@@ -66,9 +64,9 @@
                                     {
 
                                         'note-edit-rating': {
-                                            required: false,
-                                            rating: true
-                                        },
+                                            required: true,
+                                            range: [60, 100]
+                                         },
 
                                         'note-edit-drink-from': {
                                             required: true,

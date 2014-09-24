@@ -27,7 +27,15 @@
 
             $('#import-tasting-note-form').submit(
                 function (event) {
+
                     event.preventDefault();
+
+                    // Validation
+                    if ($('#import-notes-field-container').val() == null || $('#import-notes-field-container').val() == '') {
+                        alert("Please choose a the file to upload.");
+
+                        return false;
+                    }
 
                     var formData = new FormData($(this)[0]);
 
@@ -128,9 +136,10 @@
                                 debug: true,
                                 rules:
                                     {
+
                                         'note-edit-rating': {
                                             required: false,
-                                            rating: true
+                                            range: [60, 100]
                                         },
 
                                         'note-edit-drink-from': {

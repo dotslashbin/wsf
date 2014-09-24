@@ -1,17 +1,22 @@
 ﻿
 <div class="col-sm-2">
-            <div class="list-group">
-                <a class="list-group-item active" href="/reviewer/Index">Dashboard</a>
-            </div>
+    <div class="list-group">
+        <a class="list-group-item active" href="/reviewer/Index">Dashboard</a>
+        <a class="list-group-item" href="/Home/ShowTemporaryPage">Search Articles</a>
+        <a class="list-group-item" href="/Home/ShowTemporaryPage">Search My Notes</a>
+    </div>
 
     <div>
         Notes status:<br />
-        <span class='glyphicon glyphicon-flag col-sm-1' style ="color:red"> </span> -  draft <br />
-        <span class='glyphicon glyphicon-flag col-sm-1' style ="color:orange"> </span> -  sent for approval<br />
-        <span class='glyphicon glyphicon-flag col-sm-1' style ="color:blue"> </span> - approved<br />
-        <span class='glyphicon glyphicon-flag col-sm-1' style ="color:black"> </span> - published<br />
+        <span class='glyphicon glyphicon-flag col-sm-1' style ="color :red "> </span> -  draft <br />
+        <span class='glyphicon glyphicon-flag col-sm-1' style ="color :orange   "> </span> -  sent for approval<br />
+        <span class='glyphicon glyphicon-flag col-sm-1' style ="color :blue "> </span> - approved<br />
+        <span class='glyphicon glyphicon-flag col-sm-1' style ="color :black "> </span> - published<br />
 
     </div>
 
+    <div id="notes-template-download-container" style="margin-top: 12px;">
+        <span style="font-size: 14px;">You can import tasting notes by batch by using an Ms Excel Template. Download <a href="@Url.Content("~/TastingNote/downloadImportTemplate")">here</a></span>
+    </div>
 </div>
 

@@ -1,4 +1,5 @@
-﻿@using ErpContent.Views.Helpers;
+﻿@Model EditorsCommon.Publication.IssueComplete
+@using ErpContent.Views.Helpers;
  
 @{
     Layout = null;
@@ -49,16 +50,40 @@
                         <br />
                         foreach (var n in t.tastingNotes)
                         {
-                            <div><b>@n.producer.ToUpper()
+                            <div>
+                                <b>@n.producer.ToUpper()
                                 &#09;@n.vintage.ToUpper()
                                 &#09;@n.wineName.ToUpper()
                                 &#09;@t.NoteAppellation(n).ToUpper()
-                                &#09;(@t.NotePrice(n).ToUpper())
+                                &#09;(@t.NotePrice(n))      
                                 &#09;@n.color.ToUpper()
-                                &#09;@n.rating.ToUpper()</b></div>
+
+                                &#09;
+                                
+                                @if(@n.isBarrelTasting == true) 
+                                {
+                                    if(@n.ratingLo > 0 && @n.ratingHi > 0)
+                                    {
+                                        @Html.Raw("(" + n.ratingLo + "-" + n.ratingHi + ")") 
+                                    } else if(@n.ratingLo > 0 && @n.ratingHi == 0) {
+                                        @Html.Raw(n.ratingLo)
+                                    }
+                                    else if (@n.ratingLo == 0 && @n.ratingHi > 0)
+                                    {
+                                        @Html.Raw("?-" + n.ratingHi)
+                                    }
+                                    
+                                } else {
+                                            
+                                    @n.rating.ToUpper()
+
+                                }
+                                </b>
+                            </div>
                         }
                         <br />
                     }
+                    
                     if (t.tastingNotes != null && t.tastingNotes.Count > 0)
                     {
                         <!--
@@ -67,26 +92,28 @@
                         <div>
                                 @foreach (var n in t.tastingNotes)
                                 {
-                                    var vintagePlusWineName = n.vintage.ToUpper() + ' ' + n.wineName;
-                                    var vintagePlusWineNameBold = "<b>" + vintagePlusWineName + "</b>";
-                                    string noteText = n.note;
-
-                                    noteText = noteText.Replace(vintagePlusWineName, vintagePlusWineNameBold); 
+                                    string output = NotesHelper.applyFormatting(n.note);
                                     
-                                    
-                                    string output = NotesHelper.applyFormatting(noteText);
-                                    
-                                    <p style="text-indent: 4em;">@(new HtmlString(output)) </p>
+                                    <br />
+                                    <div style="text-indent: 4em;">@Html.Raw(output)</div>
+                                    <br />
                                 }
+                            
                                 @if(  !String.IsNullOrEmpty( t.comments )){
                                     <br />
                                     <div>Comments:</div>
-                                    <p>@NotesHelper.applyFormatting(t.comments)</p>
+                                    <br />
+                                    string notes = NotesHelper.applyFormatting(t.comments);
+
+                                    @Html.Raw(notes)
+                                    <br />
+                                    <br />
                                 }
                         </div>
                     }
                 }
             }
+            
         }
     </div>
 </body>

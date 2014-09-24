@@ -3,11 +3,38 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
+using System.Net;
 
 namespace ErpContent.Views.Helpers
 {
     public class NotesHelper
     {
+
+        static List<String> _wordsToItalize; 
+
+        static NotesHelper()
+        {
+
+            _wordsToItalize = new List<String>();
+
+            _wordsToItalize.Add("élevage");
+            _wordsToItalize.Add("demi-muid");
+            _wordsToItalize.Add("bouquet garni");
+            _wordsToItalize.Add("négociant");
+            _wordsToItalize.Add("lieu-dit");
+            _wordsToItalize.Add("vin de pays");
+            _wordsToItalize.Add("mélange");
+            _wordsToItalize.Add("cepage");
+            _wordsToItalize.Add("batonnage");
+            _wordsToItalize.Add("sur lie");
+            _wordsToItalize.Add("garrigue");
+            _wordsToItalize.Add("tour de force");
+            _wordsToItalize.Add("vigneron");
+            _wordsToItalize.Add("creme de cassis");
+            _wordsToItalize.Add("sur-maturité");
+            _wordsToItalize.Add("patisserie");
+            _wordsToItalize.Add("pain grillé");
+        }
 
         /**
          * This method will execute the process of applying our formatting 
@@ -25,7 +52,9 @@ namespace ErpContent.Views.Helpers
         {
             string evaluatedFroDotsAndSpaces = evaluateForDotAndSpaces(notes); // Call to check for space after each period
 
-            string evaluatedForIndention = evaluateParagraphIndention(evaluatedFroDotsAndSpaces);
+            string evaluatedForItalics = evaluateItalics(evaluatedFroDotsAndSpaces);
+
+            string evaluatedForIndention = HttpUtility.HtmlDecode(evaluateParagraphIndention(evaluatedForItalics));
 
             string formattedNotes = evaluatedForIndention; 
 
@@ -37,9 +66,9 @@ namespace ErpContent.Views.Helpers
          * The evaluation is based on our documented rules. This is designed to be called from 
          * the publicly accessible method "applyFormatting"
          * 
-         * @param       String      input
+         * @param       String              input
          * 
-         * @return      String      evaluatedString      This represent the string that has been modified based on set of writing rules
+         * @return      String              evaluatedString      This represent the string that has been modified based on set of writing rules
          * 
          * @author      Joshua Fuentes      <joshua.fuentes@robertparker.com>
          */
@@ -63,13 +92,51 @@ namespace ErpContent.Views.Helpers
          */
         private static string evaluateParagraphIndention(string input)
         {
-            //string evaluatedString = "";
-
-            // Removes all spaces at the beginning of each paragraph
-
             string withSpacesRemoved = Regex.Replace(input, "^( )*", "");
 
             return withSpacesRemoved; 
+        }
+
+        /**
+         * This methods looks up keywords from a collection of defined workds, and implements 
+         * HTML italisation on them. 
+         * 
+         * @param       String          input
+         * 
+         * @return      String          evaluatedString 
+         * 
+         * @author      Joshua Fuentes  <joshua.fuentes@robertpaker.com>
+         */
+        private static string evaluateItalics(string input)
+        {
+
+            // Adding words to italize
+            //wordsToItalize.Add("élevage");
+            //wordsToItalize.Add("demi-muid");
+            //wordsToItalize.Add("bouquet garni");
+            //wordsToItalize.Add("négociant");
+            //wordsToItalize.Add("lieu-dit");
+            //wordsToItalize.Add("vin de pays");
+            //wordsToItalize.Add("mélange");
+            //wordsToItalize.Add("cepage");
+            //wordsToItalize.Add("batonnage");
+            //wordsToItalize.Add("sur lie");
+            //wordsToItalize.Add("garrigue");
+            //wordsToItalize.Add("tour de force");
+            //wordsToItalize.Add("vigneron");
+            //wordsToItalize.Add("creme de cassis");
+            //wordsToItalize.Add("sur-maturité");
+            //wordsToItalize.Add("patisserie");
+            //wordsToItalize.Add("pain grillé");
+
+            foreach (String wordToLookFor in _wordsToItalize)
+            {
+                string replacement = "<i>" + wordToLookFor + "</i>";
+
+                input = Regex.Replace(input, wordToLookFor, replacement); 
+            }
+
+            return input; 
         }
     }
 }

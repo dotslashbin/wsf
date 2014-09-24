@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace EditorsCommon
 {
@@ -67,15 +68,22 @@ namespace EditorsCommon
                 {
                     if (n.estimatedCost.CompareTo(n.estimatedCostHi) != 0)
                     {
-                        return "$" + n.estimatedCost + "-" + n.estimatedCostHi;
+
+                        Double estimatedCost = Convert.ToDouble(n.estimatedCost);
+                        Double estimatedCostHi = Convert.ToDouble(n.estimatedCostHi); 
+
+
+                        return estimatedCost.ToString("C2") + "-" + estimatedCostHi.ToString("C2");
                     }
                 }
-                return "$" + n.estimatedCost;
+
+                Double estimatedCostSingle = Convert.ToDouble(n.estimatedCost);
+
+                return estimatedCostSingle.ToString("C2"); 
             }
 
             return "Unknown";
         }
-
     }
 
 

@@ -134,6 +134,7 @@ namespace ErpContent.Controllers
 
             var objectToEvaluate = new JavaScriptSerializer().Deserialize<TastingNote>(stringObject);
 
+            var maturityId = objectToEvaluate.maturityId;
 
             if (!isImport)
             {
@@ -216,33 +217,7 @@ namespace ErpContent.Controllers
         {
             var o = new JavaScriptSerializer().Deserialize<TastingNote>(str);
 
-           // o.userId = (int)Membership.GetUser(User.Identity.Name).ProviderUserKey;
-
-            //var maturityId = o.maturityId;
-
-            //int maturityIdValue = 5;
-
-            //switch (maturityId.ToString())
-            //{
-            //    case "Young":
-            //        maturityIdValue = 0;
-            //        break;
-            //    case "Early":
-            //        maturityIdValue = 1;
-            //        break;
-            //    case "Mature":
-            //        maturityIdValue = 2;
-            //        break;
-            //    case "Late":
-            //        maturityIdValue = 3;
-            //        break;
-            //    case "Old":
-            //        maturityIdValue = 4;
-            //        break;
-            //}
-
-            //o.maturityId = maturityIdValue; 
-
+            o.userId = (int)Membership.GetUser(User.Identity.Name).ProviderUserKey;
 
             var result = _storage.Update(o);
 

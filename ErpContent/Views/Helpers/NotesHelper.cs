@@ -18,7 +18,7 @@ namespace ErpContent.Views.Helpers
             _wordsToItalize = new List<String>();
 
             _wordsToItalize.Add("élevage");
-            _wordsToItalize.Add("demi-muid");
+            _wordsToItalize.Add("demi-muid");   
             _wordsToItalize.Add("bouquet garni");
             _wordsToItalize.Add("négociant");
             _wordsToItalize.Add("lieu-dit");
@@ -109,26 +109,7 @@ namespace ErpContent.Views.Helpers
          */
         private static string evaluateItalics(string input)
         {
-
-            // Adding words to italize
-            //wordsToItalize.Add("élevage");
-            //wordsToItalize.Add("demi-muid");
-            //wordsToItalize.Add("bouquet garni");
-            //wordsToItalize.Add("négociant");
-            //wordsToItalize.Add("lieu-dit");
-            //wordsToItalize.Add("vin de pays");
-            //wordsToItalize.Add("mélange");
-            //wordsToItalize.Add("cepage");
-            //wordsToItalize.Add("batonnage");
-            //wordsToItalize.Add("sur lie");
-            //wordsToItalize.Add("garrigue");
-            //wordsToItalize.Add("tour de force");
-            //wordsToItalize.Add("vigneron");
-            //wordsToItalize.Add("creme de cassis");
-            //wordsToItalize.Add("sur-maturité");
-            //wordsToItalize.Add("patisserie");
-            //wordsToItalize.Add("pain grillé");
-
+            
             foreach (String wordToLookFor in _wordsToItalize)
             {
                 string replacement = "<i>" + wordToLookFor + "</i>";

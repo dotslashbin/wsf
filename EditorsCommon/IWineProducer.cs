@@ -24,6 +24,12 @@ namespace EditorsCommon
         public short wfState;
     }
 
+    public class WineProducerExt : WineProducer
+    {
+        public int linkImportersCount;
+    }
+
+
     public interface IWineProducerStorage : IStorage<WineProducer>
     {
         /// <summary>
@@ -55,5 +61,20 @@ namespace EditorsCommon
         /// <param name="id"></param>
         /// <returns></returns>
         bool SetProducerStatus(int id, int status);
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="p"></param>
+        /// <returns></returns>
+        IEnumerable<WineProducerExt> SearchByWorkflowStatusExt(int p);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="term"></param>
+        /// <returns></returns>
+        IEnumerable<WineProducerExt> SearchByNameExt(string term);
     }
 }

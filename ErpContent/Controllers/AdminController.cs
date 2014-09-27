@@ -44,11 +44,19 @@ namespace ErpContent.Controllers
             return View("Producers");
         }
 
-        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAdmin)]
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameReviewer + "," + EditorsCommon.Constants.roleNameAdmin)]
         public ActionResult Importers()
         {
             return View("Importers");
         }
+
+
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameReviewer + "," + EditorsCommon.Constants.roleNameAdmin)]
+        public ActionResult ProducersImporters()
+        {
+            return View("ProducersImporters");
+        }
+
 
 
         [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAdmin)]

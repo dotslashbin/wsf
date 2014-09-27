@@ -94,6 +94,9 @@ namespace EditorsDbLayer
         }
 
 
+
+
+
         public IEnumerable<WineProducer> SearchByName(string searchString)
         {
             List<WineProducer> res = new List<WineProducer>();
@@ -145,6 +148,60 @@ namespace EditorsDbLayer
         }
 
 
+        public IEnumerable<WineProducerExt> SearchByNameExt(string searchString)
+        {
+            List<WineProducerExt> res = new List<WineProducerExt>();
+
+            if (String.IsNullOrEmpty(searchString))
+                return res;
+
+            searchString = "%" + searchString.Trim().Replace("%", "") + "%";
+
+
+
+            using (SqlConnection conn = _connFactory.GetConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("", conn))
+                {
+                    cmd.CommandText = @"
+            select top(300)
+	            ID = wp.ID, 
+	            Name = wp.Name, 
+	            NameToShow = wp.NameToShow,
+	            WF_StatusID = wp.WF_StatusID,
+	            SortOrder = case when wp.NameToShow like right(@SearchString, len(@SearchString)-1) then 0 else 20 end,
+                linkCount = (select count(*) from WineProducer_WineImporter where ProducerId = wp.ID)
+            from WineProducer wp (nolock)
+            where wp.Name like @SearchString
+            order by SortOrder, NameToShow, ID
+";
+
+
+                    cmd.Parameters.AddWithValue("@SearchString", searchString);
+
+
+                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            WineProducerExt item = new WineProducerExt();
+                            item.id = dr.GetInt32(0);
+                            item.name = dr.GetString(1);
+                            item.nameToShow = dr.GetString(2);
+                            item.wfState = (dr.IsDBNull(3) ? (short)0 : dr.GetInt16(3));
+                            item.linkImportersCount = (dr.IsDBNull(5) ? 0 : dr.GetInt32(5));
+
+                            res.Add(item);
+                        }
+                    }
+                }
+            }
+
+            return res;
+        }
+
+
+
         public IEnumerable<WineProducer> SearchByWorkflowStatus(int status)
         {
             List<WineProducer> res = new List<WineProducer>();
@@ -185,6 +242,49 @@ namespace EditorsDbLayer
             return res;
         }
 
+
+
+        public IEnumerable<WineProducerExt> SearchByWorkflowStatusExt(int status)
+        {
+            List<WineProducerExt> res = new List<WineProducerExt>();
+
+            using (SqlConnection conn = _connFactory.GetConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("", conn))
+                {
+                    cmd.CommandText = @"
+            select top(300)
+	            ID = wp.ID, 
+	            Name = wp.Name, 
+	            NameToShow = wp.NameToShow,
+	            WF_StatusID = wp.WF_StatusID,
+                linkCount = (select count(*) from WineProducer_WineImporter where ProducerId = wp.ID)
+            from WineProducer wp (nolock)
+            where wp.WF_StatusID = @Status
+            order by NameToShow, ID
+";
+
+
+                    cmd.Parameters.AddWithValue("@Status", status);
+                    using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.CloseConnection))
+                    {
+                        while (dr.Read())
+                        {
+                            WineProducerExt item = new WineProducerExt();
+                            item.id = dr.GetInt32(0);
+                            item.name = dr.GetString(1);
+                            item.nameToShow = dr.GetString(2);
+                            item.wfState = (dr.IsDBNull(3) ? (short)0 : dr.GetInt16(3));
+                            item.linkImportersCount = (dr.IsDBNull(4) ? 0 : dr.GetInt32(4));
+
+                            res.Add(item);
+                        }
+                    }
+                }
+            }
+
+            return res;
+        }
 
 
         public IEnumerable<WineProducer> Search(WineProducer wineProducer) 
@@ -343,6 +443,7 @@ namespace EditorsDbLayer
                 }
             }
         }
+
 
 
     }

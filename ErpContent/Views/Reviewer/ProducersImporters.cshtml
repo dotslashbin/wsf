@@ -1,0 +1,543 @@
+﻿
+@{
+    ViewBag.Title = "Producers";
+   ViewBag.PageTitle = "ADMIN DASHBOARD: Producers & Importers";
+    Layout = "~/Views/Shared/_LayoutBootstrap.cshtml";
+}
+
+
+@section LeftMenu{
+    @Html.Partial("_ReviewerLeftMenu")
+ }
+
+
+
+<h2>Producers & Importers</h2>
+
+
+<div data-bind="template: { name: mv().view, data: mv().model, afterRender: $root.modelInit } ">
+... loading
+</div>
+
+<div id="dialog-placeholder" 
+    data-bind="template: { name: dmv().view, data: dmv().model, afterRender: $root.dialogInit }">
+</div>
+
+<div id="error-dialog-placeholder" 
+    data-bind="  template: { name: dmvError().view, data: dmvError().model, afterRender: $root.errorDialogInit }">
+</div>
+
+
+
+@section scripts {
+
+    <script  src="~/Scripts/models/PageDataModel.js"></script>
+
+
+    <script id="search-producer-template" type="text/html">
+
+         <div class="row">
+            <div class="col-sm-4  input-group-md">
+                <input type="text" 
+                    data-bind="value: searchString, valueUpdate: 'blur'" 
+                    class="form-control" 
+                    id="note-edit-producer-search" 
+                    placeholder="Search String" required />
+            </div>
+            <div class="col-sm-1 input-group-md">
+                <button class="btn btn-sm" data-bind="click: search" >Search</button>
+            </div>
+
+
+            <div class="col-sm-2">
+                <select class="form-control input-sm col-sm-4" data-bind="options: stateGroups,
+                    optionsText: 'name',
+                    optionsValue: 'id',
+                    value: stateGroupId,
+                    valueUpdate: 'blur'">
+                </select>
+            </div>
+
+        </div>
+        <br />
+        <div class="row" style="height: 550px; overflow:auto">
+            <div class="row"  style="border-bottom: solid 1px gray;">
+                <div class='col-sm-12'>
+                      Name
+                </div>
+            </div>
+            <!-- ko foreach: items -->
+            <div class="row"  style="border-bottom: solid 1px gray;">
+                <div class='col-sm-12' data-bind="click: showImporters, style: { color: erp.utils.statusColor($data.wfState()) }" style="cursor: pointer">
+                    <span data-bind="attr:{class : open() ? 'glyphicon glyphicon-arrow-up' : 'glyphicon glyphicon-arrow-down'}"></span>
+                    <span data-bind="text: nameToShow"></span>&nbsp;(<span data-bind="    text: importersCount, style: { color: importersCount() > 0 ? 'black' : 'red' }"></span>)
+                </div>
+
+                <div class="row panel panel-success" data-bind="visible: open">
+                      <div class="col-sm-2 pull-right">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <a href="#" class="btn btn-xs" data-bind="click: addImporter"><span class='glyphicon glyphicon-plus' title="Add New Importer"></span>&nbsp;Add New Importer</a><br />
+                                </div>
+                            </div>
+                        </div>
+                    <br />
+
+                    <!-- ko foreach: importers -->
+                    <div class="row ">
+                        <div class='col-sm-1' >
+                             <a href="#" class="btn btn-xs" data-bind="click: $parent.removeImporter"><span class='glyphicon glyphicon-trash' title="Remove Importer"></span>&nbsp;</a><br />
+                        </div>
+                       <div class='col-sm-3' >
+                              <span data-bind="text: name"></span>&nbsp;
+                        </div>
+                        <div class='col-sm-4' >
+                              <span data-bind="text: address"></span>&nbsp;
+                        </div>
+                        <div class='col-sm-3' >
+                              <span data-bind="text: url"></span>&nbsp;
+                        </div>
+                    </div>
+
+                    <!-- /ko -->
+                </div>
+
+
+            </div>
+            <!-- /ko -->
+        </div>
+    </script>
+
+
+
+
+    <script id="search-importer-template"  type="text/html">
+        <br />
+
+            <div class="row form-group">
+                <div class="col-sm-2">&nbsp;</div>
+                <div class="col-sm-8">
+                    <input type="text"
+                        id="importer-search-string" 
+                        class="col-sm-8 form-control" 
+                        placeholder="Search String" />
+                </div>
+            </div>
+
+            <br />
+
+            <div class="row form-group">
+                <div class="col-sm-2">Name: </div>
+                <div class="col-sm-8">
+                    <span class="form-control input-sm" 
+                        id="importerName" 
+                        data-bind="text:name, valueUpdate: 'blur'"></span>
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-sm-2">Address: </div>
+                <div class="col-sm-8">
+                    <span class="form-control input-sm" 
+                        id="importerAddress" 
+                        data-bind="text: address, valueUpdate: 'blur'"></span>
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-sm-2">URL: </div>
+                <div class="col-sm-8">
+                    <span class="form-control input-sm" 
+                        id="importerUrl" 
+                        data-bind="text: url, valueUpdate: 'blur'"></span>
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <div class="col-sm-2">Email: </div>
+                <div class="col-sm-8">
+                    <span class="form-control input-sm" 
+                        id="importerEmail" 
+                        data-bind="text: email, valueUpdate: 'blur'"></span>
+                </div>
+            </div>
+
+
+            <div class="row form-group">
+                <div class="col-sm-2">Phone1: </div>
+                <div class="col-sm-8">
+                    <span class="form-control input-sm" 
+                        id="importerPhone1" 
+                        data-bind="text: phone1, valueUpdate: 'blur'"></span>
+                </div>
+            </div>
+
+
+            <div class="row form-group">
+                <div class="col-sm-2">Phone2: </div>
+                <div class="col-sm-8">
+                    <span class="form-control input-sm" 
+                        id="importerPhone2" 
+                        data-bind="text: phone2, valueUpdate: 'blur'"></span>
+                </div>
+            </div>
+
+    </script>
+
+
+
+
+<script type="text/javascript">
+
+
+
+    function ImporterModel(src) {
+        var self = this;
+
+
+        self.toObject = function () {
+            var o = ko.mapping.toJS(self);
+            return o;
+        }
+
+        var dt2js  = function (options) { return erp.utils.Json2Date(options.data) };
+  
+
+        self.fromObject = function (o) {
+            ko.mapping.fromJS(o,
+                {
+                }, self);
+        }
+        //
+        //
+        //
+        if (src)
+            self.fromObject(src);
+
+
+    }
+
+
+
+    function ProducerModel(src) {
+        var self = this;
+
+
+        self.toObject = function () {
+            var o = ko.mapping.toJS(self);
+            return o;
+        }
+
+        var dt2js     = function (options) { return erp.utils.Json2Date(options.data) };
+  
+
+        self.fromObject = function (o) {
+            ko.mapping.fromJS(o,
+                {
+                    "dateCreated": { create: dt2js },
+                    "dateUpdated": { create: dt2js }
+
+                }, self);
+        }
+
+
+        self.importers = ko.observableArray();
+        self.open = ko.observable(false);
+        self.loaded = ko.observable(false);
+
+
+        //
+        //
+        //
+        if (src)
+            self.fromObject(src);
+
+
+        self.importersCount =  ko.computed(function() {
+            if( self.loaded() )
+                return self.importers().length;
+            else
+                return self.linkImportersCount(); 
+        }, self);
+
+
+        self.showImporters = function(){
+            self.open(!self.open());
+
+            if( !self.loaded()){
+                self.loaded(true);
+
+                $.get('@Url.Content("~/Importer/SearchByProducerId")', { id: self.id() },
+                function (result) {
+                    var t = ko.mapping.fromJS(
+                        {'children' : result}, 
+                        {'children': 
+                            {
+                                create: function(options) {
+                                    return new ImporterModel(options.data);
+                                }
+                            }},{});
+
+
+                    self.importers(t.children());
+                });
+
+
+            }else{
+            }
+        }
+    
+
+        self.removeImporter = function(item){
+
+            var result = window.confirm("You are about to remove link between\r\nimporter -'" 
+                + item.name() + "'\r\nproducer -'"  
+                + self.nameToShow() + "'\r\nDo you wish to continue?");
+            if( !result )
+                return;
+
+
+            $.get('@Url.Content("~/Importer/RemoveProducer")', { importerId : item.id(),  producerId : self.id() },
+                function (result) {
+                    self.importers.remove(item);
+                });
+        }
+
+        self.addImporter = function(){
+
+            var m = null;
+            $.ajax({
+                type: 'POST',
+                async: false,
+                url: '@Url.Content("~/Importer/GetNewImporter")',
+                data: {},
+                success: function (r) {
+                    if (r != null ) {
+                        m = new ImporterModel(r);
+                    }
+                },
+                error: function (request, status, error) {
+                    alert('error while checking for requesting new Importer');
+                }
+            });
+
+
+            //
+            // use return value as template
+            //
+            //
+            if (m == null)
+                return;
+
+            m.init = function (elements) {
+
+                $(elements).find("#importer-search-string").autocomplete(
+                {
+                    source: function (request, response) {
+                        $.get('@Url.Content("~/Importer/SearchByName")', { term: request.term},
+                               function (result) {
+                                   response(result);
+                               });
+                    },
+                    focus: function (event, ui) {
+                        $(this).val(ui.item.name);
+                        return false;
+                    },
+                    select: function (event, ui) {
+                        $(this).val(ui.item.name);
+                        m.id(ui.item.id);
+                        m.name(ui.item.name);
+                        m.address(ui.item.address);
+                        m.url(ui.item.url);
+                        m.email(ui.item.email);
+                        m.phone1(ui.item.phone1);
+                        m.phone2(ui.item.phone2);
+                        return false;
+                    },
+                    minLength: 3
+                }).data("ui-autocomplete")._renderItem = function (ul, i) {
+                    return $("<li>").append("<a>" + i.name  + "</a>").appendTo(ul);
+                };
+
+            };
+
+            m.validate = function () {
+                return true;
+            }
+
+
+            m.save = function (o) {
+
+                var len = self.importers().length;
+                if( len > 0 ){
+                    for(var i=0; i < len; i++){
+                        if( self.importers()[i].id() == o.id()){
+                            alert("'" + o.name() +"' is already linked to '" + self.nameToShow() + "'");
+                            return false;
+                        }
+                    }
+                }
+
+
+                $.get('@Url.Content("~/Importer/AddProducer")', { importerId : o.id(),  producerId : self.id() },
+                    function (result) {
+                        var n = new ImporterModel(result);
+                        self.importers.unshift(n);
+                    });
+                return true;
+            };
+
+
+            var d = pageData.OpenDialog(m, m, "search-importer-template");
+            d.dialog("option", "title", "Search For Importer");
+        }
+
+
+
+
+    }
+
+
+    function PageModel() {
+        var self = this;
+
+        self.items = ko.observableArray();
+        self.searchString = ko.observable();
+
+
+        self.search = function () {
+            // do nothing at the moment
+            //
+            $.get('@Url.Content("~/Producer/SearchProducerExt")', { term: self.searchString(), state : self.stateGroupId() },
+                function (result) {
+
+                    var t = ko.mapping.fromJS(
+                        { 'children': result },
+                        {
+                            'children':
+                            {
+                                create: function (options) {
+
+                                    var result = new ProducerModel(options.data);
+                                    return result;
+                                }
+                            }
+                        }, {});
+
+                    self.items(t.children());
+                });
+        }
+
+        self.stateGroupId = ko.observable(0);
+        self.stateGroups = ko.observableArray();
+
+
+        self.initOnce = false;
+        self.init = function () {
+
+            if( ! self.initOnce ){
+
+                self.stateGroups([
+                    {name:'ALL',id:@EditorsCommon.WorkFlowState.STATE_GROUP_ALL},
+                   {name:'In Process',id:@EditorsCommon.WorkFlowState.STATE_GROUP_IN_PROCESS},
+                   {name:'Published',id:@EditorsCommon.WorkFlowState.STATE_GROUP_PUBLISHED},
+                ]);
+
+                self.stateGroupId(@EditorsCommon.WorkFlowState.STATE_GROUP_ALL);
+                self.initOnce = !self.initOnce;
+            }
+
+        }
+    }
+
+
+
+
+    var PAGE_CONTEXT = {};
+
+    var pageData = new PageData();
+
+    pageData.init = function () {
+    }
+
+
+    ko.applyBindings(pageData);
+
+    PAGE_CONTEXT.sortByOptions =
+        [
+            { name: 'Producer', id: 0 },
+            { name: 'Label', id: 1 },
+            { name: 'Vintage', id: 2 }
+        ];
+
+    PAGE_CONTEXT.sortByOptionsVin =
+        [
+            { name: 'Producer', id: 0 },
+            { name: 'Label', id: 1 },
+        ];
+
+
+    function wineColor(color) {
+        if (color == "Red" || color == "red")
+            return 'maroon';
+
+        if (color == "White" || color == "white")
+            return 'yellow';
+
+        if (color == "Rose" || color == "rose")
+            return 'red';
+
+        return 'maroon';
+    };
+
+
+
+    $(document).ready(function () {
+
+        $("#dialog-placeholder").dialog({
+            autoOpen: false,
+            height: 500,
+            width: 800,
+            modal: true,
+            buttons: {
+                "Save Changes": function () {
+
+                    if (pageData.CloseDialog()) {
+                        $(this).dialog("close");
+                    }
+                },
+                Cancel: function () {
+                    pageData.CancelDialog();
+                    $(this).dialog("close");
+                }
+            },
+            close: function () {
+            }
+        });
+
+
+        $("#error-dialog-placeholder").dialog({
+            autoOpen: false,
+            height: 500,
+            width: 800,
+            modal: true,
+            buttons: {
+                Close: function () {
+                    pageData.CancelErrorDialog();
+                    $(this).dialog("close");
+                }
+            },
+            close: function () {
+            }
+        });
+
+
+        pageData.init();
+        pageData.drillDown('search-producer-template', new PageModel());
+
+        $("#page-left-menu #producers_importers").addClass("active");
+
+
+    });
+
+</script>
+
+}

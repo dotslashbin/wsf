@@ -93,12 +93,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.6.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="nunit.framework">
-      <HintPath>..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
-    </Reference>
-    <Reference Include="Sprache">
-      <HintPath>..\packages\Sprache.1.10.0.35\lib\net40\Sprache.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.Entity" />
@@ -603,6 +597,7 @@
       <SubType>Code</SubType>
     </Content>
     <Content Include="Views\Reviewer\ProducersImporters.cshtml" />
+    <Content Include="Views\Admin\Status.cshtml" />
     <None Include="Web.Prod.config" />
   </ItemGroup>
   <ItemGroup>

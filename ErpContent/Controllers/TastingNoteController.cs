@@ -35,13 +35,14 @@ namespace ErpContent.Controllers
         
         //
         // GET: /Assignment/
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
         public ActionResult Index()
         {
             return View();
         }
 
 
-        [Authorize]
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
         [OutputCache(Duration = 0, VaryByParam = "none")]
         public ActionResult GetNotesByTastingEvent(int eventId)
         {
@@ -54,7 +55,7 @@ namespace ErpContent.Controllers
         }
 
 
-        [Authorize]
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
         [OutputCache(Duration = 0, VaryByParam = "none")]
         public ActionResult GetNotesByVinN(int vinN)
         {
@@ -63,7 +64,7 @@ namespace ErpContent.Controllers
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
-        [Authorize]
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
         [OutputCache(Duration = 0, VaryByParam = "none")]
         public ActionResult GetNotesByWineN(int wineN)
         {
@@ -74,7 +75,7 @@ namespace ErpContent.Controllers
 
 
 
-        [Authorize]
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
         [HttpPost]
         [OutputCache(Duration = 0, VaryByParam = "none")]
         public ActionResult GetNewNoteForEvent(int eventId)
@@ -86,15 +87,15 @@ namespace ErpContent.Controllers
         }
 
 
+
+
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="str"></param>
         /// <returns></returns>
-        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameChiefEditor
-            + "," + EditorsCommon.Constants.roleNameEditor
-            + "," + EditorsCommon.Constants.roleNameReviewer
-            + "," + EditorsCommon.Constants.roleNameAdmin)]
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
         [OutputCache(Duration = 0, VaryByParam = "none")]
         [HttpPost]
         public ActionResult SetTastingNoteState(int noteId, int stateId)
@@ -112,10 +113,7 @@ namespace ErpContent.Controllers
         /// </summary>
         /// <param name="str"></param>
         /// <returns></returns>
-        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameChiefEditor
-            + "," + EditorsCommon.Constants.roleNameEditor
-            + "," + EditorsCommon.Constants.roleNameReviewer
-            + "," + EditorsCommon.Constants.roleNameAdmin)]
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
         [OutputCache(Duration = 0, VaryByParam = "none")]
         [HttpPost]
         public ActionResult AddTastingNote(String str)
@@ -177,10 +175,7 @@ namespace ErpContent.Controllers
         /// </summary>
         /// <param name="str"></param>
         /// <returns></returns>
-        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameChiefEditor
-            + "," + EditorsCommon.Constants.roleNameEditor
-            + "," + EditorsCommon.Constants.roleNameReviewer
-            + "," + EditorsCommon.Constants.roleNameAdmin)]
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
         [OutputCache(Duration = 0, VaryByParam = "none")]
         [HttpPost]
         public ActionResult DeleteTastingNote(String str)
@@ -206,10 +201,7 @@ namespace ErpContent.Controllers
         /// </summary>
         /// <param name="str"></param>
         /// <returns></returns>
-        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameChiefEditor
-            + "," + EditorsCommon.Constants.roleNameEditor
-            + "," + EditorsCommon.Constants.roleNameReviewer
-            + "," + EditorsCommon.Constants.roleNameAdmin)]
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
         [OutputCache(Duration = 0, VaryByParam = "none")]
         [HttpPost]
         public ActionResult UpdateTastingNote(String str)
@@ -395,10 +387,7 @@ namespace ErpContent.Controllers
         /// </summary>
         /// <param name="str"></param>
         /// <returns></returns>
-        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameChiefEditor
-            + "," + EditorsCommon.Constants.roleNameEditor
-            + "," + EditorsCommon.Constants.roleNameReviewer
-            + "," + EditorsCommon.Constants.roleNameAdmin)]
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
         [OutputCache(Duration = 0, VaryByParam = "none")]
         [HttpPost]
         public ActionResult MoveTastingNote(int tastingEventId, int tastingNoteId)
@@ -406,6 +395,43 @@ namespace ErpContent.Controllers
 
             var result = _storage.MoveTastingNote(tastingEventId,tastingNoteId);
             return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
+        [OutputCache(Duration = 0, VaryByParam = "none")]
+        public ActionResult GetInQueueCount()
+        {
+            var result = _storage.GetInQueueCount();
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
+        [OutputCache(Duration = 0, VaryByParam = "none")]
+        public ActionResult GetInQueue()
+        {
+
+            var result = _storage.GetInQueue();
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAdmin)]
+        [OutputCache(Duration = 0, VaryByParam = "none")]
+        public ActionResult Reload()
+        {
+            _storage.PublishFromQueue();
+            return Json(true, JsonRequestBehavior.AllowGet);
         }
 
 

@@ -809,8 +809,6 @@ namespace EditorsDbLayer
                          exec TastingEvent_TasteNote_Add @TastingEventID=@tastingEventId, @TasteNote=@tastingNoteId;
 
                      ";
-
-
                     cmd.Parameters.AddWithValue("@tastingNoteId", noteId);
                     cmd.Parameters.AddWithValue("@tastingEventId", eventId);
 
@@ -822,5 +820,134 @@ namespace EditorsDbLayer
             }
         }
 
+
+
+        public int GetInQueueCount()
+        {
+            using (var con = _connFactory.GetConnection())
+            {
+                var query = new StringBuilder();
+
+                using (var cmd = new SqlCommand("", con))
+                {
+                    cmd.CommandText =
+                    @" select COUNT(*) from Wine inner join TasteNote on wine.TasteNote_ID = TasteNote.ID
+                       where  wine.RV_TasteNote <> TasteNote.RV";
+
+                    using (var rdr = cmd.ExecuteReader())
+                    {
+                        if (rdr.Read())
+                        {
+                            return rdr.GetInt32(0);
+                        }
+
+                    }
+
+                    return 0;
+
+                }
+            }
+        }
+
+        public IEnumerable<TastingNote> GetInQueue()
+        {
+
+            List<TastingNote> result = new List<TastingNote>();
+
+
+            using (var con = _connFactory.GetConnection())
+            {
+                var query = new StringBuilder();
+
+                using (var cmd = new SqlCommand("", con))
+                {
+                    cmd.CommandText =
+                    @" 
+
+select  top 200
+		ID = tn.ID,
+		OriginID = tn.OriginID,
+		UserId = tn.UserId,
+		UserrName = u.FullName,
+		
+		Wine_N_ID = tn.Wine_N_ID,
+		Wine_ProducerID = w.ProducerID,
+		Wine_Producer = w.ProducerToShow,
+		Wine_Country  = w.Country,
+		Wine_Region   = w.Region,
+		Wine_Location = w.Location,
+		Wine_Locale   = w.Locale,
+		Wine_Site     = w.Site,
+		Wine_Label    = w.Label,
+		Wine_Vintage  = w.Vintage,
+		Wine_Name     = w.Name,
+		
+		Wine_Type     = w.Type,
+		Wine_Variety  = w.Variety,
+		Wine_Drynes   = w.Dryness,
+		Wine_Color    = w.Color,
+		
+
+		TasteDate     = tn.TasteDate, 
+		MaturityID    = tn.MaturityID, 
+		MaturityName  = wm.Name,
+		MaturitySuggestion = wm.Suggestion,
+		Rating_Lo = tn.Rating_Lo, 
+		Rating_Hi = tn.Rating_Hi, 
+		DrinkDate_Lo = tn.DrinkDate_Lo, 
+		DrinkDate_Hi = tn.DrinkDate_Hi, 
+		IsBarrelTasting = tn.IsBarrelTasting, 
+		Notes = tn.Notes, 
+
+		WF_StatusID = tn.WF_StatusID,
+		WF_StatusName = '',
+		created = tn.created, 
+		updated = tn.updated, 
+        Wine_N_WF_StatusID = w.Wine_N_WF_StatusID,
+		Vin_N_WF_StatusID = w.Vin_N_WF_StatusID,
+		EstimatedCost = tn.EstimatedCost,
+		EstimatedCost_Hi 
+		
+				
+	from TasteNote tn (nolock)
+		join Users u (nolock) on tn.UserId = u.UserId
+		join vWineDetails w on tn.Wine_N_ID = w.Wine_N_ID
+		join WineMaturity wm (nolock) on tn.MaturityID = wm.ID
+		join TastingEvent_TasteNote ttn  (nolock) on ttn.TasteNoteID = tn.ID
+	where  tn.WF_StatusID = 100
+    and tn.ID in (select TasteNote.ID from Wine inner join TasteNote on wine.TasteNote_ID = TasteNote.ID
+                  where  wine.RV_TasteNote <> TasteNote.RV)
+	order by TasteDate desc, UserName, tn.ID
+";
+
+                    using (var rdr = cmd.ExecuteReader())
+                    {
+                        while (rdr.Read())
+                        {
+                            TastingNote note = ReadTastingFromDb(rdr);
+                            result.Add(note);
+                        }
+
+                    }
+
+                    return result;
+                }
+            }
+        }
+
+
+        public void PublishFromQueue()
+        {
+            using (var con = _connFactory.GetConnection())
+            {
+                var query = new StringBuilder();
+
+                using (var cmd = new SqlCommand("", con))
+                {
+                    cmd.CommandText = @"exec [srv].[Wine_Reload]  @IsFullReload = 0";
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
     }
 }

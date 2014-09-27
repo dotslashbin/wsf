@@ -244,5 +244,22 @@ namespace EditorsCommon
         /// <param name="noteId"></param>
         /// <returns></returns>
         bool MoveTastingNote(int eventId, int noteId);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        int GetInQueueCount();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        IEnumerable<TastingNote> GetInQueue();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        void PublishFromQueue();
     }
 }

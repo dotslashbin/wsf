@@ -1,0 +1,244 @@
+﻿@{
+  ViewBag.Title = "Status";
+   ViewBag.PageTitle = "ADMIN DASHBOARD: Status";
+    Layout = "~/Views/Shared/_LayoutBootstrap.cshtml";
+}
+
+
+@section LeftMenu{
+   @Html.Partial("_AdminMenuPartial")
+ }
+
+
+
+<h2>Status</h2>
+
+
+<div data-bind="template: { name: mv().view, data: mv().model, afterRender: $root.modelInit } ">
+... loading
+</div>
+
+<div id="dialog-placeholder" 
+    data-bind="template: { name: dmv().view, data: dmv().model, afterRender: $root.dialogInit }">
+</div>
+
+<div id="error-dialog-placeholder" 
+    data-bind="  template: { name: dmvError().view, data: dmvError().model, afterRender: $root.errorDialogInit }">
+</div>
+
+
+
+@section scripts {
+
+
+    <script  src="~/Scripts/models/TastingNoteModel.js"></script>
+
+
+    <script  src="~/Scripts/models/PageDataModel.js"></script>
+
+
+    <script id="status-template" type="text/html">
+
+         <div class="row">
+
+            <div class="col-sm-4 input-group-md">
+                Number notes awaiting update &nbsp;<b><span data-bind="text: notesInQueue"></span></b>
+            </div>
+            <div class="col-sm-1 input-group-md">
+                <button class="btn btn-sm" data-bind="click: refresh" title="Refresh Count for notes in queue">Refresh</button>
+            </div>
+            <div class="col-sm-1 input-group-md">
+                <button class="btn btn-sm" data-bind="click: load"  title="Load for preview notes in queue (first 200)">Load</button>
+            </div>
+
+            <div class="col-sm-1 input-group-md">
+                <button class="btn btn-sm" data-bind="click: reload"  title="Publish all new awaiting update in the queue">Publish Awaiting Data</button>
+            </div>
+
+         </div>
+        <br />
+
+        <!-- ko foreach: items -->
+        <div class="row  panel-heading">
+
+            <div class="col-sm-8" style=" margin-bottom: 5px;cursor:pointer">
+                <div>
+                    <h5>
+                        <b>
+                            <span data-bind="text: vintage"></span>&nbsp;
+                            <span data-bind="text: producer"></span>,
+                            <span data-bind="text: wineName().length == 0 ? '' : wineName() + ',' "></span>
+                            <span data-bind="text: variety"></span>,
+                            <span data-bind="text: color"></span>,
+                            <span data-bind="text: dryness"></span> (<span data-bind="text: rating"></span>)
+                        </b>
+                    </h5>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" style="border-bottom: solid 1px gray">
+            <div class="col-sm-11  pull-right" style="background-color: white;" >
+                <span data-bind="html: erp.utils.Str2Html($data.note()) "></span>
+            </div>
+        </div>
+        <!-- /ko -->
+
+
+    </script>
+
+
+<script type="text/javascript">
+
+
+
+    function PageModel() {
+        var self = this;
+
+        self.items = ko.observableArray();
+        self.notesInQueue = ko.observable(0);
+
+
+        self.refresh = function () {
+            // do nothing at the moment
+            //
+            $.get('@Url.Content("~/TastingNote/GetInQueueCount")', {},
+                function (result) {
+                    self.notesInQueue(result);
+                });
+        }
+
+        self.reload = function () {
+
+            if( self.notesInQueue() == 0 ){
+                alert("There are no notes in the queue to publish.");
+                return;
+                }
+
+
+           var result = window.confirm("You are about to publish notes awaiting in the queue\r\n\r\nit might take up to one minute to complete'" 
+                + "\r\n\r\nDo you wish to continue?");
+            if( !result )
+                return;
+
+
+            $.get('@Url.Content("~/TastingNote/Reload")', {},
+                function (result) {
+
+                    alert('Reload is completed');
+
+                });
+        }
+
+
+
+
+        self.loaded = false;
+
+
+        self.load = function () {
+            // do nothing at the moment
+            //
+            if (self.loaded == true)
+                return;
+
+            self.loaded = true;
+
+
+
+            $.get('@Url.Content("~/TastingNote/GetInQueue")', { },
+                function (result) {
+                    var t = ko.mapping.fromJS(
+                        {'children' : result}, 
+                        {'children': 
+                            {
+                                create: function(options) {
+                                    var tnm = new TastingNoteModel(options.data);
+                                    return tnm;
+
+                                }
+                            }},{});
+
+
+                    self.items(t.children());
+                });
+        }
+
+
+        self.initOnce = false;
+        self.init = function () {
+
+            if( ! self.initOnce ){
+              self.refresh();
+            }
+
+        }
+    }
+
+
+
+
+    var PAGE_CONTEXT = {};
+
+    var pageData = new PageData();
+
+    pageData.init = function () {
+    }
+
+
+    ko.applyBindings(pageData);
+
+
+
+
+    $(document).ready(function () {
+
+        $("#dialog-placeholder").dialog({
+            autoOpen: false,
+            height: 500,
+            width: 800,
+            modal: true,
+            buttons: {
+                "Save Changes": function () {
+
+                    if (pageData.CloseDialog()) {
+                        $(this).dialog("close");
+                    }
+                },
+                Cancel: function () {
+                    pageData.CancelDialog();
+                    $(this).dialog("close");
+                }
+            },
+            close: function () {
+            }
+        });
+
+
+        $("#error-dialog-placeholder").dialog({
+            autoOpen: false,
+            height: 500,
+            width: 800,
+            modal: true,
+            buttons: {
+                Close: function () {
+                    pageData.CancelErrorDialog();
+                    $(this).dialog("close");
+                }
+            },
+            close: function () {
+            }
+        });
+
+
+        pageData.init();
+        pageData.drillDown('status-template', new PageModel());
+
+        $("#page-left-menu #status").addClass("active");
+
+
+    });
+
+</script>
+
+}

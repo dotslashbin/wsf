@@ -60,6 +60,7 @@
     <Compile Include="ArticleStorage.cs" />
     <Compile Include="AssignmentStorage.cs" />
     <Compile Include="IssueStorage.cs" />
+    <Compile Include="WineImporter.cs" />
     <Compile Include="WineProducer.cs" />
     <Compile Include="SqlConnectionFactory.cs" />
     <Compile Include="TastingEventStorage.cs" />

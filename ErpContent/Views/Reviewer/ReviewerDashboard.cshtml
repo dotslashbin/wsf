@@ -66,14 +66,11 @@
 
                         <!-- ko foreach: assignment.events -->
 
-
                             <div >
                                     <div class="row">
                                         <!-- 
                                           we load notes  on demand, so before notes are loaded we use notesCount, after that length of notes array
                                           in this case this number dynamically reflects number of notes for a tasting record
-
-
                                          -->
                                         <div data-bind="click: showNotes" class="col-sm-10" style="cursor:pointer" >
                                             <span data-bind="attr: { class: open() ? 'glyphicon glyphicon-arrow-up' : 'glyphicon glyphicon-arrow-down' }" title="Expand/Collapse Tasting Record"></span>
@@ -143,7 +140,8 @@
                                 </div>
                                 <div class='col-sm-2'>
                                     <button class="btn  btn-primary btn-xs" data-bind="visible: wfState() == 0 ,click: editNote">Edit</button>
-                                    <button class="btn  btn-primary btn-xs" data-bind="visible: wfState() == 0 ,click: setReadyNote">Ready</button>
+                                    <button class="btn  btn-primary btn-xs" data-bind="visible: wfState() == 0, click: setReadyNote" title="Set 'sent for approval' status">Ready</button>
+                                    <button class="btn  btn-primary btn-xs" data-bind="visible: wfState() > 0 && wfState() < 60  ,click: setDraftNote" title="Set 'draft' status">Draft</button>
                                     <span data-bind="visible: wfState() == 0, click : $parents[1].assignment.moveTastingNote.bind($data,$parent)" 
                                                class="glyphicon glyphicon-move" 
                                                style="cursor:pointer" 
@@ -581,6 +579,39 @@
         }
 
 
+
+        var setDraftNoteCallback = function (data) {
+
+            if (!data.validate()) {
+                window.alert(data.validateResult);
+                return;
+            }
+
+
+            var state = '@EditorsCommon.WorkFlowState.DRAFT';
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/TastingNote/SetTastingNoteState")',
+                data:
+                    { noteId: data.id, stateId: state },
+                success: function (result) {
+
+                    if (result == state) {
+                        data.wfState(result);
+                    }
+                },
+                error: function (request, status, error) {
+                    var dlg = pageData.OpenErrorDialog({ error: request.responseText }, null, "error-view-template");
+                    dlg.dialog("option", "title", "Server Error").
+                        dialog("option", "width", 600).
+                        dialog("option", "height", 300);
+
+                }
+            });
+
+        }
+
 //************************************ ***************************************
         var setReadyNoteCallback = function (data) {
 
@@ -776,6 +807,7 @@
                                     var tnm = new TastingNoteModel(options.data);
                                     tnm.editNote = editNoteCallback;
                                     tnm.setReadyNote = setReadyNoteCallback;
+                                    tnm.setDraftNote = setDraftNoteCallback;
 
                                     return tnm;
 
@@ -1369,6 +1401,10 @@
 
         self.setReadyForApproval = function () {
 
+            var result = window.confirm("You are about to set all notes in this\r\nassignment as 'sent for approval'.\r\n\r\nDo you wish to continue?");
+            if (!result)
+                return;
+
 
             $.ajax({
                 type: 'POST',
@@ -1620,6 +1656,8 @@
          pageData.init();
          pageData.drillDownExt ('issue-details-template', new IssueModel(),"Assignments");
              
+         $("#page-left-menu #dashboard").addClass("active");
+
      });
     </script>
 

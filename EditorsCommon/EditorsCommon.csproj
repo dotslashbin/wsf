@@ -96,10 +96,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants.cs" />
+    <Compile Include="IImporterStorage.cs" />
     <Compile Include="ICachedUserStorage.cs" />
     <Compile Include="IPublicationDataStorage.cs" />
     <Compile Include="IArticleStorage.cs" />
-    <Compile Include="IProducerStorage.cs" />
     <Compile Include="ISqlConnectionFactory.cs" />
     <Compile Include="IStorage.cs" />
     <Compile Include="ITastingEventStorage.cs" />

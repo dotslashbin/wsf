@@ -23,12 +23,6 @@ namespace ErpContent.Controllers
         }
 
 
-        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAdmin)]
-        public ActionResult ProducerProfile()
-        {
-            return View("ProducerProfile");
-        }
-
 
         [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAdmin)]
         public ActionResult VintageProfile()
@@ -49,6 +43,20 @@ namespace ErpContent.Controllers
         {
             return View("Producers");
         }
+
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameReviewer + "," + EditorsCommon.Constants.roleNameAdmin)]
+        public ActionResult Importers()
+        {
+            return View("Importers");
+        }
+
+
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameReviewer + "," + EditorsCommon.Constants.roleNameAdmin)]
+        public ActionResult ProducersImporters()
+        {
+            return View("ProducersImporters");
+        }
+
 
 
         [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAdmin)]

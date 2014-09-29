@@ -1,0 +1,457 @@
+﻿
+@{
+  ViewBag.Title = "Importers";
+   ViewBag.PageTitle = "ADMIN DASHBOARD: Importers";
+    Layout = "~/Views/Shared/_LayoutBootstrap.cshtml";
+}
+
+
+@section LeftMenu{
+    @Html.Partial("_ReviewerLeftMenu")
+ }
+
+
+
+<h2>Importers</h2>
+
+
+<div data-bind="template: { name: mv().view, data: mv().model, afterRender: $root.modelInit } ">
+... loading
+</div>
+
+<div id="dialog-placeholder" 
+    data-bind="template: { name: dmv().view, data: dmv().model, afterRender: $root.dialogInit }">
+</div>
+
+<div id="error-dialog-placeholder" 
+    data-bind="  template: { name: dmvError().view, data: dmvError().model, afterRender: $root.errorDialogInit }">
+</div>
+
+
+
+@section scripts {
+
+    <script  src="~/Scripts/models/PageDataModel.js"></script>
+
+
+    <script id="search-importer-template" type="text/html">
+
+         <div class="row">
+            <div class="col-sm-4  input-group-md">
+                <input type="text" 
+                    data-bind="value: searchString, valueUpdate: 'blur'" 
+                    class="form-control" 
+                    id="note-edit-producer-search" 
+                    placeholder="Search String" required />
+            </div>
+            <div class="col-sm-1 input-group-md">
+                <button class="btn btn-sm" data-bind="click: search" >Search</button>
+            </div>
+
+
+            <div class="col-sm-2 pull-right">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <a href="#" class="btn btn-xs" data-bind="click: addImporter"><span class='glyphicon glyphicon-plus' title="Add New Importer"></span>&nbsp;Add New Importer</a><br />
+                    </div>
+                </div>
+            </div>
+
+            </div>
+        <br />
+        <div class="row" style="height: 550px; overflow:auto">
+            <div class="row"  style="border-bottom: solid 1px gray;">
+                <div class='col-sm-1'>&nbsp;</div>
+                <div class='col-sm-3'>
+                      Name
+                </div>
+                <div class='col-sm-4'>
+                      Address
+                </div>
+                <div class='col-sm-2'>
+                      URL
+                </div>
+            </div>
+            <!-- ko foreach: items -->
+            <div class="row"  style="border-bottom: solid 1px gray;">
+                <div class='col-sm-1'>
+                      <span data-bind="click: edit" class='glyphicon glyphicon-pencil' style="cursor:pointer" title="Start editing"></span>
+                </div>  
+                <div class='col-sm-3' >
+                      <span data-bind="text: name"></span>
+                </div>
+                <div class='col-sm-4' >
+                      <span data-bind="text: address"></span>
+                </div>
+                <div class='col-sm-2' >
+                      <span data-bind="text: url"></span>
+                </div>
+            </div>
+            <!-- /ko -->
+        </div>
+    </script>
+
+
+    <script id="edit-importer-template"  type="text/html">
+        <br />
+        <form name="edit-importer-template-form" id="edit-importer-template-form" action="#">
+            <div class="row form-group">
+                <div class="col-sm-2">Name: </div>
+                <div class="col-sm-6">
+                    <input class="form-control input-sm" 
+                        id="importerName" 
+                        name="importerName" 
+                        data-bind="value:name, valueUpdate: 'blur'" placeholder="Importer's name" required />
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-sm-2">Address: </div>
+                <div class="col-sm-6">
+                    <input class="form-control input-sm" 
+                        id="importerAddress" 
+                        name="importerAddress" 
+                        data-bind="value: address, valueUpdate: 'blur'" placeholder="Address" />
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-sm-2">URL: </div>
+                <div class="col-sm-6">
+                    <input class="form-control input-sm" 
+                        id="importerUrl" 
+                        name="importerUrl" 
+                        data-bind="value: url, valueUpdate: 'blur'" placeholder="Address"  />
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <div class="col-sm-2">Email: </div>
+                <div class="col-sm-6">
+                    <input class="form-control input-sm" 
+                        id="importerEmail" 
+                        name="importerEmail" 
+                        data-bind="value: email, valueUpdate: 'blur'" placeholder="Email"  />
+                </div>
+            </div>
+
+
+            <div class="row form-group">
+                <div class="col-sm-2">Phone1: </div>
+                <div class="col-sm-6">
+                    <input class="form-control input-sm" 
+                        id="importerPhone1" 
+                        name="importerPhone1" 
+                        data-bind="value: phone1, valueUpdate: 'blur'" placeholder="Phone1"  />
+                </div>
+            </div>
+
+
+            <div class="row form-group">
+                <div class="col-sm-2">Phone2: </div>
+                <div class="col-sm-6">
+                    <input class="form-control input-sm" 
+                        id="importerPhone2" 
+                        name="importerPhone2" 
+                        data-bind="value: phone2, valueUpdate: 'blur'" placeholder="Phone2"  />
+                </div>
+            </div>
+
+
+        </form>
+    </script>
+
+<script type="text/javascript">
+
+
+    function ImporterModel(src) {
+        var self = this;
+
+
+        self.toObject = function () {
+            var o = ko.mapping.toJS(self);
+            return o;
+        }
+
+        var dt2js  = function (options) { return erp.utils.Json2Date(options.data) };
+  
+
+        self.fromObject = function (o) {
+            ko.mapping.fromJS(o,
+                {
+                }, self);
+        }
+        //
+        //
+        //
+        if (src)
+            self.fromObject(src);
+
+     
+        self.edit = function(item){
+            //
+            // use return value as template
+            //
+            //
+            var m = new ImporterModel(item.toObject());
+                        
+            m.init = function (elements) {
+                m.validator = $("#edit-importer-template-form").validate(
+                    {
+                        debug: true,
+                        rules: {
+                            importerUrl: {
+                                required: false,
+                                complete_url: true,
+                                maxlength: 254
+                            },
+                            importerEmail: {
+                                required: false,
+                                email: true,
+                                maxlength: 254
+                            }
+                        }
+                    });
+            };
+
+            m.validate = function(){
+
+                var result = true;
+                result =  m.validator.form();
+                if( ! result ){
+                    m.validator.showErrors();
+                }
+                return result;
+            }
+
+
+            m.save = function (o) {
+
+                if (!m.validate()) {
+                    return false;
+                }
+
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Content("~/Importer/Update")',
+                    data:
+                        {
+                            str: JSON.stringify(m.toObject())
+                        },
+                    success: function (r)
+                    {
+                        item.fromObject(r);
+                    },
+                    error: function (request, status, error) {
+                        alert('error while updating producer record');
+                        //PAGE_CONTEXT.error(request, status, error)
+                    }
+                });
+
+                return true;
+            };
+
+
+
+            var d = pageData.OpenDialog(m, m, "edit-importer-template");
+            d.dialog("option", "title", "Edit Importer");
+        }
+
+
+
+    }
+
+
+    function PageModel() {
+        var self = this;
+
+        self.items = ko.observableArray();
+        self.searchString = ko.observable();
+
+
+        self.search = function () {
+            // do nothing at the moment
+            //
+            $.get('@Url.Content("~/Importer/SearchByName")', { term: self.searchString() },
+                function (result) {
+
+                    var t = ko.mapping.fromJS(
+                        { 'children': result },
+                        {
+                            'children':
+                            {
+                                create: function (options) {
+
+                                    var result = new ImporterModel(options.data);
+                                    return result;
+                                }
+                            }
+                        }, {});
+
+                    self.items(t.children());
+                });
+        }
+
+        self.addImporter = function () {
+
+            var m = null;
+            $.ajax({
+                type: 'POST',
+                async: false,
+                url: '@Url.Content("~/Importer/GetNewImporter")',
+                        data: {},
+                        success: function (r) {
+                            if (r != null ) {
+                                m = new ImporterModel(r);
+                            }
+                        },
+                        error: function (request, status, error) {
+                            alert('error while checking for requesting new Importer');
+                        }
+            });
+
+
+            //
+            // use return value as template
+            //
+            //
+            if (m == null)
+                return;
+
+            m.init = function (elements) {
+                m.validator = $("#edit-importer-template-form").validate(
+                    {
+                        debug: true,
+                        rules: {
+                            importerUrl: {
+                                required: false,
+                                complete_url: true,
+                                maxlength: 254
+                            },
+                            importerEmail: {
+                                required: false,
+                                email: true,
+                                maxlength: 254
+                            }
+                        }
+                    });
+            };
+
+            m.validate = function () {
+
+                var result = true;
+                result = m.validator.form();
+                if (!result) {
+                    m.validator.showErrors();
+                }
+                return result;
+            }
+
+
+            m.save = function (o) {
+
+                if (!m.validate()) {
+                    return false;
+                }
+
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Content("~/Importer/Insert")',
+                    data:
+                        {
+                            str: JSON.stringify(m.toObject())
+                        },
+                    success: function (r) {
+                        self.items.unshift(new ImporterModel(r));
+                    },
+                    error: function (request, status, error) {
+                        alert('error while inserting importer record');
+                    }
+                });
+
+                return true;
+            };
+
+
+
+            var d = pageData.OpenDialog(m, m, "edit-importer-template");
+            d.dialog("option", "title", "Create New Importer");
+
+
+        }
+
+        self.initOnce = false;
+        self.init = function () {
+
+            if( ! self.initOnce ){
+
+            }
+
+        }
+    }
+
+
+
+
+    var PAGE_CONTEXT = {};
+
+    var pageData = new PageData();
+
+    pageData.init = function () {
+    }
+
+
+    ko.applyBindings(pageData);
+
+
+
+
+    $(document).ready(function () {
+
+        $("#dialog-placeholder").dialog({
+            autoOpen: false,
+            height: 500,
+            width: 800,
+            modal: true,
+            buttons: {
+                "Save Changes": function () {
+
+                    if (pageData.CloseDialog()) {
+                        $(this).dialog("close");
+                    }
+                },
+                Cancel: function () {
+                    pageData.CancelDialog();
+                    $(this).dialog("close");
+                }
+            },
+            close: function () {
+            }
+        });
+
+
+        $("#error-dialog-placeholder").dialog({
+            autoOpen: false,
+            height: 500,
+            width: 800,
+            modal: true,
+            buttons: {
+                Close: function () {
+                    pageData.CancelErrorDialog();
+                    $(this).dialog("close");
+                }
+            },
+            close: function () {
+            }
+        });
+
+
+        pageData.init();
+        pageData.drillDown('search-importer-template', new PageModel());
+
+        $("#page-left-menu #importers").addClass("active");
+
+
+    });
+
+</script>
+
+}

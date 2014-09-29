@@ -50,6 +50,21 @@ namespace ErpContent.Controllers
         }
 
 
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameReviewer + "," + EditorsCommon.Constants.roleNameAdmin)]
+        public ActionResult Importers()
+        {
+            return View("Importers");
+        }
+
+
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameReviewer + "," + EditorsCommon.Constants.roleNameAdmin)]
+        public ActionResult ProducersImporters()
+        {
+            return View("ProducersImporters");
+        }
+
+
+
         [System.Web.Mvc.Authorize(Roles=EditorsCommon.Constants.roleNameReviewer + "," + EditorsCommon.Constants.roleNameAdmin)]
         [OutputCache(Duration=0, VaryByParam="none")]
         public ActionResult  NewAddNote()

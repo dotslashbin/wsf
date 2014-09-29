@@ -1,12 +1,420 @@
-﻿
-@{
+﻿@{
     ViewBag.Title = "Producers";
    ViewBag.PageTitle = "ADMIN DASHBOARD: Producers";
     Layout = "~/Views/Shared/_LayoutBootstrap.cshtml";
 }
 
 
+@section LeftMenu{
+   @Html.Partial("_AdminMenuPartial")
+ }
+
 
 
 <h2>Producers</h2>
 
+
+<div data-bind="template: { name: mv().view, data: mv().model, afterRender: $root.modelInit } ">
+... loading
+</div>
+
+<div id="dialog-placeholder" 
+    data-bind="template: { name: dmv().view, data: dmv().model, afterRender: $root.dialogInit }">
+</div>
+
+<div id="error-dialog-placeholder" 
+    data-bind="  template: { name: dmvError().view, data: dmvError().model, afterRender: $root.errorDialogInit }">
+</div>
+
+
+
+@section scripts {
+
+    <script  src="~/Scripts/models/PageDataModel.js"></script>
+
+
+    <script id="search-wine-template" type="text/html">
+
+         <div class="row">
+            <div class="col-sm-4  input-group-md">
+                <input type="text" 
+                    data-bind="value: searchString, valueUpdate: 'blur'" 
+                    class="form-control" 
+                    id="note-edit-producer-search" 
+                    placeholder="Search String" required />
+            </div>
+            <div class="col-sm-1 input-group-md">
+                <button class="btn btn-sm" data-bind="click: search" >Search</button>
+            </div>
+
+
+            <div class="col-sm-2">
+                <select class="form-control input-sm col-sm-4" data-bind="options: stateGroups,
+    optionsText: 'name',
+    optionsValue: 'id',
+    value: stateGroupId,
+    valueUpdate: 'blur'">
+
+                </select>
+            </div>
+
+        </div>
+        <br />
+        <div class="row" style="height: 550px; overflow:auto">
+            <div class="row"  style="border-bottom: solid 1px gray;">
+                <div class='col-sm-1'>&nbsp;</div>
+                <div class='col-sm-4'>
+                      Name
+                </div>
+                <div class='col-sm-4'>
+                      Name To Show
+                </div>
+            </div>
+            <!-- ko foreach: items -->
+            <div class="row"  style="border-bottom: solid 1px gray;">
+                <div class='col-sm-1'>
+                      <span data-bind="click: edit" class='glyphicon glyphicon-pencil' style="cursor:pointer" title="Start editing"></span>
+                </div>  
+                <div class='col-sm-4' data-bind="style: { color: erp.utils.statusColor($data.wfState()) }">
+                      <span data-bind="text: name"></span>
+                </div>
+                <div class='col-sm-4' data-bind="style: { color: erp.utils.statusColor($data.wfState()) }">
+                      <span data-bind="text: nameToShow"></span>
+                </div>
+               <div class='col-sm-1' >
+                  <button class="btn btn-primary btn-xs" style="cursor:pointer" data-bind="click: approve, visible: needApprove() == true">Approve</button>
+               </div>
+            </div>
+            <!-- /ko -->
+        </div>
+    </script>
+
+
+    <script id="edit-producer-template"  type="text/html">
+        <br />
+        <form name="edit-producer-template-form" id="edit-producer-template-form" action="#">
+            <div class="row form-group">
+                <div class="col-sm-3">Name To Show: </div>
+                <div class="col-sm-6">
+                    <input class="form-control input-sm" 
+                        id="producerNameToShow" 
+                        name="producerNameToShow" 
+                        data-bind="value:nameToShow, valueUpdate: 'blur'" placeholder="Name To Show" required />
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-sm-3"></div>
+                <div class="col-sm-6">'Name To Show' field presents a producer name how it would be shown on web site
+                </div>
+            </div>
+
+            <br />
+            <div class="row form-group">
+                <div class="col-sm-3">Name: </div>
+                <div class="col-sm-6">
+                    <input class="form-control input-sm" 
+                        id="producerName" 
+                        name="producerName" 
+                        data-bind="value:name, valueUpdate: 'blur'" placeholder="Name To Sort" required />
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-sm-3"></div>
+                <div class="col-sm-6">'Name' field presents a producer name how it would be used while soritng producer by name
+                </div>
+            </div>
+        </form>
+    </script>
+
+<script type="text/javascript">
+
+
+    function ProducerModel(src) {
+        var self = this;
+
+
+        self.toObject = function () {
+            var o = ko.mapping.toJS(self);
+            return o;
+        }
+
+        var dt2js     = function (options) { return erp.utils.Json2Date(options.data) };
+  
+
+        self.fromObject = function (o) {
+            ko.mapping.fromJS(o,
+                {
+                    "dateCreated": { create: dt2js },
+                    "dateUpdated": { create: dt2js }
+
+                }, self);
+        }
+        //
+        //
+        //
+        if (src)
+            self.fromObject(src);
+
+        self.needApprove = function(){
+            if( self.wfState() < 100 )
+                return true;
+
+
+            return false;
+        }
+
+
+        self.edit = function(item){
+            //
+            // use return value as template
+            //
+            //
+            var m = new ProducerModel(item.toObject());
+                        
+            m.init = function (elements) {
+                m.validator =   $("#edit-producer-template-form").validate({debug:true});
+            };
+
+            m.validate = function(){
+
+                var result = true;
+                result =  m.validator.form();
+                if( ! result ){
+                    m.validator.showErrors();
+                }
+                return result;
+            }
+
+
+            m.save = function (o) {
+
+                if (!m.validate()) {
+                    return false;
+                }
+
+
+                if(m.nameToShow().trim() != item.nameToShow().trim()){
+
+                    var exsitingProducer = null;
+                    $.ajax({
+                        type: 'POST',
+                        async: false,
+                        url: '@Url.Content("~/Producer/SearchName")',
+                        data:
+                            {
+                                name: m.nameToShow().trim()
+                            },
+                        success: function (r)
+                        {
+                            if( r != null && r.name ){
+                                exsitingProducer = new ProducerModel(r);
+                            }
+                        },
+                        error: function (request, status, error) {
+                            alert('error while checking for existing name');
+                        }
+                    });
+
+                    if( exsitingProducer != null ){
+                        alert("Such producer '" + exsitingProducer.nameToShow() + "' already recorder into DB ");
+                        return;
+                    }
+                }
+
+
+
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Content("~/Producer/Update")',
+                    data:
+                        {
+                            str: JSON.stringify(m.toObject())
+                        },
+                    success: function (r)
+                    {
+                        item.fromObject(r);
+                    },
+                    error: function (request, status, error) {
+                        alert('error while updating producer record');
+                        //PAGE_CONTEXT.error(request, status, error)
+                    }
+                });
+
+                return true;
+            };
+
+
+
+            var d = pageData.OpenDialog(m, m, "edit-producer-template");
+            d.dialog("option", "title", "Create New assignment");
+        }
+
+
+        self.approve = function(){
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Producer/Approve")',
+                data:
+                    {   id: self.id()},
+                success: function (result) {
+                    if(result > 0 ){
+                        self.wfState(100);
+                    }
+                },
+                error: function (request, status, error) {
+                    alert("server error. report to admin");
+
+                }
+            });
+
+        }
+
+    }
+
+
+    function PageModel() {
+        var self = this;
+
+        self.items = ko.observableArray();
+        self.searchString = ko.observable();
+
+
+        self.search = function () {
+            // do nothing at the moment
+            //
+            $.get('@Url.Content("~/Producer/SearchProducer")', { term: self.searchString(), state : self.stateGroupId() },
+                function (result) {
+
+                    var t = ko.mapping.fromJS(
+                        { 'children': result },
+                        {
+                            'children':
+                            {
+                                create: function (options) {
+
+                                    var result = new ProducerModel(options.data);
+                                    return result;
+                                }
+                            }
+                        }, {});
+
+                    self.items(t.children());
+                });
+        }
+
+        self.stateGroupId = ko.observable(0);
+        self.stateGroups = ko.observableArray();
+
+
+        self.initOnce = false;
+        self.init = function () {
+
+            if( ! self.initOnce ){
+
+                self.stateGroups([
+                    {name:'ALL',id:@EditorsCommon.WorkFlowState.STATE_GROUP_ALL},
+                   {name:'In Process',id:@EditorsCommon.WorkFlowState.STATE_GROUP_IN_PROCESS},
+                   {name:'Published',id:@EditorsCommon.WorkFlowState.STATE_GROUP_PUBLISHED},
+                ]);
+
+                self.stateGroupId(@EditorsCommon.WorkFlowState.STATE_GROUP_ALL);
+                self.initOnce = !self.initOnce;
+            }
+
+        }
+    }
+
+
+
+
+    var PAGE_CONTEXT = {};
+
+    var pageData = new PageData();
+
+    pageData.init = function () {
+    }
+
+
+    ko.applyBindings(pageData);
+
+    PAGE_CONTEXT.sortByOptions =
+        [
+            { name: 'Producer', id: 0 },
+            { name: 'Label', id: 1 },
+            { name: 'Vintage', id: 2 }
+        ];
+
+    PAGE_CONTEXT.sortByOptionsVin =
+        [
+            { name: 'Producer', id: 0 },
+            { name: 'Label', id: 1 },
+        ];
+
+
+    function wineColor(color) {
+        if (color == "Red" || color == "red")
+            return 'maroon';
+
+        if (color == "White" || color == "white")
+            return 'yellow';
+
+        if (color == "Rose" || color == "rose")
+            return 'red';
+
+        return 'maroon';
+    };
+
+
+
+    $(document).ready(function () {
+
+        $("#dialog-placeholder").dialog({
+            autoOpen: false,
+            height: 500,
+            width: 800,
+            modal: true,
+            buttons: {
+                "Save Changes": function () {
+
+                    if (pageData.CloseDialog()) {
+                        $(this).dialog("close");
+                    }
+                },
+                Cancel: function () {
+                    pageData.CancelDialog();
+                    $(this).dialog("close");
+                }
+            },
+            close: function () {
+            }
+        });
+
+
+        $("#error-dialog-placeholder").dialog({
+            autoOpen: false,
+            height: 500,
+            width: 800,
+            modal: true,
+            buttons: {
+                Close: function () {
+                    pageData.CancelErrorDialog();
+                    $(this).dialog("close");
+                }
+            },
+            close: function () {
+            }
+        });
+
+
+        pageData.init();
+        pageData.drillDown('search-wine-template', new PageModel());
+
+        $("#page-left-menu #producers").addClass("active");
+
+
+    });
+
+</script>
+
+}

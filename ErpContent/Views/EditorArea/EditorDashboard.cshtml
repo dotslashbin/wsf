@@ -626,6 +626,14 @@
 
         self.setApproved = function(){
 
+
+            var result = window.confirm("You are about to set all notes in this\r\nassignment as 'approved'.\r\n\r\nDo you wish to continue?");
+            if (!result)
+                return;
+
+
+
+
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Assignment/SetAssignmentApproved")',
@@ -770,7 +778,7 @@
 
                 if( data.wfState() >= 100 ){
                     // ask before allow editing
-                    var result = window.confirm("You are about to edit note which is already published,\r\nif you make changes and save it, the live note will be updated.\r\nDo you want continue?");
+                    var result = window.confirm("You are about to edit note which is already published,\r\nif you make changes and save it, the live note will be updated.\r\nDo you wish to continue?");
                     if( !result )
                          return;
                 }

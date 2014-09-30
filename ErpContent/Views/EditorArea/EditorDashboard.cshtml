@@ -119,7 +119,7 @@
                                                 </div>
                                             </div>
                                             <div class="col-sm-3" style=" margin-bottom: 5px;cursor:pointer">
-                                                <button class="btn btn-primary btn-xs inner-window-button" data-bind="click: approveNote, visible : wfState() < 60 && wfState() > 0">Approve</button>
+                                                <button class="btn btn-primary btn-xs inner-window-button" data-bind="click: approveNote, visible : wfState() == 10">Approve</button>
                                                 <button class="btn btn-primary btn-xs inner-window-button" data-bind="click: sendBackNote, visible : wfState() != 100">Send Back To Reviewer</button>
                                                 <button class="btn btn-primary btn-xs inner-window-button" data-bind="click: editNote, visible : wfState() != 100">Edit Note</button>
                                             </div>
@@ -730,7 +730,7 @@
 
         var approveNoteCallback = function (data) {
 
-            var state = '@EditorsCommon.WorkFlowState.READY_APPROVED';
+            var state = '@EditorsCommon.WorkFlowState.READY_FOR_PROOF_READ';
 
             setReadyNoteCallback(data,state);
         };
@@ -955,8 +955,8 @@
 
         if (state == '@EditorsCommon.WorkFlowState.READY_FOR_REVIEW')
             return 'red';
-
-        if (state == '@EditorsCommon.WorkFlowState.READY_APPROVED')
+         
+         if (state == '@EditorsCommon.WorkFlowState.READY_APPROVED' || state == '@EditorsCommon.WorkFlowState.READY_FOR_PROOF_READ')
             return 'blue';
 
         return 'black';
@@ -973,7 +973,7 @@
             if (state == '@EditorsCommon.WorkFlowState.READY_FOR_REVIEW')
                 return 'Ready For Review/Approval ';
 
-            if (state == '@EditorsCommon.WorkFlowState.READY_APPROVED')
+            if (state == '@EditorsCommon.WorkFlowState.READY_APPROVED' || state == '@EditorsCommon.WorkFlowState.READY_FOR_PROOF_READ')
                 return 'Approved';
 
             return 'Unknown';

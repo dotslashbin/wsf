@@ -55,6 +55,7 @@
                                 var result = new TastingNoteModel(tastingNote);
                                 result.editNote = editNoteCallback;
                                 result.setReadyNote = setReadyNoteCallback;
+                                result.setDraftNote = setDraftNoteCallback;
 
                                 tastingEvent.notes.unshift(result);
                             }
@@ -223,6 +224,8 @@
                                 var result = new TastingNoteModel(r);
                                 result.editNote = editNoteCallback;
                                 result.setReadyNote = setReadyNoteCallback;
+                                result.setDraftNote = setDraftNoteCallback;
+
 
                                 tastingEvent.notes.unshift(result);
                                 pageData.drillUp();

@@ -100,8 +100,13 @@
                                     string output = NotesHelper.applyFormatting(n.note).Replace(vintagePlusWineName, vintagePlusWineNameBold);
                                     
                                     <br />
-                                    <div style="text-indent: 4em;">@Html.Raw(output)</div>
                                     <br />
+                                    <div style="text-indent: 4em;">@Html.Raw(output)</div>
+                                    <span>IMPORTER INFORMATION HERE</span>
+                                    
+                                    <br /> 
+                                    <br />
+
                                 }
                             
                                 @if(  !String.IsNullOrEmpty( t.comments )){

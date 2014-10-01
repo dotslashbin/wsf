@@ -325,7 +325,7 @@
                     <div class="col-sm-12">
                         <a href="#" class="btn btn-xs" data-bind="click: PublishRollack"><span class='glyphicon glyphicon-refresh' title="Rollback">&nbsp;</span>Rollback Publish</a>
                     </div>
-                    <div class="col-sm-12">
+                    <div class="col-sm-12" id="export-link-container">
                         <a href="#" class="btn btn-xs" data-bind="click: Export"><span class='glyphicon glyphicon-list-alt' title="Export to Doc">&nbsp;</span>Export to Doc</a>
                     </div>
                 </div>
@@ -840,6 +840,10 @@
                     self.loaded = !self.loaded;
                     $.get('@Url.Content("~/Assignment/GetAssignmentsByIssue")', { issueId: self.id() },
                          function (result) {
+
+                             if (result.length == 0) {
+                                 $("#export-link-container").hide(); 
+                             }
 
                              var t = ko.mapping.fromJS(
                                      {'children' : result},

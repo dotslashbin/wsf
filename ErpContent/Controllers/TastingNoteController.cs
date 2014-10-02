@@ -74,6 +74,15 @@ namespace ErpContent.Controllers
         }
 
 
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
+        [OutputCache(Duration = 0, VaryByParam = "none")]
+        public ActionResult GetNotesByProducerN(int producerN)
+        {
+
+            var result = _storage.SearchTastingNoteByProducerN(producerN);
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
 
         [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
         [HttpPost]

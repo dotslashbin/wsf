@@ -385,7 +385,7 @@
 
 
 
-                $.get('@Url.Content("~/Assignment/GetAssignmentsByUser")', { publicationid: id, state : self.stateGroupId() },
+                $.get('@Url.Content("~/Assignment/GetAssignmentsForEditor")', { publicationid: id, state : self.stateGroupId() },
                  function (result) {
 
                      var a = new Array();

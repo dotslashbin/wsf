@@ -240,6 +240,13 @@ namespace EditorsCommon
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="producerN"></param>
+        /// <returns></returns>
+        IEnumerable<TastingNote> SearchTastingNoteByProducerN(int producerN);
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="eventId"></param>
         /// <param name="noteId"></param>
         /// <returns></returns>

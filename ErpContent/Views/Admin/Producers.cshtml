@@ -30,6 +30,7 @@
 
 @section scripts {
 
+    <script  src="~/Scripts/models/TastingNoteModel.js"></script>
     <script  src="~/Scripts/models/PageDataModel.js"></script>
 
 
@@ -81,11 +82,40 @@
                 <div class='col-sm-4' data-bind="style: { color: erp.utils.statusColor($data.wfState()) }">
                       <span data-bind="text: nameToShow"></span>
                 </div>
-               <div class='col-sm-1' >
+               <div class='col-sm-2' >
                   <button class="btn btn-primary btn-xs" style="cursor:pointer" data-bind="click: approve, visible: needApprove() == true">Approve</button>
+                  <button class="btn btn-primary btn-xs" style="cursor:pointer" data-bind="click: loadNotes, visible: notesLoaded() == false">Load Notes</button>
+                  <button class="btn btn-primary btn-xs" style="cursor:pointer" data-bind="click: clearNotes, visible: notesLoaded() == true">Clear Notes</button>
                </div>
             </div>
+            <!-- ko foreach: notes -->
+            <div class="row  panel-heading" data-bind="visible: $parent.notesLoaded() == true">
+
+                <div class="col-sm-11  pull-right" style=" margin-bottom: 5px;cursor:pointer">
+                    <div>
+                        <h5>
+                            <b>
+                                <span data-bind="text: vintage"></span>&nbsp;
+                                <span data-bind="text: producer"></span>,
+                                <span data-bind="text: wineName().length == 0 ? '' : wineName() + ',' "></span>
+                                <span data-bind="text: variety"></span>,
+                                <span data-bind="text: color"></span>,
+                                <span data-bind="text: dryness"></span> (<span data-bind="text: rating"></span>)
+                                &nbsp;by <span data-bind="text: reviewer"></span>
+                            </b>
+                        </h5>
+                    </div>
+                </div>
+
+                <div class="row" style="border-bottom: solid 1px gray">
+                    <div class="col-sm-11  pull-right" style="background-color: white;" >
+                        <span data-bind="html: erp.utils.Str2Html($data.note()) "></span>
+                    </div>
+                </div>
+            </div>
+
             <!-- /ko -->
+        <!-- /ko -->
         </div>
     </script>
 
@@ -138,8 +168,10 @@
             return o;
         }
 
-        var dt2js     = function (options) { return erp.utils.Json2Date(options.data) };
+        var dt2js = function (options) { return erp.utils.Json2Date(options.data) };
   
+
+
 
         self.fromObject = function (o) {
             ko.mapping.fromJS(o,
@@ -154,6 +186,44 @@
         //
         if (src)
             self.fromObject(src);
+
+
+        self.notesLoaded = ko.observable(false);
+        self.notes = ko.observableArray();
+
+        self.loadNotes = function(item){
+            self.notesLoaded(true);
+
+            $.get('@Url.Content("~/TastingNote/GetNotesByProducerN")', {producerN : item.id() },
+                function (result) {
+                    var t = ko.mapping.fromJS(
+                        {'children' : result}, 
+                        {'children': 
+                            {
+                                create: function(options) {
+                                    var tnm = new TastingNoteModel(options.data);
+                                    return tnm;
+
+                                }
+                            }},{});
+
+                    if(t.children().length == 0){
+                        alert('No tasting found for that Producer ');
+                        self.notesLoaded(false);
+                    }else{
+                        self.notes(t.children());
+                    }
+                });
+
+        }
+
+        self.clearNotes = function(){
+            self.notesLoaded(false);
+            self.notes(null);
+        }
+
+
+
 
         self.needApprove = function(){
             if( self.wfState() < 100 )
@@ -236,7 +306,6 @@
                     },
                     error: function (request, status, error) {
                         alert('error while updating producer record');
-                        //PAGE_CONTEXT.error(request, status, error)
                     }
                 });
 
@@ -246,7 +315,7 @@
 
 
             var d = pageData.OpenDialog(m, m, "edit-producer-template");
-            d.dialog("option", "title", "Create New assignment");
+            d.dialog("option", "title", "Edit Producer Record");
         }
 
 
@@ -263,7 +332,7 @@
                     }
                 },
                 error: function (request, status, error) {
-                    alert("server error. report to admin");
+                    alert("server error while approving producer. report to admin");
 
                 }
             });

@@ -244,6 +244,95 @@ namespace EditorsDbLayer
         }
 
 
+
+        public IEnumerable<TastingNote> SearchTastingNoteByProducerN(int producerN)
+        {
+            List<TastingNote> result = new List<TastingNote>();
+
+
+
+            using (var con = _connFactory.GetConnection())
+            {
+                var query = new StringBuilder();
+
+                var nullDate = new DateTime(0);
+
+                using (var cmd = new SqlCommand("", con))
+                {
+                    cmd.CommandText = @"
+	select 
+		ID = tn.ID,
+		OriginID = tn.OriginID,
+		UserId = tn.UserId,
+		UserrName = u.FullName,
+		
+		Wine_N_ID = tn.Wine_N_ID,
+		Wine_ProducerID = w.ProducerID,
+		Wine_Producer = w.ProducerToShow,
+		Wine_Country  = w.Country,
+		Wine_Region   = w.Region,
+		Wine_Location = w.Location,
+		Wine_Locale   = w.Locale,
+		Wine_Site     = w.Site,
+		Wine_Label    = w.Label,
+		Wine_Vintage  = w.Vintage,
+		Wine_Name     = w.Name,
+		
+		Wine_Type     = w.Type,
+		Wine_Variety  = w.Variety,
+		Wine_Drynes   = w.Dryness,
+		Wine_Color    = w.Color,
+		
+
+		TasteDate     = tn.TasteDate, 
+		MaturityID    = tn.MaturityID, 
+		MaturityName  = wm.Name,
+		MaturitySuggestion = wm.Suggestion,
+		Rating_Lo = tn.Rating_Lo, 
+		Rating_Hi = tn.Rating_Hi, 
+		DrinkDate_Lo = tn.DrinkDate_Lo, 
+		DrinkDate_Hi = tn.DrinkDate_Hi, 
+		IsBarrelTasting = tn.IsBarrelTasting, 
+		Notes = tn.Notes, 
+
+		WF_StatusID = tn.WF_StatusID,
+		WF_StatusName = '',
+		created = tn.created, 
+		updated = tn.updated, 
+        Wine_N_WF_StatusID = w.Wine_N_WF_StatusID,
+		Vin_N_WF_StatusID = w.Vin_N_WF_StatusID,
+		EstimatedCost,
+		EstimatedCost_Hi 
+		
+				
+	from TasteNote tn (nolock)
+		join Users u (nolock) on tn.UserId = u.UserId
+		join vWineDetails w on tn.Wine_N_ID = w.Wine_N_ID
+		join WineMaturity wm (nolock) on tn.MaturityID = wm.ID
+		join TastingEvent_TasteNote ttn  (nolock) on ttn.TasteNoteID = tn.ID
+	where w.ProducerID = @ProducerN
+	order by Wine_Vintage desc,  Wine_Label asc,  tn.ID
+
+";
+                    cmd.Parameters.AddWithValue("@ProducerN", producerN);
+
+                    using (var rdr = cmd.ExecuteReader())
+                    {
+
+                        while (rdr.Read())
+                        {
+                            TastingNote note = ReadTastingFromDb(rdr);
+
+                            result.Add(note);
+                        }
+
+                    }
+                    return result;
+                }
+            }
+        }
+
+
         /// <summary>
         /// 08.03.2014 special case : Edit Plablished Tasting Note. System will create new record where its noteId equal noteId original note. 
         /// </summary>
@@ -949,5 +1038,6 @@ select  top 200
                 }
             }
         }
+
     }
 }

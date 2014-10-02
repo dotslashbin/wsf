@@ -10,7 +10,9 @@ namespace ErpContent.Views.Helpers
     public class NotesHelper
     {
 
-        static List<String> _wordsToItalize; 
+        static List<String> _wordsToItalize;
+        static List<String> _wordsToHypenate;
+        static List<String> _wordsToRepalceWithSomething; 
 
         static NotesHelper()
         {
@@ -52,9 +54,9 @@ namespace ErpContent.Views.Helpers
         {
             string evaluatedFroDotsAndSpaces = evaluateForDotAndSpaces(notes); // Call to check for space after each period
 
-            string evaluatedForItalics = evaluateItalics(evaluatedFroDotsAndSpaces);
+            string evaluatedForItalics = evaluateForItalics(evaluatedFroDotsAndSpaces);
 
-            string evaluatedForIndention = HttpUtility.HtmlDecode(evaluateParagraphIndention(evaluatedForItalics));
+            string evaluatedForIndention = HttpUtility.HtmlDecode(evaluateForParagraphIndention(evaluatedForItalics));
 
             string formattedNotes = evaluatedForIndention; 
 
@@ -81,20 +83,17 @@ namespace ErpContent.Views.Helpers
         }
 
         /**
-         * This method is aimed to automatically apply indention at the start of the paragraph. 
-         * The indention is set to 3 spaces. 
+         * This method will replace matching words with their hypenated values
          * 
          * @param       String      input
          * 
-         * @return      String      evaluatedString      This represent the string that has been modified based on set of writing rules
+         * @return      String      evaluatedString
          * 
-         * @author      Joshua Fuentes      <joshua.fuentes@robertparker.com>
+         * @author      Joshua Fuente  <joshua.fuentes@robertparker.com>
          */
-        private static string evaluateParagraphIndention(string input)
+        private static string evaluateForHypens(String input)
         {
-            string withSpacesRemoved = Regex.Replace(input, "^( )*", "");
-
-            return withSpacesRemoved; 
+            return ""; 
         }
 
         /**
@@ -107,7 +106,7 @@ namespace ErpContent.Views.Helpers
          * 
          * @author      Joshua Fuentes  <joshua.fuentes@robertpaker.com>
          */
-        private static string evaluateItalics(string input)
+        private static string evaluateForItalics(string input)
         {
             
             foreach (String wordToLookFor in _wordsToItalize)
@@ -118,6 +117,23 @@ namespace ErpContent.Views.Helpers
             }
 
             return input; 
+        }
+
+        /**
+        * This method is aimed to automatically apply indention at the start of the paragraph. 
+        * The indention is set to 3 spaces. 
+        * 
+        * @param       String      input
+        * 
+        * @return      String      evaluatedString      This represent the string that has been modified based on set of writing rules
+        * 
+        * @author      Joshua Fuentes      <joshua.fuentes@robertparker.com>
+        */
+        private static string evaluateForParagraphIndention(string input)
+        {
+            string withSpacesRemoved = Regex.Replace(input, "^( )*", "");
+
+            return withSpacesRemoved;
         }
     }
 }

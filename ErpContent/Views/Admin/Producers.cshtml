@@ -83,9 +83,9 @@
                       <span data-bind="text: nameToShow"></span>
                 </div>
                <div class='col-sm-2' >
-                  <button class="btn btn-primary btn-xs" style="cursor:pointer" data-bind="click: approve, visible: needApprove() == true">Approve</button>
                   <button class="btn btn-primary btn-xs" style="cursor:pointer" data-bind="click: loadNotes, visible: notesLoaded() == false">Load Notes</button>
                   <button class="btn btn-primary btn-xs" style="cursor:pointer" data-bind="click: clearNotes, visible: notesLoaded() == true">Clear Notes</button>
+                  <button class="btn btn-primary btn-xs" style="cursor:pointer" data-bind="click: approve, visible: needApprove() == true">Approve</button>
                </div>
             </div>
             <!-- ko foreach: notes -->
@@ -303,6 +303,14 @@
                     success: function (r)
                     {
                         item.fromObject(r);
+
+                        if( self.notesLoaded() == true ){
+                            //
+                            // reload notes
+                            //
+                            self.loadNotes(item);
+                        }
+
                     },
                     error: function (request, status, error) {
                         alert('error while updating producer record');

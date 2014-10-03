@@ -122,6 +122,14 @@ namespace EditorsDbLayer
 		Vin_N_WF_StatusID = w.Vin_N_WF_StatusID,
 		EstimatedCost,
 		EstimatedCost_Hi 
+
+        ,RatingQ
+        ,Importers =  STUFF(  (select ' '+CHAR(13)+CHAR(10)+ Name
+                    from WineImporter wi
+                    join WineProducer_WineImporter wpi  (nolock) on wpi.ImporterId  = wi.ID
+                    where 
+                    wpi.ProducerId = w.ProducerID
+                    FOR XML PATH('')), 1, 1, '' )		
 		
 				
 	from TasteNote tn (nolock)
@@ -213,6 +221,14 @@ namespace EditorsDbLayer
 		Vin_N_WF_StatusID = w.Vin_N_WF_StatusID,
 		EstimatedCost,
 		EstimatedCost_Hi 
+
+        ,RatingQ
+        ,Importers =  STUFF(  (select ' '+CHAR(13)+CHAR(10)+ Name
+                    from WineImporter wi
+                    join WineProducer_WineImporter wpi  (nolock) on wpi.ImporterId  = wi.ID
+                    where 
+                    wpi.ProducerId = w.ProducerID
+                    FOR XML PATH('')), 1, 1, '' )		
 		
 				
 	from TasteNote tn (nolock)
@@ -303,13 +319,21 @@ namespace EditorsDbLayer
 		Vin_N_WF_StatusID = w.Vin_N_WF_StatusID,
 		EstimatedCost,
 		EstimatedCost_Hi 
-		
+
+        ,RatingQ
+        ,Importers =  STUFF(  (select ' '+CHAR(13)+CHAR(10)+ Name
+                    from WineImporter wi
+                    join WineProducer_WineImporter wpi  (nolock) on wpi.ImporterId  = wi.ID
+                    where 
+                    wpi.ProducerId = w.ProducerID
+                    FOR XML PATH('')), 1, 1, '' )		
 				
 	from TasteNote tn (nolock)
 		join Users u (nolock) on tn.UserId = u.UserId
 		join vWineDetails w on tn.Wine_N_ID = w.Wine_N_ID
 		join WineMaturity wm (nolock) on tn.MaturityID = wm.ID
 		join TastingEvent_TasteNote ttn  (nolock) on ttn.TasteNoteID = tn.ID
+
 	where w.ProducerID = @ProducerN
 	order by Wine_Vintage desc,  Wine_Label asc,  tn.ID
 
@@ -334,7 +358,6 @@ namespace EditorsDbLayer
 
 
         /// <summary>
-        /// 08.03.2014 special case : Edit Plablished Tasting Note. System will create new record where its noteId equal noteId original note. 
         /// </summary>
         /// <param name="eventId"></param>
         /// <returns></returns>
@@ -367,20 +390,6 @@ namespace EditorsDbLayer
                             
                             note.tastingEventId = eventId;
 
-
-                            //if (dict.ContainsKey(note.noteId))
-                            //{
-                            //    // if plublished note already in the dictionary, replace it.
-                            //    // if unpubllished note already in the dictionary, do not insert published one.
-                            //    //
-                            //    //
-                            //    if (note.wfState < 100)
-                            //        dict[note.noteId] = note;
-                            //}
-                            //else
-                            //{
-                            //    dict[note.noteId] = note;
-                            //}
                             result.Add(note);
                         }
 
@@ -437,7 +446,7 @@ namespace EditorsDbLayer
                             exec @NoteId = TastingNote_Add @UserId = @UserId,@Wine_N_ID=@Wine_N_ID,@TasteDate=@TasteDate,@MaturityID=@MaturityID,
                                  @Rating_Lo=@Rating_Lo, @Rating_Hi= @Rating_Hi,@DrinkDate_Lo=@DrinkDate_Lo,@DrinkDate_Hi=@DrinkDate_Hi,
                                  @EstimatedCost=@EstimatedCost, @EstimatedCost_Hi= @EstimatedCost_Hi,
-                                 @IsBarrelTasting=@IsBarrelTasting, @Notes=@Notes, @IssueID = @IssueId;
+                                 @IsBarrelTasting=@IsBarrelTasting,@RatingQ= @RatingQ, @Notes=@Notes, @IssueID = @IssueId;
 
 
                             exec TastingEvent_TasteNote_Add @TastingEventID=@TastingEventID, @TasteNote=@NoteId;
@@ -469,6 +478,9 @@ namespace EditorsDbLayer
                         e.decodeRating();
                         cmd.Parameters.AddWithValue("@Rating_Lo", e.ratingLo);
                         cmd.Parameters.AddWithValue("@Rating_Hi", e.ratingHi);
+
+
+                        cmd.Parameters.AddWithValue("@RatingQ", String.IsNullOrEmpty(e.ratingQ) || e.isBarrelTasting == false ? null : e.ratingQ);
 
                         if (e.drinkDateLo.Ticks > 0)
                         {
@@ -612,7 +624,7 @@ namespace EditorsDbLayer
     exec @UpdatedId = TastingNote_Update @ID=@ID, @UserId = @UserId,@Wine_N_ID=@Wine_N_ID,@TasteDate=@TasteDate,@MaturityID=@MaturityID,
             @Rating_Lo=@Rating_Lo, @Rating_Hi= @Rating_Hi,@DrinkDate_Lo=@DrinkDate_Lo,@DrinkDate_Hi=@DrinkDate_Hi,
             @EstimatedCost=@EstimatedCost, @EstimatedCost_Hi= @EstimatedCost_Hi,
-            @IsBarrelTasting=@IsBarrelTasting, @Notes=@Notes, @IssueID = @IssueId;
+            @IsBarrelTasting=@IsBarrelTasting,@RatingQ=@RatingQ, @Notes=@Notes, @IssueID = @IssueId;
 
 
 
@@ -647,6 +659,7 @@ namespace EditorsDbLayer
                         e.decodeRating();
                         cmd.Parameters.AddWithValue("@Rating_Lo", e.ratingLo);
                         cmd.Parameters.AddWithValue("@Rating_Hi", e.ratingHi);
+                        cmd.Parameters.AddWithValue("@RatingQ", String.IsNullOrEmpty(e.ratingQ) || e.isBarrelTasting == false ? null : e.ratingQ);
 
                         if (e.drinkDateLo.Ticks > 0)
                         {
@@ -790,6 +803,9 @@ namespace EditorsDbLayer
             note.estimatedCostHi = rdr.IsDBNull(36) ? "" : rdr.GetDecimal(36).ToString("0.##");
             note.estimatedCost = note.estimatedCost.CompareTo("0") == 0 ? "" : note.estimatedCost;
             note.estimatedCostHi = note.estimatedCostHi.CompareTo("0") == 0 ? "" : note.estimatedCostHi;
+
+            note.ratingQ = rdr.IsDBNull(37) ? "" : rdr.GetString(37);
+            note.importers = rdr.IsDBNull(38) ? "" : rdr.GetString(38);
 
 
             return note;

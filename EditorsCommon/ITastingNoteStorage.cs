@@ -64,6 +64,10 @@ namespace EditorsCommon
     public int wfStateWineN;
     public int wfStateVinN;
 
+    public string ratingQ; 
+    public string importers;
+
+
         /// <summary>
         /// 
         /// </summary>

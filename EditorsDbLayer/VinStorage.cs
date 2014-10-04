@@ -396,22 +396,27 @@ namespace EditorsDbLayer
                             while (rdr.Read())
                             {
                                 Int32 vinId = rdr.GetInt32(0);
-                                var vinN = dict[vinId];
 
-                                if (vinN != null)
+                                if (dict.ContainsKey(vinId))
                                 {
-                                    vinN.wines.Add(new WineN() { 
-                                        id = rdr.GetInt32(1)
-                                        , vintage = rdr.GetString(2)
-                                        , workflow = rdr.GetFieldValue<Int16>(3)
-                                    });
-                                }
+                                    var vinN = dict[vinId];
 
+                                    if (vinN != null)
+                                    {
+                                        vinN.wines.Add(new WineN()
+                                        {
+                                            id = rdr.GetInt32(1)
+                                            ,
+                                            vintage = rdr.GetString(2)
+                                            ,
+                                            workflow = rdr.GetFieldValue<Int16>(3)
+                                        });
+                                    }
+                                }
                             }
                         }
 
                     }
-
 
                     return dict.Values.ToList();
                 }

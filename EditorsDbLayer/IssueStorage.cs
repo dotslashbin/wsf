@@ -645,10 +645,12 @@ order by te.ID
                             }
                             while (rdr.Read())
                             {
-                                int id = rdr.GetInt32(0);
-
-                                AssignmentItem item = assignmentsDictionary[id];
-                                item.ProcessActor(rdr.GetInt32(1), (ActorRole)rdr.GetInt32(3), rdr.IsDBNull(2) ? "" : rdr.GetString(2));
+                                if (!rdr.IsDBNull(0))
+                                {
+                                    int id = rdr.GetInt32(0);
+                                    AssignmentItem item = assignmentsDictionary[id];
+                                    item.ProcessActor(rdr.GetInt32(1), (ActorRole)rdr.GetInt32(3), rdr.IsDBNull(2) ? "" : rdr.GetString(2));
+                                }
                             }
 
                             if (!rdr.NextResult())
@@ -657,10 +659,13 @@ order by te.ID
                             }
                             while (rdr.Read())
                             {
-                                int id = rdr.GetInt32(0);
+                                if (!rdr.IsDBNull(0))
+                                {
+                                    int id = rdr.GetInt32(0);
 
-                                AssignmentItem item = assignmentsDictionary[id];
-                                item.ProcessDeadline((DeadlineType)rdr.GetInt32(1), rdr.GetDateTime(2));
+                                    AssignmentItem item = assignmentsDictionary[id];
+                                    item.ProcessDeadline((DeadlineType)rdr.GetInt32(1), rdr.GetDateTime(2));
+                                }
                             }
 
 

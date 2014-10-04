@@ -124,7 +124,7 @@ namespace EditorsDbLayer
 		EstimatedCost_Hi 
 
         ,RatingQ
-        ,Importers =  STUFF(  (select ' '+CHAR(13)+CHAR(10)+ Name
+        ,Importers =  STUFF(  (select ' '+'---new-line---'+ Name
                     from WineImporter wi
                     join WineProducer_WineImporter wpi  (nolock) on wpi.ImporterId  = wi.ID
                     where 
@@ -223,7 +223,7 @@ namespace EditorsDbLayer
 		EstimatedCost_Hi 
 
         ,RatingQ
-        ,Importers =  STUFF(  (select ' '+CHAR(13)+CHAR(10)+ Name
+        ,Importers =  STUFF(  (select ' '+'---new-line---'+ Name
                     from WineImporter wi
                     join WineProducer_WineImporter wpi  (nolock) on wpi.ImporterId  = wi.ID
                     where 
@@ -321,7 +321,7 @@ namespace EditorsDbLayer
 		EstimatedCost_Hi 
 
         ,RatingQ
-        ,Importers =  STUFF(  (select ' '+CHAR(13)+CHAR(10)+ Name
+        ,Importers =  STUFF(  (select ' '+'---new-line---'+ Name
                     from WineImporter wi
                     join WineProducer_WineImporter wpi  (nolock) on wpi.ImporterId  = wi.ID
                     where 
@@ -480,7 +480,7 @@ namespace EditorsDbLayer
                         cmd.Parameters.AddWithValue("@Rating_Hi", e.ratingHi);
 
 
-                        cmd.Parameters.AddWithValue("@RatingQ", String.IsNullOrEmpty(e.ratingQ) || e.isBarrelTasting == false ? null : e.ratingQ);
+                        cmd.Parameters.AddWithValue("@RatingQ", String.IsNullOrEmpty(e.ratingQ) || e.isBarrelTasting == false ? "" : e.ratingQ);
 
                         if (e.drinkDateLo.Ticks > 0)
                         {
@@ -659,7 +659,7 @@ namespace EditorsDbLayer
                         e.decodeRating();
                         cmd.Parameters.AddWithValue("@Rating_Lo", e.ratingLo);
                         cmd.Parameters.AddWithValue("@Rating_Hi", e.ratingHi);
-                        cmd.Parameters.AddWithValue("@RatingQ", String.IsNullOrEmpty(e.ratingQ) || e.isBarrelTasting == false ? null : e.ratingQ);
+                        cmd.Parameters.AddWithValue("@RatingQ", String.IsNullOrEmpty(e.ratingQ) || e.isBarrelTasting == false ? "" : e.ratingQ);
 
                         if (e.drinkDateLo.Ticks > 0)
                         {
@@ -806,6 +806,8 @@ namespace EditorsDbLayer
 
             note.ratingQ = rdr.IsDBNull(37) ? "" : rdr.GetString(37);
             note.importers = rdr.IsDBNull(38) ? "" : rdr.GetString(38);
+
+            note.importers = note.importers.Replace("---new-line---", "\r\n");
 
 
             return note;

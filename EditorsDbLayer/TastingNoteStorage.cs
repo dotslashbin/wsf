@@ -515,7 +515,7 @@ namespace EditorsDbLayer
 
 
 
-                        if (String.IsNullOrEmpty(e.ratingQ) || e.isBarrelTasting == false)
+                        if (String.IsNullOrEmpty(e.ratingQ) )
                         {
                             cmd.Parameters.AddWithValue("@RatingQ", DBNull.Value);
 
@@ -705,7 +705,7 @@ namespace EditorsDbLayer
                         cmd.Parameters.AddWithValue("@Rating_Lo", e.ratingLo);
                         cmd.Parameters.AddWithValue("@Rating_Hi", e.ratingHi);
 
-                        if (String.IsNullOrEmpty(e.ratingQ) || e.isBarrelTasting == false)
+                        if (String.IsNullOrEmpty(e.ratingQ) )
                         {
                             cmd.Parameters.AddWithValue("@RatingQ",  DBNull.Value );
 

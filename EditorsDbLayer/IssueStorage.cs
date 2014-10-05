@@ -564,6 +564,25 @@ select
 		w.Vin_N_WF_StatusID,
 		tn.created, 
 		tn.updated 
+        ,RatingQ
+        ,Importers =  STUFF(  (select '+'+'---new-line---'+ Name 
+                     +  case
+                          when LEN( isnull(Address,'')) > 0 then (',' + Address )
+                         else ''
+                        end   
+                     +  case
+                          when LEN( isnull(Phone1,'')) > 0 then (',' + Phone1 )
+                         else ''
+                        end   
+                     +  case
+                          when LEN( isnull(URL,'')) > 0 then (',' + URL)
+                         else ''
+                        end   
+                    from WineImporter wi
+                    join WineProducer_WineImporter wpi  (nolock) on wpi.ImporterId  = wi.ID
+                    where 
+                    wpi.ProducerId = w.ProducerID
+                    FOR XML PATH('')), 1, 1, '' )
 
 
 from  Issue as i
@@ -577,7 +596,7 @@ join vWineDetails as w  on w.Wine_N_ID = tn.Wine_N_ID
 left join Users as u on tn.UserId  = u.UserId
 left join WineMaturity wm (nolock) on tn.MaturityID = wm.ID
                          
-where i.ID = @IssueId
+where i.ID = @IssueId and tn.WF_StatusID >= 60 
 order by te.ID
 
 ";
@@ -781,7 +800,8 @@ order by te.ID
             note.wfState = rdr.GetFieldValue<Int16>(32);
             note.wfStateWineN = rdr.GetFieldValue<Int16>(33);
             note.wfStateVinN = rdr.GetFieldValue<Int16>(34);
-
+            note.importers = rdr.IsDBNull(38) ? "" : rdr.GetString(38);
+            note.importers = note.importers.Replace("---new-line---", "");
 
             return note;
         }

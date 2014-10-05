@@ -42,7 +42,7 @@ namespace ErpContent.Controllers
         /// </summary>
         /// <param name="assignmentId"></param>
         /// <returns></returns>
-        [Authorize]
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
         [OutputCache(Duration = 0, VaryByParam = "none")]
         public ActionResult GetNewTastingEventToAssignment(int assignmentId)
         {
@@ -57,7 +57,7 @@ namespace ErpContent.Controllers
         /// </summary>
         /// <param name="assignmentId"></param>
         /// <returns></returns>
-        [Authorize]
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
         [OutputCache(Duration = 0, VaryByParam = "none")]
         public ActionResult GetTastingEventByAssignment(int assignmentId)
         {
@@ -77,9 +77,7 @@ namespace ErpContent.Controllers
         /// </summary>
         /// <param name="str"></param>
         /// <returns></returns>
-        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameChiefEditor
-            + "," + EditorsCommon.Constants.roleNameReviewer
-            + "," + EditorsCommon.Constants.roleNameAdmin)]
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
         [OutputCache(Duration = 0, VaryByParam = "none")]
         [HttpPost]
         public ActionResult AddTastingEvent(String str)
@@ -99,9 +97,7 @@ namespace ErpContent.Controllers
         /// </summary>
         /// <param name="str"></param>
         /// <returns></returns>
-        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameChiefEditor
-            + "," + EditorsCommon.Constants.roleNameReviewer
-            + "," + EditorsCommon.Constants.roleNameAdmin)]
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
         [OutputCache(Duration = 0, VaryByParam = "none")]
         [HttpPost]
         public ActionResult EditTastingEvent(String str)
@@ -121,9 +117,7 @@ namespace ErpContent.Controllers
         /// </summary>
         /// <param name="str"></param>
         /// <returns></returns>
-        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameChiefEditor
-            + "," + EditorsCommon.Constants.roleNameReviewer
-            + "," + EditorsCommon.Constants.roleNameAdmin)]
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
         [OutputCache(Duration = 0, VaryByParam = "none")]
         [HttpPost]
         public ActionResult DeleteTastingEvent(String str)
@@ -143,9 +137,7 @@ namespace ErpContent.Controllers
         /// </summary>
         /// <param name="str"></param>
         /// <returns></returns>
-        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameChiefEditor
-            + "," + EditorsCommon.Constants.roleNameReviewer
-            + "," + EditorsCommon.Constants.roleNameAdmin)]
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
         [OutputCache(Duration = 0, VaryByParam = "none")]
         [HttpPost]
         public ActionResult MoveTastingEvent(int assignmentId, int tastingEventId)

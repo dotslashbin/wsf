@@ -132,10 +132,7 @@
                                 <div class="col-sm-12">
                                    <a href="#" class="btn btn-xs" data-bind="click: addIssue"><span class='glyphicon glyphicon-plus' title="Add New Issue"></span>&nbsp;Add New Issue</a>
                                 </div>
-                                <div class="col-sm-12">
-                                   <a href="#" class="btn btn-xs" data-bind="click: importIssue"><span class='glyphicon glyphicon-plus' title="Import Issue"></span>&nbsp;Import Issue</a>
-                                </div>
-                            </div>
+                             </div>
                         </div>
 
                     </div>
@@ -1547,49 +1544,6 @@
                 });
             };
 
-
-            self.importIssue = function () {
-                //
-                // will be called after dialog initialization
-                //
-
-                var m = {};
-                
-                m.init = function (elements) {
-                    m.fileInput = $(elements).find("#fileInput");
-                };
-
-
-                m.save = function (o) {
-                    alert("got it");
-                    var formdata = new FormData(); //FormData object
-                    var fileInput = document.getElementById('fileInput');
-                    //Iterating through each files selected in fileInput
-                    for (i = 0; i < fileInput.files.length; i++) {
-                        //Appending each file to FormData object
-                        formdata.append(fileInput.files[i].name, fileInput.files[i]);
-                    }
-                    //Creating an XMLHttpRequest and sending
-                    var xhr = new XMLHttpRequest();
-                    xhr.open('POST', '/Issue/Upload');
-                    xhr.send(formdata);
-                    xhr.onreadystatechange = function () {
-                        if (xhr.readyState == 4 && xhr.status == 200) {
-                            alert(xhr.responseText);
-                        }
-                    }
-                    return false;
-                }
-
-
-                var d = pageData.OpenDialog(m, m, "xml-uploader-template");
-
-                d.dialog("option", "title", "Import Issue").
-                dialog("option", "width", 760).
-                dialog("option", "height", 400);
-
-
-            };
 
 
 

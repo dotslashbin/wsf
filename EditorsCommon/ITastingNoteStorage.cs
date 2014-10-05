@@ -68,6 +68,15 @@ namespace EditorsCommon
     public string importers;
 
 
+    public string DrindDateToString()
+    {
+        if (drinkDateLo.Year > 1 && drinkDateHi.Year > 1)
+            return drinkDateLo.Year.ToString() + "-" + drinkDateHi.Year.ToString();
+
+        return "";
+    }
+
+
         /// <summary>
         /// 
         /// </summary>
@@ -94,6 +103,9 @@ namespace EditorsCommon
 
         return 5;
     }
+
+
+
 
         /// <summary>
         /// 

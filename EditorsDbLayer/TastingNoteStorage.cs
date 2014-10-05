@@ -124,13 +124,24 @@ namespace EditorsDbLayer
 		EstimatedCost_Hi 
 
         ,RatingQ
-        ,Importers =  STUFF(  (select ' '+'---new-line---'+ Name
+        ,Importers =  STUFF(  (select '+'+'---new-line---'+ Name 
+                     +  case
+                          when LEN( isnull(Address,'')) > 0 then (',' + Address )
+                          else ''
+                        end   
+                     +  case
+                          when LEN( isnull(Phone1,'')) > 0 then (',' + Phone1 )
+                          else ''
+                        end   
+                     +  case
+                          when LEN( isnull(URL,'')) > 0 then (',' + URL)
+                          else ''
+                        end   
                     from WineImporter wi
                     join WineProducer_WineImporter wpi  (nolock) on wpi.ImporterId  = wi.ID
                     where 
                     wpi.ProducerId = w.ProducerID
                     FOR XML PATH('')), 1, 1, '' )		
-		
 				
 	from TasteNote tn (nolock)
 		join Users u (nolock) on tn.UserId = u.UserId
@@ -223,13 +234,24 @@ namespace EditorsDbLayer
 		EstimatedCost_Hi 
 
         ,RatingQ
-        ,Importers =  STUFF(  (select ' '+'---new-line---'+ Name
+        ,Importers =  STUFF(  (select '+'+'---new-line---'+ Name 
+                     +  case
+                          when LEN( isnull(Address,'')) > 0 then (',' + Address )
+                          else ''
+                        end   
+                     +  case
+                          when LEN( isnull(Phone1,'')) > 0 then (',' + Phone1 )
+                          else ''
+                        end   
+                     +  case
+                          when LEN( isnull(URL,'')) > 0 then (',' + URL)
+                          else ''
+                        end   
                     from WineImporter wi
                     join WineProducer_WineImporter wpi  (nolock) on wpi.ImporterId  = wi.ID
                     where 
                     wpi.ProducerId = w.ProducerID
                     FOR XML PATH('')), 1, 1, '' )		
-		
 				
 	from TasteNote tn (nolock)
 		join Users u (nolock) on tn.UserId = u.UserId
@@ -321,7 +343,19 @@ namespace EditorsDbLayer
 		EstimatedCost_Hi 
 
         ,RatingQ
-        ,Importers =  STUFF(  (select ' '+'---new-line---'+ Name
+        ,Importers =  STUFF(  (select '+'+'---new-line---'+ Name 
+                     +  case
+                          when LEN( isnull(Address,'')) > 0 then (',' + Address )
+                          else ''
+                        end   
+                     +  case
+                          when LEN( isnull(Phone1,'')) > 0 then (',' + Phone1 )
+                          else ''
+                        end   
+                     +  case
+                          when LEN( isnull(URL,'')) > 0 then (',' + URL)
+                          else ''
+                        end   
                     from WineImporter wi
                     join WineProducer_WineImporter wpi  (nolock) on wpi.ImporterId  = wi.ID
                     where 
@@ -480,7 +514,18 @@ namespace EditorsDbLayer
                         cmd.Parameters.AddWithValue("@Rating_Hi", e.ratingHi);
 
 
-                        cmd.Parameters.AddWithValue("@RatingQ", String.IsNullOrEmpty(e.ratingQ) || e.isBarrelTasting == false ? "" : e.ratingQ);
+
+                        if (String.IsNullOrEmpty(e.ratingQ) || e.isBarrelTasting == false)
+                        {
+                            cmd.Parameters.AddWithValue("@RatingQ", DBNull.Value);
+
+                        }
+                        else
+                        {
+                            cmd.Parameters.AddWithValue("@RatingQ", e.ratingQ);
+                        }
+
+
 
                         if (e.drinkDateLo.Ticks > 0)
                         {
@@ -659,7 +704,17 @@ namespace EditorsDbLayer
                         e.decodeRating();
                         cmd.Parameters.AddWithValue("@Rating_Lo", e.ratingLo);
                         cmd.Parameters.AddWithValue("@Rating_Hi", e.ratingHi);
-                        cmd.Parameters.AddWithValue("@RatingQ", String.IsNullOrEmpty(e.ratingQ) || e.isBarrelTasting == false ? "" : e.ratingQ);
+
+                        if (String.IsNullOrEmpty(e.ratingQ) || e.isBarrelTasting == false)
+                        {
+                            cmd.Parameters.AddWithValue("@RatingQ",  DBNull.Value );
+
+                        }
+                        else
+                        {
+                            cmd.Parameters.AddWithValue("@RatingQ",  e.ratingQ);
+                        }
+
 
                         if (e.drinkDateLo.Ticks > 0)
                         {
@@ -1014,6 +1069,27 @@ select  top 200
 		Vin_N_WF_StatusID = w.Vin_N_WF_StatusID,
 		EstimatedCost = tn.EstimatedCost,
 		EstimatedCost_Hi 
+
+        ,RatingQ
+        ,Importers =  STUFF(  (select '+'+'---new-line---'+ Name 
+                     +  case
+                          when LEN( isnull(Address,'')) > 0 then (',' + Address )
+                          else ''
+                        end   
+                     +  case
+                          when LEN( isnull(Phone1,'')) > 0 then (',' + Phone1 )
+                          else ''
+                        end   
+                     +  case
+                          when LEN( isnull(URL,'')) > 0 then (',' + URL)
+                          else ''
+                        end   
+                    from WineImporter wi
+                    join WineProducer_WineImporter wpi  (nolock) on wpi.ImporterId  = wi.ID
+                    where 
+                    wpi.ProducerId = w.ProducerID
+                    FOR XML PATH('')), 1, 1, '' )		
+				
 		
 				
 	from TasteNote tn (nolock)

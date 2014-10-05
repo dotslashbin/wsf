@@ -598,6 +598,7 @@
     </Content>
     <Content Include="Views\Reviewer\ProducersImporters.cshtml" />
     <Content Include="Views\Admin\Status.cshtml" />
+    <Content Include="Views\Issue\ViewPage1.cshtml" />
     <None Include="Web.Prod.config" />
   </ItemGroup>
   <ItemGroup>

@@ -1,5 +1,4 @@
-﻿@Model EditorsCommon.Publication.IssueComplete
-@using ErpContent.Views.Helpers;
+﻿@using ErpContent.Views.Helpers;
  
 @{
     Layout = null;
@@ -41,6 +40,7 @@
             Assignment:<div>@a.title</div>
             
             if( a.tastingEvents != null ){
+
                 
                 foreach (var t in a.tastingEvents)
                 {
@@ -86,13 +86,39 @@
                     
                     if (t.tastingNotes != null && t.tastingNotes.Count > 0)
                     {
-                        <!--
-                        <div style="text-indent: 4em; column-count: 2; -moz-column-count: 2; /* Firefox */ -webkit-column-count: 2; /* Safari and Chrome */ ">
-                        -->
+                        int cnt = 0;
+                        
                         <div>
                                 @foreach (var n in t.tastingNotes)
                                 {
-                                    string output = NotesHelper.applyFormatting(n.note);
+                                    /// 
+                                    /// 
+                                    /// 
+                                    cnt++;
+                                    
+                                    var vintagePlusWineName = n.vintage.ToUpper() + ' ' + n.wineName;
+                                    var vintagePlusWineNameBold = "<b>" + vintagePlusWineName + "</b>";
+                                    string noteText = n.note;
+                                    string drinkDate = n.DrindDateToString();
+                                    
+                                    if( !String.IsNullOrEmpty(drinkDate) ) {
+                                        noteText += " Anticipated maturity : " + drinkDate + ".";
+                                    }
+
+                                    //
+                                    // add importers only to last tasting note withing that tasting record.
+                                    //
+                                    if (!String.IsNullOrEmpty(n.importers) && cnt == t.tastingNotes.Count)
+                                    {
+                                        noteText += " Importer(s): " + n.importers + ".";
+                                    }
+                                    
+                                    //
+                                    // if vintage+label can be find within tasting note body, make it bold
+                                    // 
+                                    noteText = noteText.Replace(vintagePlusWineName, vintagePlusWineNameBold);
+
+                                    string output = NotesHelper.applyFormatting(noteText);
                                     
                                     <br />
                                     <div style="text-indent: 4em;">@Html.Raw(output)</div>

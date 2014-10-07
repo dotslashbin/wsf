@@ -208,6 +208,37 @@ namespace EditorsCommon
     }
 
 
+    public string encodeRatingForPrinting()
+    {
+        string result = "";
+        string q = String.IsNullOrEmpty(ratingQ) ? "" : ratingQ;
+
+        if (ratingLo == ratingHi)
+        {
+            if (ratingLo == 0)
+            {
+                result = "";
+            }
+            else
+            {
+
+                result = ratingLo.ToString() + q;
+            }
+        }
+        else if (ratingHi < ratingLo)
+        {
+            result = ratingLo.ToString() + q;
+        }
+        else
+        {
+            result = "(" + ratingLo.ToString() + "-" + ratingHi.ToString() + q + ")";
+        }
+
+        return result;
+    }
+
+
+
     }
 
 

@@ -800,6 +800,8 @@ order by te.ID
             note.wfState = rdr.GetFieldValue<Int16>(32);
             note.wfStateWineN = rdr.GetFieldValue<Int16>(33);
             note.wfStateVinN = rdr.GetFieldValue<Int16>(34);
+
+            note.ratingQ   = rdr.IsDBNull(37) ? "" : rdr.GetString(37);
             note.importers = rdr.IsDBNull(38) ? "" : rdr.GetString(38);
             note.importers = note.importers.Replace("---new-line---", "");
 

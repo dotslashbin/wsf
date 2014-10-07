@@ -57,27 +57,8 @@
                                 &#09;@t.NoteAppellation(n).ToUpper()
                                 &#09;(@t.NotePrice(n))      
                                 &#09;@n.color.ToUpper()
+                                &#09;@n.encodeRatingForPrinting() 
 
-                                &#09;
-                                
-                                @if(@n.isBarrelTasting == true) 
-                                {
-                                    if(@n.ratingLo > 0 && @n.ratingHi > 0)
-                                    {
-                                        @Html.Raw("(" + n.ratingLo + "-" + n.ratingHi + ")") 
-                                    } else if(@n.ratingLo > 0 && @n.ratingHi == 0) {
-                                        @Html.Raw(n.ratingLo)
-                                    }
-                                    else if (@n.ratingLo == 0 && @n.ratingHi > 0)
-                                    {
-                                        @Html.Raw("?-" + n.ratingHi)
-                                    }
-                                    
-                                } else {
-                                            
-                                    @n.rating.ToUpper()
-
-                                }
                                 </b>
                             </div>
                         }

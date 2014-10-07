@@ -104,28 +104,16 @@ namespace ErpContent.Controllers
         public ActionResult GetAssignmentsByUser(int publicationId, int state)
         {
             var id = (int)Membership.GetUser(User.Identity.Name).ProviderUserKey;
-
-            //
-            // for development, demo only, if user is in Reviewer role, use his(her id)
-            // for adminn, editor-in-chief use Antonio's id
-            //
-            //if (id != 1063560 && !Roles.IsUserInRole(EditorsCommon.Constants.roleNameEditor) && Roles.IsUserInRole(EditorsCommon.Constants.roleNameAdmin))
-            //{
-            //    id = 798881;  // Antonio 
-            //}
-
-
-
             var result = _assignmentStorage.SearchByUser(id);
 
-            if (publicationId > 0 )
+            if (publicationId > 0)
             {
                 result = from r in result where r.publicationId == publicationId select r;
             }
 
-            if ( state != EditorsCommon.WorkFlowState.STATE_GROUP_ALL)
+            if (state != EditorsCommon.WorkFlowState.STATE_GROUP_ALL)
             {
-                result = from r in result where  EditorsCommon.WorkFlowState.IsInState(r.wfState, state) select r;
+                result = from r in result where EditorsCommon.WorkFlowState.IsInState(r.wfState, state) select r;
             }
 
             result = from r in result orderby r.submitDate descending select r;
@@ -133,6 +121,78 @@ namespace ErpContent.Controllers
 
             return Json(result, JsonRequestBehavior.AllowGet);
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="publicationId"></param>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
+        [OutputCache(Duration = 0, VaryByParam = "none")]
+        public ActionResult GetAssignmentsForEditor(int publicationId, int state)
+        {
+            var id = (int)Membership.GetUser(User.Identity.Name).ProviderUserKey;
+            var result = _assignmentStorage.SearchByUser(id);
+
+            //
+            // select only assignments where user is assigned as editot
+            //
+            result = from r in result where r.editor != null && r.editor.id == id select r;
+
+
+            if (publicationId > 0)
+            {
+                result = from r in result where r.publicationId == publicationId select r;
+            }
+
+            if (state != EditorsCommon.WorkFlowState.STATE_GROUP_ALL)
+            {
+                result = from r in result where EditorsCommon.WorkFlowState.IsInState(r.wfState, state) select r;
+            }
+
+            result = from r in result orderby r.submitDate descending select r;
+
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="publicationId"></param>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
+        [OutputCache(Duration = 0, VaryByParam = "none")]
+        public ActionResult GetAssignmentsForProofreader(int publicationId, int state)
+        {
+            var id = (int)Membership.GetUser(User.Identity.Name).ProviderUserKey;
+            var result = _assignmentStorage.SearchByUser(id);
+
+            //
+            // select only assignments where user is assigned as editot
+            //
+            result = from r in result where r.proofread != null && r.proofread.id == id select r;
+
+
+            if (publicationId > 0)
+            {
+                result = from r in result where r.publicationId == publicationId select r;
+            }
+
+            if (state != EditorsCommon.WorkFlowState.STATE_GROUP_ALL)
+            {
+                result = from r in result where EditorsCommon.WorkFlowState.IsInState(r.wfState, state) select r;
+            }
+
+            result = from r in result orderby r.submitDate descending select r;
+
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
 
 
         /// <summary>

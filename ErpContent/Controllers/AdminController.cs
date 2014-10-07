@@ -65,6 +65,12 @@ namespace ErpContent.Controllers
             return View("Articles");
         }
 
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAdmin)]
+        public ActionResult Status()
+        {
+            return View("Status");
+        }
+
 
         [System.Web.Mvc.Authorize(Roles =  EditorsCommon.Constants.roleNameAdmin)]
         public ActionResult Users()

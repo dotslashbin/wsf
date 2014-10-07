@@ -113,13 +113,13 @@
                                                             <span data-bind="text: wineName().length == 0 ? '' : wineName() + ',' "></span>
                                                             <span data-bind="text: variety"></span>,
                                                             <span data-bind="text: color"></span>,
-                                                            <span data-bind="text: dryness"></span> (<span data-bind="text: rating"></span>)
+                                                            <span data-bind="text: dryness"></span> (<span data-bind="text: rating"></span><span data-bind="text: ratingQ"></span>)
                                                         </b>
                                                     </h5>
                                                 </div>
                                             </div>
                                             <div class="col-sm-3" style=" margin-bottom: 5px;cursor:pointer">
-                                                <button class="btn btn-primary btn-xs inner-window-button" data-bind="click: approveNote, visible : wfState() < 60 && wfState() > 0">Approve</button>
+                                                <button class="btn btn-primary btn-xs inner-window-button" data-bind="click: approveNote, visible : wfState() == 50">Approve</button>
                                                 <button class="btn btn-primary btn-xs inner-window-button" data-bind="click: sendBackNote, visible : wfState() != 100">Send Back To Reviewer</button>
                                                 <button class="btn btn-primary btn-xs inner-window-button" data-bind="click: editNote, visible : wfState() != 100">Edit Note</button>
                                             </div>
@@ -385,7 +385,7 @@
 
 
 
-                $.get('@Url.Content("~/Assignment/GetAssignmentsByUser")', { publicationid: id, state : self.stateGroupId() },
+                $.get('@Url.Content("~/Assignment/GetAssignmentsForEditor")', { publicationid: id, state : self.stateGroupId() },
                  function (result) {
 
                      var a = new Array();
@@ -950,13 +950,13 @@
          if( state >= '@EditorsCommon.WorkFlowState.PUBLISHED' )
             return 'black';
 
-        if (state == '@EditorsCommon.WorkFlowState.DRAFT')
+         if (state == '@EditorsCommon.WorkFlowState.DRAFT' || state == '@EditorsCommon.WorkFlowState.READY_FOR_REVIEW')
             return 'orange';
 
-        if (state == '@EditorsCommon.WorkFlowState.READY_FOR_REVIEW')
+        if (state == '@EditorsCommon.WorkFlowState.READY_FOR_PROOF_READ')
             return 'red';
-
-        if (state == '@EditorsCommon.WorkFlowState.READY_APPROVED')
+         
+         if (state == '@EditorsCommon.WorkFlowState.READY_APPROVED')
             return 'blue';
 
         return 'black';
@@ -967,10 +967,10 @@
             if( state >= '@EditorsCommon.WorkFlowState.PUBLISHED' )
                 return 'Published';
 
-            if (state == '@EditorsCommon.WorkFlowState.DRAFT')
+            if (state == '@EditorsCommon.WorkFlowState.DRAFT' || state == '@EditorsCommon.WorkFlowState.READY_FOR_REVIEW')
                 return 'Draft';
 
-            if (state == '@EditorsCommon.WorkFlowState.READY_FOR_REVIEW')
+            if (state == '@EditorsCommon.WorkFlowState.READY_FOR_PROOF_READ')
                 return 'Ready For Review/Approval ';
 
             if (state == '@EditorsCommon.WorkFlowState.READY_APPROVED')

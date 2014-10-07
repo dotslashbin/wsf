@@ -131,7 +131,7 @@
                                             <span data-bind="text: wineName().length == 0 ? '' : wineName() + ',' "></span>
                                             <span data-bind="text: variety"></span>,
                                             <span data-bind="text: color"></span>,
-                                            <span data-bind="text: dryness"></span> (<span data-bind="    text: rating"></span>)
+                                            <span data-bind="text: dryness"></span> (<span data-bind="text: rating"></span><span data-bind="text: ratingQ"></span>)
                                         </b>
                                             <span data-bind="text: coDrink()"></span>
                                             <span data-bind="text: coPrice()"></span>
@@ -152,9 +152,12 @@
                                           title="delete tasting note (if empty)"></span>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-sm-11  pull-right" style="border-bottom: solid 1px gray;">
+                            <div class="row" style="border-bottom: solid 1px gray;">
+                                <div class="col-sm-11  pull-right" >
                                     <span data-bind="html: erp.utils.Str2Html($data.note())"></span>
+                                </div>
+                                <div class="col-sm-11  pull-right">
+                                    <span data-bind="html: erp.utils.Str2Html($data.importers())"></span>
                                 </div>
                             </div>
                             <!-- /ko -->
@@ -1534,7 +1537,7 @@
          if (state == '@EditorsCommon.WorkFlowState.DRAFT')
              return 'red';
 
-         if (state == '@EditorsCommon.WorkFlowState.READY_FOR_REVIEW')
+            if (state == '@EditorsCommon.WorkFlowState.READY_FOR_REVIEW' || state == '@EditorsCommon.WorkFlowState.READY_FOR_PROOF_READ')
              return 'orange';
 
          if (state == '@EditorsCommon.WorkFlowState.READY_APPROVED')
@@ -1568,7 +1571,7 @@
             if (state == '@EditorsCommon.WorkFlowState.DRAFT')
                 return 'Draft';
 
-            if (state == '@EditorsCommon.WorkFlowState.READY_FOR_REVIEW')
+            if (state == '@EditorsCommon.WorkFlowState.READY_FOR_REVIEW' || state == '@EditorsCommon.WorkFlowState.READY_FOR_PROOF_READ')
                 return 'Ready For Review/Approval ';
 
             if (state == '@EditorsCommon.WorkFlowState.READY_APPROVED')

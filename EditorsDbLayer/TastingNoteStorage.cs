@@ -122,7 +122,26 @@ namespace EditorsDbLayer
 		Vin_N_WF_StatusID = w.Vin_N_WF_StatusID,
 		EstimatedCost,
 		EstimatedCost_Hi 
-		
+
+        ,RatingQ
+        ,Importers =  STUFF(  (select '+'+'---new-line---'+ Name 
+                     +  case
+                          when LEN( isnull(Address,'')) > 0 then (',' + Address )
+                          else ''
+                        end   
+                     +  case
+                          when LEN( isnull(Phone1,'')) > 0 then (',' + Phone1 )
+                          else ''
+                        end   
+                     +  case
+                          when LEN( isnull(URL,'')) > 0 then (',' + URL)
+                          else ''
+                        end   
+                    from WineImporter wi
+                    join WineProducer_WineImporter wpi  (nolock) on wpi.ImporterId  = wi.ID
+                    where 
+                    wpi.ProducerId = w.ProducerID
+                    FOR XML PATH('')), 1, 1, '' )		
 				
 	from TasteNote tn (nolock)
 		join Users u (nolock) on tn.UserId = u.UserId
@@ -213,7 +232,26 @@ namespace EditorsDbLayer
 		Vin_N_WF_StatusID = w.Vin_N_WF_StatusID,
 		EstimatedCost,
 		EstimatedCost_Hi 
-		
+
+        ,RatingQ
+        ,Importers =  STUFF(  (select '+'+'---new-line---'+ Name 
+                     +  case
+                          when LEN( isnull(Address,'')) > 0 then (',' + Address )
+                          else ''
+                        end   
+                     +  case
+                          when LEN( isnull(Phone1,'')) > 0 then (',' + Phone1 )
+                          else ''
+                        end   
+                     +  case
+                          when LEN( isnull(URL,'')) > 0 then (',' + URL)
+                          else ''
+                        end   
+                    from WineImporter wi
+                    join WineProducer_WineImporter wpi  (nolock) on wpi.ImporterId  = wi.ID
+                    where 
+                    wpi.ProducerId = w.ProducerID
+                    FOR XML PATH('')), 1, 1, '' )		
 				
 	from TasteNote tn (nolock)
 		join Users u (nolock) on tn.UserId = u.UserId
@@ -244,8 +282,116 @@ namespace EditorsDbLayer
         }
 
 
+
+        public IEnumerable<TastingNote> SearchTastingNoteByProducerN(int producerN)
+        {
+            List<TastingNote> result = new List<TastingNote>();
+
+
+
+            using (var con = _connFactory.GetConnection())
+            {
+                var query = new StringBuilder();
+
+                var nullDate = new DateTime(0);
+
+                using (var cmd = new SqlCommand("", con))
+                {
+                    cmd.CommandText = @"
+	select 
+		ID = tn.ID,
+		OriginID = tn.OriginID,
+		UserId = tn.UserId,
+		UserrName = u.FullName,
+		
+		Wine_N_ID = tn.Wine_N_ID,
+		Wine_ProducerID = w.ProducerID,
+		Wine_Producer = w.ProducerToShow,
+		Wine_Country  = w.Country,
+		Wine_Region   = w.Region,
+		Wine_Location = w.Location,
+		Wine_Locale   = w.Locale,
+		Wine_Site     = w.Site,
+		Wine_Label    = w.Label,
+		Wine_Vintage  = w.Vintage,
+		Wine_Name     = w.Name,
+		
+		Wine_Type     = w.Type,
+		Wine_Variety  = w.Variety,
+		Wine_Drynes   = w.Dryness,
+		Wine_Color    = w.Color,
+		
+
+		TasteDate     = tn.TasteDate, 
+		MaturityID    = tn.MaturityID, 
+		MaturityName  = wm.Name,
+		MaturitySuggestion = wm.Suggestion,
+		Rating_Lo = tn.Rating_Lo, 
+		Rating_Hi = tn.Rating_Hi, 
+		DrinkDate_Lo = tn.DrinkDate_Lo, 
+		DrinkDate_Hi = tn.DrinkDate_Hi, 
+		IsBarrelTasting = tn.IsBarrelTasting, 
+		Notes = tn.Notes, 
+
+		WF_StatusID = tn.WF_StatusID,
+		WF_StatusName = '',
+		created = tn.created, 
+		updated = tn.updated, 
+        Wine_N_WF_StatusID = w.Wine_N_WF_StatusID,
+		Vin_N_WF_StatusID = w.Vin_N_WF_StatusID,
+		EstimatedCost,
+		EstimatedCost_Hi 
+
+        ,RatingQ
+        ,Importers =  STUFF(  (select '+'+'---new-line---'+ Name 
+                     +  case
+                          when LEN( isnull(Address,'')) > 0 then (',' + Address )
+                          else ''
+                        end   
+                     +  case
+                          when LEN( isnull(Phone1,'')) > 0 then (',' + Phone1 )
+                          else ''
+                        end   
+                     +  case
+                          when LEN( isnull(URL,'')) > 0 then (',' + URL)
+                          else ''
+                        end   
+                    from WineImporter wi
+                    join WineProducer_WineImporter wpi  (nolock) on wpi.ImporterId  = wi.ID
+                    where 
+                    wpi.ProducerId = w.ProducerID
+                    FOR XML PATH('')), 1, 1, '' )		
+				
+	from TasteNote tn (nolock)
+		join Users u (nolock) on tn.UserId = u.UserId
+		join vWineDetails w on tn.Wine_N_ID = w.Wine_N_ID
+		join WineMaturity wm (nolock) on tn.MaturityID = wm.ID
+		join TastingEvent_TasteNote ttn  (nolock) on ttn.TasteNoteID = tn.ID
+
+	where w.ProducerID = @ProducerN
+	order by Wine_Vintage desc,  Wine_Label asc,  tn.ID
+
+";
+                    cmd.Parameters.AddWithValue("@ProducerN", producerN);
+
+                    using (var rdr = cmd.ExecuteReader())
+                    {
+
+                        while (rdr.Read())
+                        {
+                            TastingNote note = ReadTastingFromDb(rdr);
+
+                            result.Add(note);
+                        }
+
+                    }
+                    return result;
+                }
+            }
+        }
+
+
         /// <summary>
-        /// 08.03.2014 special case : Edit Plablished Tasting Note. System will create new record where its noteId equal noteId original note. 
         /// </summary>
         /// <param name="eventId"></param>
         /// <returns></returns>
@@ -278,20 +424,6 @@ namespace EditorsDbLayer
                             
                             note.tastingEventId = eventId;
 
-
-                            //if (dict.ContainsKey(note.noteId))
-                            //{
-                            //    // if plublished note already in the dictionary, replace it.
-                            //    // if unpubllished note already in the dictionary, do not insert published one.
-                            //    //
-                            //    //
-                            //    if (note.wfState < 100)
-                            //        dict[note.noteId] = note;
-                            //}
-                            //else
-                            //{
-                            //    dict[note.noteId] = note;
-                            //}
                             result.Add(note);
                         }
 
@@ -348,7 +480,7 @@ namespace EditorsDbLayer
                             exec @NoteId = TastingNote_Add @UserId = @UserId,@Wine_N_ID=@Wine_N_ID,@TasteDate=@TasteDate,@MaturityID=@MaturityID,
                                  @Rating_Lo=@Rating_Lo, @Rating_Hi= @Rating_Hi,@DrinkDate_Lo=@DrinkDate_Lo,@DrinkDate_Hi=@DrinkDate_Hi,
                                  @EstimatedCost=@EstimatedCost, @EstimatedCost_Hi= @EstimatedCost_Hi,
-                                 @IsBarrelTasting=@IsBarrelTasting, @Notes=@Notes, @IssueID = @IssueId;
+                                 @IsBarrelTasting=@IsBarrelTasting,@RatingQ= @RatingQ, @Notes=@Notes, @IssueID = @IssueId;
 
 
                             exec TastingEvent_TasteNote_Add @TastingEventID=@TastingEventID, @TasteNote=@NoteId;
@@ -380,6 +512,20 @@ namespace EditorsDbLayer
                         e.decodeRating();
                         cmd.Parameters.AddWithValue("@Rating_Lo", e.ratingLo);
                         cmd.Parameters.AddWithValue("@Rating_Hi", e.ratingHi);
+
+
+
+                        if (String.IsNullOrEmpty(e.ratingQ) )
+                        {
+                            cmd.Parameters.AddWithValue("@RatingQ", DBNull.Value);
+
+                        }
+                        else
+                        {
+                            cmd.Parameters.AddWithValue("@RatingQ", e.ratingQ);
+                        }
+
+
 
                         if (e.drinkDateLo.Ticks > 0)
                         {
@@ -523,7 +669,7 @@ namespace EditorsDbLayer
     exec @UpdatedId = TastingNote_Update @ID=@ID, @UserId = @UserId,@Wine_N_ID=@Wine_N_ID,@TasteDate=@TasteDate,@MaturityID=@MaturityID,
             @Rating_Lo=@Rating_Lo, @Rating_Hi= @Rating_Hi,@DrinkDate_Lo=@DrinkDate_Lo,@DrinkDate_Hi=@DrinkDate_Hi,
             @EstimatedCost=@EstimatedCost, @EstimatedCost_Hi= @EstimatedCost_Hi,
-            @IsBarrelTasting=@IsBarrelTasting, @Notes=@Notes, @IssueID = @IssueId;
+            @IsBarrelTasting=@IsBarrelTasting,@RatingQ=@RatingQ, @Notes=@Notes, @IssueID = @IssueId;
 
 
 
@@ -558,6 +704,17 @@ namespace EditorsDbLayer
                         e.decodeRating();
                         cmd.Parameters.AddWithValue("@Rating_Lo", e.ratingLo);
                         cmd.Parameters.AddWithValue("@Rating_Hi", e.ratingHi);
+
+                        if (String.IsNullOrEmpty(e.ratingQ) )
+                        {
+                            cmd.Parameters.AddWithValue("@RatingQ",  DBNull.Value );
+
+                        }
+                        else
+                        {
+                            cmd.Parameters.AddWithValue("@RatingQ",  e.ratingQ);
+                        }
+
 
                         if (e.drinkDateLo.Ticks > 0)
                         {
@@ -702,6 +859,11 @@ namespace EditorsDbLayer
             note.estimatedCost = note.estimatedCost.CompareTo("0") == 0 ? "" : note.estimatedCost;
             note.estimatedCostHi = note.estimatedCostHi.CompareTo("0") == 0 ? "" : note.estimatedCostHi;
 
+            note.ratingQ = rdr.IsDBNull(37) ? "" : rdr.GetString(37);
+            note.importers = rdr.IsDBNull(38) ? "" : rdr.GetString(38);
+
+            note.importers = note.importers.Replace("---new-line---", "\r\n");
+
 
             return note;
         }
@@ -809,8 +971,6 @@ namespace EditorsDbLayer
                          exec TastingEvent_TasteNote_Add @TastingEventID=@tastingEventId, @TasteNote=@tastingNoteId;
 
                      ";
-
-
                     cmd.Parameters.AddWithValue("@tastingNoteId", noteId);
                     cmd.Parameters.AddWithValue("@tastingEventId", eventId);
 
@@ -818,6 +978,157 @@ namespace EditorsDbLayer
 
                     return true;
 
+                }
+            }
+        }
+
+
+
+        public int GetInQueueCount()
+        {
+            using (var con = _connFactory.GetConnection())
+            {
+                var query = new StringBuilder();
+
+                using (var cmd = new SqlCommand("", con))
+                {
+                    cmd.CommandText =
+                    @" select COUNT(*) from Wine inner join TasteNote on wine.TasteNote_ID = TasteNote.ID
+                       where  wine.RV_TasteNote <> TasteNote.RV";
+
+                    using (var rdr = cmd.ExecuteReader())
+                    {
+                        if (rdr.Read())
+                        {
+                            return rdr.GetInt32(0);
+                        }
+
+                    }
+
+                    return 0;
+
+                }
+            }
+        }
+
+        public IEnumerable<TastingNote> GetInQueue()
+        {
+
+            List<TastingNote> result = new List<TastingNote>();
+
+
+            using (var con = _connFactory.GetConnection())
+            {
+                var query = new StringBuilder();
+
+                using (var cmd = new SqlCommand("", con))
+                {
+                    cmd.CommandText =
+                    @" 
+
+select  top 200
+		ID = tn.ID,
+		OriginID = tn.OriginID,
+		UserId = tn.UserId,
+		UserrName = u.FullName,
+		
+		Wine_N_ID = tn.Wine_N_ID,
+		Wine_ProducerID = w.ProducerID,
+		Wine_Producer = w.ProducerToShow,
+		Wine_Country  = w.Country,
+		Wine_Region   = w.Region,
+		Wine_Location = w.Location,
+		Wine_Locale   = w.Locale,
+		Wine_Site     = w.Site,
+		Wine_Label    = w.Label,
+		Wine_Vintage  = w.Vintage,
+		Wine_Name     = w.Name,
+		
+		Wine_Type     = w.Type,
+		Wine_Variety  = w.Variety,
+		Wine_Drynes   = w.Dryness,
+		Wine_Color    = w.Color,
+		
+
+		TasteDate     = tn.TasteDate, 
+		MaturityID    = tn.MaturityID, 
+		MaturityName  = wm.Name,
+		MaturitySuggestion = wm.Suggestion,
+		Rating_Lo = tn.Rating_Lo, 
+		Rating_Hi = tn.Rating_Hi, 
+		DrinkDate_Lo = tn.DrinkDate_Lo, 
+		DrinkDate_Hi = tn.DrinkDate_Hi, 
+		IsBarrelTasting = tn.IsBarrelTasting, 
+		Notes = tn.Notes, 
+
+		WF_StatusID = tn.WF_StatusID,
+		WF_StatusName = '',
+		created = tn.created, 
+		updated = tn.updated, 
+        Wine_N_WF_StatusID = w.Wine_N_WF_StatusID,
+		Vin_N_WF_StatusID = w.Vin_N_WF_StatusID,
+		EstimatedCost = tn.EstimatedCost,
+		EstimatedCost_Hi 
+
+        ,RatingQ
+        ,Importers =  STUFF(  (select '+'+'---new-line---'+ Name 
+                     +  case
+                          when LEN( isnull(Address,'')) > 0 then (',' + Address )
+                          else ''
+                        end   
+                     +  case
+                          when LEN( isnull(Phone1,'')) > 0 then (',' + Phone1 )
+                          else ''
+                        end   
+                     +  case
+                          when LEN( isnull(URL,'')) > 0 then (',' + URL)
+                          else ''
+                        end   
+                    from WineImporter wi
+                    join WineProducer_WineImporter wpi  (nolock) on wpi.ImporterId  = wi.ID
+                    where 
+                    wpi.ProducerId = w.ProducerID
+                    FOR XML PATH('')), 1, 1, '' )		
+				
+		
+				
+	from TasteNote tn (nolock)
+		join Users u (nolock) on tn.UserId = u.UserId
+		join vWineDetails w on tn.Wine_N_ID = w.Wine_N_ID
+		join WineMaturity wm (nolock) on tn.MaturityID = wm.ID
+		join TastingEvent_TasteNote ttn  (nolock) on ttn.TasteNoteID = tn.ID
+	where  tn.WF_StatusID = 100
+    and tn.ID in (select TasteNote.ID from Wine inner join TasteNote on wine.TasteNote_ID = TasteNote.ID
+                  where  wine.RV_TasteNote <> TasteNote.RV)
+	order by TasteDate desc, UserName, tn.ID
+";
+
+                    using (var rdr = cmd.ExecuteReader())
+                    {
+                        while (rdr.Read())
+                        {
+                            TastingNote note = ReadTastingFromDb(rdr);
+                            result.Add(note);
+                        }
+
+                    }
+
+                    return result;
+                }
+            }
+        }
+
+
+        public void PublishFromQueue()
+        {
+            using (var con = _connFactory.GetConnection())
+            {
+                var query = new StringBuilder();
+
+                using (var cmd = new SqlCommand("", con))
+                {
+                    cmd.CommandText = @"exec [srv].[Wine_Reload]  @IsFullReload = 0";
+                    cmd.ExecuteNonQuery();
                 }
             }
         }

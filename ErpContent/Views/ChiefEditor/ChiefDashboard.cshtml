@@ -219,11 +219,12 @@
             <div class="col-sm-2 pull-right">
                 <div class="row">
                     <div class="col-sm-12">
-                        <!--
-                        <a data-toggle="modal" href="#" class="btn btn-xs" data-bind="click: $data.edit, visible: $data.assignment.wfState() != 100"><span class='glyphicon glyphicon-pencil' title="Start editing"></span>&nbsp;Edit Assignment</a>
-                        --> 
-                        <a data-toggle="modal" href="#" class="btn btn-xs" data-bind="click: $data.edit"><span class='glyphicon glyphicon-pencil' title="Start editing"></span>&nbsp;Edit Assignment</a>
+                        <a href="#" class="btn btn-xs" data-bind="click: $data.edit"><span class='glyphicon glyphicon-pencil' title="Start editing"></span>&nbsp;Edit Assignment</a>
                     </div>
+                    <div class="col-sm-12">
+                        <a href="#" class="btn btn-xs" data-bind="click: exportAssignment"><span class='glyphicon glyphicon-list-alt' title="Export to Doc"></span>&nbsp;Export to Doc</a>
+                    </div>
+
                 </div>
                 <!-- commented by Sergey 05.07.2014
                 <a style="display: none;" id="add-new-article-link" data-toggle="modal" href="#" class="btn btn-xs" data-bind="click: addArticle"><span class='glyphicon glyphicon-pencil' title="Add new article"></span>&nbsp;Add Article</a>
@@ -263,7 +264,7 @@
                                     <span data-bind="text: wineName.length == 0 ? '' : wineName + ',' "></span>
                                     <span data-bind="text: variety"></span>,
                                     <span data-bind="text: color"></span>,
-                                    <span data-bind="text: dryness"></span> (<span data-bind="text: rating"></span>)
+                                    <span data-bind="text: dryness"></span> (<span data-bind="text: rating"></span><span data-bind="text: ratingQ"></span>)
                                 </b>
                             </h5>
                         </div>
@@ -631,16 +632,12 @@
                 erp.utils.ajaxDownload('@Url.Content("~/Issue/Export")',{id : self.id()});
 
             };
-            // *******************
-            // ******************* Add New Assignment *****************************
-            // *******************
+
+
+
             self.OpenDialogNewAssgnmt = function () {
 
-                // 1. request template from server
-                // 2. open dialog (supply model and callback model
-                // 3. send/save new assignment
-                //
-                //
+
                 $.ajax({
                     type: 'POST',
                     url: '@Url.Content("~/Assignment/GetNewAssignment")',
@@ -768,6 +765,7 @@
 
                 return false; 
             }
+
 
 
             self.edit = function () {
@@ -964,6 +962,12 @@
             }
 
 
+            self.exportAssignment = function () {
+
+                erp.utils.ajaxDownload('@Url.Content("~/Issue/ExportAssignment")', { issueId: self.issue.id(), assignmentId: self.assignment.id });
+
+            }
+
 
             self.edit = function () {
 
@@ -1113,6 +1117,9 @@
             self.fromObject(src);
 
 
+
+
+
             self.goToAssignmentDetails = function (issue) {
 
                 // TODO: Figure out where it is best to implemement this <-- joshua
@@ -1173,8 +1180,8 @@
                 }
             }
 
-            self.edit = function () {
 
+            self.edit = function () {
 
 
                 var m = new AssignmentModel(self.toObject());
@@ -1260,6 +1267,12 @@
 
                 d.dialog("option", "title", "Edit Assignment");
             }
+
+
+
+
+
+
         }
 
         function PublicationModel(src) {

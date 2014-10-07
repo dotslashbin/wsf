@@ -64,6 +64,19 @@ namespace EditorsCommon
     public int wfStateWineN;
     public int wfStateVinN;
 
+    public string ratingQ; 
+    public string importers;
+
+
+    public string DrindDateToString()
+    {
+        if (drinkDateLo.Year > 1 && drinkDateHi.Year > 1)
+            return drinkDateLo.Year.ToString() + "-" + drinkDateHi.Year.ToString();
+
+        return "";
+    }
+
+
         /// <summary>
         /// 
         /// </summary>
@@ -90,6 +103,9 @@ namespace EditorsCommon
 
         return 5;
     }
+
+
+
 
         /// <summary>
         /// 
@@ -192,6 +208,37 @@ namespace EditorsCommon
     }
 
 
+    public string encodeRatingForPrinting()
+    {
+        string result = "";
+        string q = String.IsNullOrEmpty(ratingQ) ? "" : ratingQ;
+
+        if (ratingLo == ratingHi)
+        {
+            if (ratingLo == 0)
+            {
+                result = "";
+            }
+            else
+            {
+
+                result = ratingLo.ToString() + q;
+            }
+        }
+        else if (ratingHi < ratingLo)
+        {
+            result = ratingLo.ToString() + q;
+        }
+        else
+        {
+            result = "(" + ratingLo.ToString() + "-" + ratingHi.ToString() + q + ")";
+        }
+
+        return result;
+    }
+
+
+
     }
 
 
@@ -240,9 +287,33 @@ namespace EditorsCommon
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="producerN"></param>
+        /// <returns></returns>
+        IEnumerable<TastingNote> SearchTastingNoteByProducerN(int producerN);
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="eventId"></param>
         /// <param name="noteId"></param>
         /// <returns></returns>
         bool MoveTastingNote(int eventId, int noteId);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        int GetInQueueCount();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        IEnumerable<TastingNote> GetInQueue();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        void PublishFromQueue();
     }
 }

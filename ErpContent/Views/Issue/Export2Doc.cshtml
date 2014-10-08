@@ -68,55 +68,46 @@
                     if (t.tastingNotes != null && t.tastingNotes.Count > 0)
                     {
                         int cnt = 0;
-                        
-                        <div>
-                                @foreach (var n in t.tastingNotes)
-                                {
-                                    /// 
-                                    /// 
-                                    /// 
-                                    cnt++;
-                                    
-                                    var vintagePlusWineName = n.vintage.ToUpper() + ' ' + n.wineName;
-                                    var vintagePlusWineNameBold = "<b>" + vintagePlusWineName + "</b>";
-                                    string noteText = n.note;
-                                    string drinkDate = n.DrindDateToString();
-                                    
-                                    if( !String.IsNullOrEmpty(drinkDate) ) {
-                                        noteText += " Anticipated maturity : " + drinkDate + ".";
-                                    }
+                        if(  !String.IsNullOrEmpty( t.comments )){
+                            string notes = NotesHelper.applyFormatting(t.comments);
 
-                                    //
-                                    // add importers only to last tasting note withing that tasting record.
-                                    //
-                                    if (!String.IsNullOrEmpty(n.importers) && cnt == t.tastingNotes.Count)
-                                    {
-                                        noteText += " Importer(s): " + n.importers + ".";
-                                    }
-                                    
-                                    //
-                                    // if vintage+label can be find within tasting note body, make it bold
-                                    // 
-                                    noteText = noteText.Replace(vintagePlusWineName, vintagePlusWineNameBold);
+                            <div  style="text-indent: 4em;">@Html.Raw(notes)</div>                        
+                        }
 
-                                    string output = NotesHelper.applyFormatting(noteText);
-                                    
-                                    <br />
-                                    <div style="text-indent: 4em;">@Html.Raw(output)</div>
-                                    <br />
-                                }
-                            
-                                @if(  !String.IsNullOrEmpty( t.comments )){
-                                    <br />
-                                    <div>Comments:</div>
-                                    <br />
-                                    string notes = NotesHelper.applyFormatting(t.comments);
 
-                                    @Html.Raw(notes)
-                                    <br />
-                                    <br />
-                                }
-                        </div>
+                        foreach (var n in t.tastingNotes)
+                        {
+                            /// 
+                            /// 
+                            /// 
+                            cnt++;
+                                    
+                            var vintagePlusWineName = n.vintage.ToUpper() + ' ' + n.wineName;
+                            var vintagePlusWineNameBold = "<b>" + vintagePlusWineName + "</b>";
+                            string noteText = n.note;
+                            string drinkDate = n.DrindDateToString();
+                                    
+                            if( !String.IsNullOrEmpty(drinkDate) ) {
+                                noteText += " Anticipated maturity: " + drinkDate + ".";
+                            }
+                                    
+                            //
+                            // if vintage+label can be find within tasting note body, make it bold
+                            // 
+                            noteText = noteText.Replace(vintagePlusWineName, vintagePlusWineNameBold);
+
+                                    
+                            string output = NotesHelper.applyFormatting(noteText);
+                            //
+                            // add importers only to last tasting note withing that tasting record.
+                            //
+                            if (!String.IsNullOrEmpty(n.importers) && cnt == t.tastingNotes.Count)
+                            {
+                                output += " Importer(s): " + n.importers + ".";
+                            }
+                                    
+                            <div style="text-indent: 4em;">@Html.Raw(output)</div>
+                        }
                     }
                 }
             }

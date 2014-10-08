@@ -19,74 +19,74 @@ namespace ErpContent.Views.Helpers
         static NotesHelper()
         {
 
-            //_wordsToItalize = new List<String>();
-
-            //_wordsToItalize.Add("élevage");
-            //_wordsToItalize.Add("demi-muid");   
-            //_wordsToItalize.Add("bouquet garni");
-            //_wordsToItalize.Add("négociant");
-            //_wordsToItalize.Add("lieu-dit");
-            //_wordsToItalize.Add("vin de pays");
-            //_wordsToItalize.Add("mélange");
-            //_wordsToItalize.Add("cepage");
-            //_wordsToItalize.Add("batonnage");
-            //_wordsToItalize.Add("sur lie");
-            //_wordsToItalize.Add("garrigue");
-            //_wordsToItalize.Add("tour de force");
-            //_wordsToItalize.Add("vigneron");
-            //_wordsToItalize.Add("creme de cassis");
-            //_wordsToItalize.Add("sur-maturité");
-            //_wordsToItalize.Add("patisserie");
-            //_wordsToItalize.Add("pain grillé");
-            //_wordsToItalize.Add("terroir");
-            //_wordsToItalize.Add("vigneron");
-            //_wordsToItalize.Add("cru");
-            //_wordsToItalize.Add("crus");
-            //_wordsToItalize.Add("vignoble");
-            //_wordsToItalize.Add("bodega");
-            //_wordsToItalize.Add("trockenheit");
-            //_wordsToItalize.Add("feinherb");
-            //_wordsToItalize.Add("mirabelle");
-            //_wordsToItalize.Add("cantus firmus");
-            //_wordsToItalize.Add("oechsle");
-            //_wordsToItalize.Add("trocken");
-            //_wordsToItalize.Add("halbtrocken");
-            //_wordsToItalize.Add("spaetlese");
-            //_wordsToItalize.Add("auslese");
-            //_wordsToItalize.Add("griotte");
-            //_wordsToItalize.Add("clos");
-            //_wordsToItalize.Add("pigeage");
-            //_wordsToItalize.Add("monopole");
-            //_wordsToItalize.Add("tonneliers");
-            //_wordsToItalize.Add("tirage");
-            //_wordsToItalize.Add("veraison");
-            //_wordsToItalize.Add("inter-alia");
-            //_wordsToItalize.Add("oidium");
-            //_wordsToItalize.Add("millerandage");
-            //_wordsToItalize.Add("rancio");
-            //_wordsToItalize.Add("solero");
-            //_wordsToItalize.Add("herbs de provence");
-            //_wordsToItalize.Add("saignée");
-            //_wordsToItalize.Add("négoçe");
-            //_wordsToItalize.Add("lutte raisonée");
-            //_wordsToItalize.Add("en route");
-            //_wordsToItalize.Add("jus");
-            //_wordsToItalize.Add("couloure");
-            //_wordsToItalize.Add("vendage");
-
-            String[] container;
-            string csvFromConfig; 
-
-
             // Italization
-            csvFromConfig = ConfigurationManager.AppSettings["ItalizedWords"];
-            container = csvFromConfig.Split(',');
-            _wordsToItalize = new List<string>(container); 
+            _wordsToItalize = new List<String>();
+            _wordsToItalize.Add("élevage");
+            _wordsToItalize.Add("demi-muid");
+            _wordsToItalize.Add("bouquet garni");
+            _wordsToItalize.Add("négociant");
+            _wordsToItalize.Add("lieu-dit");
+            _wordsToItalize.Add("vin de pays");
+            _wordsToItalize.Add("mélange");
+            _wordsToItalize.Add("cepage");
+            _wordsToItalize.Add("batonnage");
+            _wordsToItalize.Add("sur lie");
+            _wordsToItalize.Add("garrigue");
+            _wordsToItalize.Add("tour de force");
+            _wordsToItalize.Add("vigneron");
+            _wordsToItalize.Add("creme de cassis");
+            _wordsToItalize.Add("sur-maturité");
+            _wordsToItalize.Add("patisserie");
+            _wordsToItalize.Add("pain grillé");
+            _wordsToItalize.Add("terroir");
+            _wordsToItalize.Add("vigneron");
+            _wordsToItalize.Add("cru");
+            _wordsToItalize.Add("crus");
+            _wordsToItalize.Add("vignoble");
+            _wordsToItalize.Add("bodega");
+            _wordsToItalize.Add("trockenheit");
+            _wordsToItalize.Add("feinherb");
+            _wordsToItalize.Add("mirabelle");
+            _wordsToItalize.Add("cantus firmus");
+            _wordsToItalize.Add("oechsle");
+            _wordsToItalize.Add("trocken");
+            _wordsToItalize.Add("halbtrocken");
+            _wordsToItalize.Add("spaetlese");
+            _wordsToItalize.Add("auslese");
+            _wordsToItalize.Add("griotte");
+            _wordsToItalize.Add("clos");
+            _wordsToItalize.Add("pigeage");
+            _wordsToItalize.Add("monopole");
+            _wordsToItalize.Add("tonneliers");
+            _wordsToItalize.Add("tirage");
+            _wordsToItalize.Add("veraison");
+            _wordsToItalize.Add("inter-alia");
+            _wordsToItalize.Add("oidium");
+            _wordsToItalize.Add("millerandage");
+            _wordsToItalize.Add("rancio");
+            _wordsToItalize.Add("solero");
+            _wordsToItalize.Add("herbs de provence");
+            _wordsToItalize.Add("saignée");
+            _wordsToItalize.Add("négoçe");
+            _wordsToItalize.Add("lutte raisonée");
+            _wordsToItalize.Add("en route");
+            _wordsToItalize.Add("jus");
+            _wordsToItalize.Add("couloure");
+            _wordsToItalize.Add("vendage");
 
             // Capitalization
-            csvFromConfig = ConfigurationManager.AppSettings["CapitalizedWords"];
-            container = csvFromConfig.Split(',');
-            _wordsToCapitalize = new List<string>(container);
+            _wordsToCapitalize = new List<string>();
+            _wordsToCapitalize.Add("provence");
+            _wordsToCapitalize.Add("provencal");
+            _wordsToCapitalize.Add("granny smith");
+            _wordsToCapitalize.Add("golden delicious");
+            _wordsToCapitalize.Add("chinese five spice");
+            _wordsToCapitalize.Add("morello");
+            _wordsToCapitalize.Add("grand cru");
+            _wordsToCapitalize.Add("Pradikatswein");
+            _wordsToCapitalize.Add("Kabinett");
+            _wordsToCapitalize.Add("Bing cherries"); 
+
         }
 
         /**

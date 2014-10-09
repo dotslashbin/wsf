@@ -9,31 +9,78 @@ namespace ErpContent.Views.Helpers
 {
     public class NotesHelper
     {
+        static string[] itilizedWords = {
+        "élevage",
+        "demi-muid", 
+        "bouquet garni",
+        "négociant",
+        "lieu-dit",
+        "lieux-dits",
+        "vin de pays",
+        "mélange",
+        "cépage",
+        "bâtonnage",
+        "sur lie",
+        "garrigue",
+        "tour de force",
+        "crème de cassis",
+        "sur-maturité",
+        "pâtisserie",
+        "pain grillé",
+        "terroir",
+        "vigneron",
+        "cru",
+        "crus",
+        "vignoble",
+        "bodega",
+        "trockenheit",
+        "feinherb",
+        "mirabelle",
+        "cantus firmus",
+        "Oechsle",
+        "trocken", 
+        "halbtrocken",
+        "spatlese",
+        "auslese",
+        "griotte",
+        "clos",
+        "pigeage", 
+        "monopole",
+        "tonneliers",
+        "tirage",
+        "veraison",
+        "inter-alia",
+        "oidium",
+        "millerandage",
+        "rancio",
+        "solera",
+        "herbes de Provence",
+        "saignée",
+        "négoçe", 
+        "lutte raisonée",
+        "en route",
+        "jus",
+        "coulure",
+        "vendage",
+        "méthode Champenoise",
+        "premier cru",
+        "village cru",
+        "grand cru",
+        "domaine"
+        };
 
-        static List<String> _wordsToItalize; 
+
+
+        static List<String> _wordsToItalize;
 
         static NotesHelper()
         {
-
             _wordsToItalize = new List<String>();
 
-            _wordsToItalize.Add("élevage");
-            _wordsToItalize.Add("demi-muid");   
-            _wordsToItalize.Add("bouquet garni");
-            _wordsToItalize.Add("négociant");
-            _wordsToItalize.Add("lieu-dit");
-            _wordsToItalize.Add("vin de pays");
-            _wordsToItalize.Add("mélange");
-            _wordsToItalize.Add("cepage");
-            _wordsToItalize.Add("batonnage");
-            _wordsToItalize.Add("sur lie");
-            _wordsToItalize.Add("garrigue");
-            _wordsToItalize.Add("tour de force");
-            _wordsToItalize.Add("vigneron");
-            _wordsToItalize.Add("creme de cassis");
-            _wordsToItalize.Add("sur-maturité");
-            _wordsToItalize.Add("patisserie");
-            _wordsToItalize.Add("pain grillé");
+            foreach (var v in itilizedWords)
+            {
+                _wordsToItalize.Add(v);
+            }
         }
 
         /**
@@ -56,7 +103,7 @@ namespace ErpContent.Views.Helpers
 
             string evaluatedForIndention = HttpUtility.HtmlDecode(evaluateParagraphIndention(evaluatedForItalics));
 
-            string formattedNotes = evaluatedForIndention; 
+            string formattedNotes = evaluatedForIndention;
 
             return formattedNotes;
         }
@@ -77,7 +124,7 @@ namespace ErpContent.Views.Helpers
             string replaceDotWithSpace = ". ";
             string evaluatedString = Regex.Replace(input, @"\.(?! |$)", replaceDotWithSpace);
 
-            return evaluatedString; 
+            return evaluatedString;
         }
 
         /**
@@ -94,7 +141,7 @@ namespace ErpContent.Views.Helpers
         {
             string withSpacesRemoved = Regex.Replace(input, "^( )*", "");
 
-            return withSpacesRemoved; 
+            return withSpacesRemoved;
         }
 
         /**
@@ -109,15 +156,15 @@ namespace ErpContent.Views.Helpers
          */
         private static string evaluateItalics(string input)
         {
-            
+
             foreach (String wordToLookFor in _wordsToItalize)
             {
                 string replacement = "<i>" + wordToLookFor + "</i>";
 
-                input = Regex.Replace(input, wordToLookFor, replacement); 
+                input = Regex.Replace(input, wordToLookFor, replacement);
             }
 
-            return input; 
+            return input;
         }
     }
 }

@@ -31,6 +31,7 @@
 
         self.wineTypeLookup = [
             { id: 0	, name: '' },
+            { id: 9, name: 'Table' },
             { id: 1	, name: 'Dessert' },
             { id: 2	, name: 'Fortified' },
             { id: 3	, name: 'Madeira' },
@@ -38,8 +39,7 @@
             { id: 5	, name: 'Sake' },
             { id: 6	, name: 'Sherry' },
             { id: 7	, name: 'Sparkling' },
-            { id: 8	, name: 'Sweet' },
-            { id: 9, name: 'Table' }
+            { id: 8	, name: 'Sweet' }
         ];
 
         self.ratingQLookup = [

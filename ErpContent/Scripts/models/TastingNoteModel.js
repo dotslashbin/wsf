@@ -29,6 +29,18 @@
             { id: 4, name: 'Old'}
         ];
 
+        self.wineTypeLookup = [
+            { id: 0	, name: '' },
+            { id: 1	, name: 'Dessert' },
+            { id: 2	, name: 'Fortified' },
+            { id: 3	, name: 'Madeira' },
+            { id: 4	, name: 'Port' },
+            { id: 5	, name: 'Sake' },
+            { id: 6	, name: 'Sherry' },
+            { id: 7	, name: 'Sparkling' },
+            { id: 8	, name: 'Sweet' },
+            { id: 9, name: 'Table' }
+        ];
 
         self.ratingQLookup = [
             { id: 0, name: '' },
@@ -121,6 +133,10 @@
             self.color(vin.colorClass());
             self.dryness(vin.dryness());
 
+            self.wineType(vin.wineType());
+
+
+            
         }
 
 

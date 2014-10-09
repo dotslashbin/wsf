@@ -47,7 +47,9 @@ namespace EditorsCommon
 
 
     public String wineType;
+
     public int maturityId = 5;
+
     public short ratingLo;
     public short ratingHi;
 

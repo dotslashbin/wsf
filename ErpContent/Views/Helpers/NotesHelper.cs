@@ -73,6 +73,12 @@ namespace ErpContent.Views.Helpers
             _wordsToItalize.Add("jus");
             _wordsToItalize.Add("couloure");
             _wordsToItalize.Add("vendage");
+            _wordsToItalize.Add("méthode Champenoise"); 
+            _wordsToItalize.Add("premier cru"); 
+            _wordsToItalize.Add("village cru"); 
+            _wordsToItalize.Add("grand cru");
+            _wordsToItalize.Add("domaine"); 
+
 
             // Capitalization
             _wordsToCapitalize = new List<string>();

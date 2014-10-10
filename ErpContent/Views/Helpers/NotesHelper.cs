@@ -4,83 +4,95 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Net;
+using System.Configuration;
 
 namespace ErpContent.Views.Helpers
 {
     public class NotesHelper
     {
-        static string[] itilizedWords = {
-        "élevage",
-        "demi-muid", 
-        "bouquet garni",
-        "négociant",
-        "lieu-dit",
-        "lieux-dits",
-        "vin de pays",
-        "mélange",
-        "cépage",
-        "bâtonnage",
-        "sur lie",
-        "garrigue",
-        "tour de force",
-        "crème de cassis",
-        "sur-maturité",
-        "pâtisserie",
-        "pain grillé",
-        "terroir",
-        "vigneron",
-        "cru",
-        "crus",
-        "vignoble",
-        "bodega",
-        "trockenheit",
-        "feinherb",
-        "mirabelle",
-        "cantus firmus",
-        "Oechsle",
-        "trocken", 
-        "halbtrocken",
-        "spatlese",
-        "auslese",
-        "griotte",
-        "clos",
-        "pigeage", 
-        "monopole",
-        "tonneliers",
-        "tirage",
-        "veraison",
-        "inter-alia",
-        "oidium",
-        "millerandage",
-        "rancio",
-        "solera",
-        "herbes de Provence",
-        "saignée",
-        "négoçe", 
-        "lutte raisonée",
-        "en route",
-        "jus",
-        "coulure",
-        "vendage",
-        "méthode Champenoise",
-        "premier cru",
-        "village cru",
-        "grand cru",
-        "domaine"
-        };
-
-
 
         static List<String> _wordsToItalize;
+        static List<String> _wordsToHypenate;
+        static List<String> _wordsToCapitalize; 
+        static List<String> _wordsToRepalceWithSomething; 
 
         static NotesHelper()
         {
-            _wordsToItalize = new List<String>();
 
-            foreach (var v in itilizedWords)
-            {
-                _wordsToItalize.Add(v);
-            }
+            // Italization
+            _wordsToItalize = new List<String>();
+            _wordsToItalize.Add("élevage");
+            _wordsToItalize.Add("demi-muid");
+            _wordsToItalize.Add("bouquet garni");
+            _wordsToItalize.Add("négociant");
+            _wordsToItalize.Add("lieu-dit");
+            _wordsToItalize.Add("vin de pays");
+            _wordsToItalize.Add("mélange");
+            _wordsToItalize.Add("cepage");
+            _wordsToItalize.Add("batonnage");
+            _wordsToItalize.Add("sur lie");
+            _wordsToItalize.Add("garrigue");
+            _wordsToItalize.Add("tour de force");
+            _wordsToItalize.Add("vigneron");
+            _wordsToItalize.Add("creme de cassis");
+            _wordsToItalize.Add("sur-maturité");
+            _wordsToItalize.Add("patisserie");
+            _wordsToItalize.Add("pain grillé");
+            _wordsToItalize.Add("terroir");
+            _wordsToItalize.Add("vigneron");
+            _wordsToItalize.Add("cru");
+            _wordsToItalize.Add("crus");
+            _wordsToItalize.Add("vignoble");
+            _wordsToItalize.Add("bodega");
+            _wordsToItalize.Add("trockenheit");
+            _wordsToItalize.Add("feinherb");
+            _wordsToItalize.Add("mirabelle");
+            _wordsToItalize.Add("cantus firmus");
+            _wordsToItalize.Add("oechsle");
+            _wordsToItalize.Add("trocken");
+            _wordsToItalize.Add("halbtrocken");
+            _wordsToItalize.Add("spaetlese");
+            _wordsToItalize.Add("auslese");
+            _wordsToItalize.Add("griotte");
+            _wordsToItalize.Add("clos");
+            _wordsToItalize.Add("pigeage");
+            _wordsToItalize.Add("monopole");
+            _wordsToItalize.Add("tonneliers");
+            _wordsToItalize.Add("tirage");
+            _wordsToItalize.Add("veraison");
+            _wordsToItalize.Add("inter-alia");
+            _wordsToItalize.Add("oidium");
+            _wordsToItalize.Add("millerandage");
+            _wordsToItalize.Add("rancio");
+            _wordsToItalize.Add("solero");
+            _wordsToItalize.Add("herbs de provence");
+            _wordsToItalize.Add("saignée");
+            _wordsToItalize.Add("négoçe");
+            _wordsToItalize.Add("lutte raisonée");
+            _wordsToItalize.Add("en route");
+            _wordsToItalize.Add("jus");
+            _wordsToItalize.Add("couloure");
+            _wordsToItalize.Add("vendage");
+            _wordsToItalize.Add("méthode Champenoise"); 
+            _wordsToItalize.Add("premier cru"); 
+            _wordsToItalize.Add("village cru"); 
+            _wordsToItalize.Add("grand cru");
+            _wordsToItalize.Add("domaine"); 
+
+
+            // Capitalization
+            _wordsToCapitalize = new List<string>();
+            _wordsToCapitalize.Add("provence");
+            _wordsToCapitalize.Add("provencal");
+            _wordsToCapitalize.Add("granny smith");
+            _wordsToCapitalize.Add("golden delicious");
+            _wordsToCapitalize.Add("chinese five spice");
+            _wordsToCapitalize.Add("morello");
+            _wordsToCapitalize.Add("grand cru");
+            _wordsToCapitalize.Add("Pradikatswein");
+            _wordsToCapitalize.Add("Kabinett");
+            _wordsToCapitalize.Add("Bing cherries"); 
+
         }
 
         /**
@@ -99,13 +111,52 @@ namespace ErpContent.Views.Helpers
         {
             string evaluatedFroDotsAndSpaces = evaluateForDotAndSpaces(notes); // Call to check for space after each period
 
-            string evaluatedForItalics = evaluateItalics(evaluatedFroDotsAndSpaces);
+            string evaluatedForItalics = evaluateForItalics(evaluatedFroDotsAndSpaces);
 
-            string evaluatedForIndention = HttpUtility.HtmlDecode(evaluateParagraphIndention(evaluatedForItalics));
+            string evaluatedFoCapitalizatoin = evaluateForCapitalization(evaluatedForItalics);
 
-            string formattedNotes = evaluatedForIndention;
+            string evaluatedForIndention = HttpUtility.HtmlDecode(evaluateForParagraphIndention(evaluatedFoCapitalizatoin));
+
+            string formattedNotes = evaluatedForIndention; 
 
             return formattedNotes;
+        }
+
+        /**
+         * A method to capitalize the first letter of a given word or set of words
+         * 
+         * @paramr          String      input
+         * 
+         * @return          String      
+         * 
+         * @author          Joshua Fuentes <joshua.fuentes@robertparker.com> 
+         */ 
+        private static string capitalizeFirstLetter(string input)
+        {
+            if (String.IsNullOrEmpty(input))
+                return input;
+            if (input.Length == 1)
+                return input.ToUpper();
+            return input.Remove(1).ToUpper() + input.Substring(1);
+        }
+
+        /**
+         * This method is responsible for capitalizing the keywords provided. 
+         * 
+         * @param       String      input
+         * 
+         * @return      String      evaluatedString
+         */
+        private static string evaluateForCapitalization(string input)
+        {
+            foreach (String wordToLookFor in _wordsToCapitalize)
+            {
+                string replacement = capitalizeFirstLetter(wordToLookFor); 
+
+                input = Regex.Replace(input, wordToLookFor, replacement, RegexOptions.IgnoreCase);
+            }
+
+            return input; 
         }
 
         /**
@@ -124,24 +175,21 @@ namespace ErpContent.Views.Helpers
             string replaceDotWithSpace = ". ";
             string evaluatedString = Regex.Replace(input, @"\.(?! |$)", replaceDotWithSpace);
 
-            return evaluatedString;
+            return evaluatedString; 
         }
 
         /**
-         * This method is aimed to automatically apply indention at the start of the paragraph. 
-         * The indention is set to 3 spaces. 
+         * This method will replace matching words with their hypenated values
          * 
          * @param       String      input
          * 
-         * @return      String      evaluatedString      This represent the string that has been modified based on set of writing rules
+         * @return      String      evaluatedString
          * 
-         * @author      Joshua Fuentes      <joshua.fuentes@robertparker.com>
+         * @author      Joshua Fuente  <joshua.fuentes@robertparker.com>
          */
-        private static string evaluateParagraphIndention(string input)
+        private static string evaluateForHypens(String input)
         {
-            string withSpacesRemoved = Regex.Replace(input, "^( )*", "");
-
-            return withSpacesRemoved;
+            return ""; 
         }
 
         /**
@@ -154,17 +202,34 @@ namespace ErpContent.Views.Helpers
          * 
          * @author      Joshua Fuentes  <joshua.fuentes@robertpaker.com>
          */
-        private static string evaluateItalics(string input)
+        private static string evaluateForItalics(string input)
         {
-
+            
             foreach (String wordToLookFor in _wordsToItalize)
             {
                 string replacement = "<i>" + wordToLookFor + "</i>";
 
-                input = Regex.Replace(input, wordToLookFor, replacement);
+                input = Regex.Replace(input, wordToLookFor, replacement, RegexOptions.IgnoreCase); 
             }
 
-            return input;
+            return input; 
+        }
+
+        /**
+        * This method is aimed to automatically apply indention at the start of the paragraph. 
+        * The indention is set to 3 spaces. 
+        * 
+        * @param       String      input
+        * 
+        * @return      String      evaluatedString      This represent the string that has been modified based on set of writing rules
+        * 
+        * @author      Joshua Fuentes      <joshua.fuentes@robertparker.com>
+        */
+        private static string evaluateForParagraphIndention(string input)
+        {
+            string withSpacesRemoved = Regex.Replace(input, "^( )*", "");
+
+            return withSpacesRemoved;
         }
     }
 }

@@ -90,8 +90,8 @@ namespace ErpContent.Views.Helpers
             _wordsToCapitalize.Add("morello");
             _wordsToCapitalize.Add("grand cru");
             _wordsToCapitalize.Add("Pradikatswein");
-            _wordsToCapitalize.Add("Kabinett");
-            _wordsToCapitalize.Add("Bing cherries"); 
+            _wordsToCapitalize.Add("kabinett");
+            _wordsToCapitalize.Add("bing cherries"); 
 
         }
 

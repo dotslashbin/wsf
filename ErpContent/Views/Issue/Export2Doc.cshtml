@@ -82,8 +82,6 @@
                             /// 
                             cnt++;
                                     
-                            var vintagePlusWineName = "";
-                            var vintagePlusWineNameBold = "";
 
                             
                             string noteText = n.note;
@@ -98,9 +96,18 @@
                             // 
                             if (!String.IsNullOrEmpty(n.wineName))
                             {
-                                vintagePlusWineName = n.vintage.ToUpper() + ' ' + n.wineName;
-                                vintagePlusWineNameBold = "<b>" + vintagePlusWineName + "</b>";
-                                noteText = noteText.Replace(vintagePlusWineName, vintagePlusWineNameBold);
+                                var vintagePlusWineName = n.vintage.ToUpper() + ' ' + n.wineName;
+                                noteText = noteText.Replace(vintagePlusWineName, "<b>" + vintagePlusWineName + "</b>");
+
+                                //
+                                // in case if name has been accented in the note
+                                //
+                                string vintagePlusWineNameAccent = NotesHelper.ReplaceToAccent(vintagePlusWineName);
+                                if (vintagePlusWineNameAccent.CompareTo(vintagePlusWineName) != 0)
+                                {
+                                    noteText = noteText.Replace(vintagePlusWineNameAccent, "<b>" + vintagePlusWineNameAccent + "</b>");
+                                }
+                                
                             }
 
 

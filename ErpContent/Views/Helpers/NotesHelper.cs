@@ -8,6 +8,8 @@ using System.Configuration;
 
 namespace ErpContent.Views.Helpers
 {
+
+
     public class NotesHelper
     {
 
@@ -16,8 +18,101 @@ namespace ErpContent.Views.Helpers
         static List<String> _wordsToCapitalize; 
         static List<String> _wordsToRepalceWithSomething; 
 
+        static string[] pairs = {
+                "cuvee"         ,"cuvée" ,
+                "Rhone"         ,"Rhône" ,
+                "Rhones"        ,"Rhônes",
+                "Cote"          ,"Côte" ,
+                "Cotes"         ,"Côtes" ,
+                "Chateau"       ,"Château" ,
+                "Chateauneuf"   ,"Châteauneuf",
+                "Provencal"     ,"Provençal",
+                "Rotie"         ,"Rôtie",
+                "Romanee",      "Romanée",
+                "Echezeaux",    "Échezeaux",
+                "Rose",         "Rosé",
+                "Batard",       "Bâtard",
+                "Bearn",        "Béarn",
+                "superieur",    "supérieur",
+                "Chenas",       "Chénas",
+                "Costieres",    "Costières",
+                "Cremant",      "Crémant",
+                "Tache",        "Tâche",
+                "Macon",        "Mâcon",
+                "Medoc",        "Médoc",
+                "Pessac-Leognan","Pessac-Léognan",
+                "Fuisse"        ,"Fuissé",
+                "Fume"          ,"Fumé",
+                "Savennieres"   ,"Savennières",
+                "Vire-Clesse"   ,"Viré-Clessé",
+            };
+
+        static Dictionary<string, string> accentMap = new Dictionary<string, string>();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private static void InitAccentMap()
+        {
+            accentMap.Clear();
+
+            int pairCount = pairs.Length / 2;
+
+            for (int i = 0; i < pairCount; i++)
+            {
+
+                var src = pairs[i * 2];
+                if (!accentMap.ContainsKey(src))
+                {
+                    accentMap.Add(src.ToLower(), pairs[i * 2 + 1]);
+                }
+            }
+        }
+
+
+        public static string ReplaceToAccent(string src)
+        {
+
+            var lines = src.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+            var newLines = new List<string>();
+            var newWords = new List<string>();
+            var newParts = new List<string>();
+
+            foreach (var line in lines)
+            {
+                newParts.Clear();
+                var parts = line.Split(new string[] { "," }, StringSplitOptions.None);
+
+                foreach (var part in parts)
+                {
+                    var words = part.Split(new string[] { " " }, StringSplitOptions.None);
+                    newWords.Clear();
+                    foreach (var word in words)
+                    {
+                        var key = word.ToLower();
+                        if (accentMap.ContainsKey(key))
+                        {
+                            newWords.Add(accentMap[key]);
+                        }
+                        else
+                        {
+                            newWords.Add(word);
+                        }
+                    }
+                    newParts.Add(String.Join(" ", newWords));
+                }
+                newLines.Add(String.Join(",",newParts));
+            }
+ 
+            return String.Join(Environment.NewLine, newLines);
+        }
+
+
+
+
         static NotesHelper()
         {
+            InitAccentMap();
 
             // Italization
             _wordsToItalize = new List<String>();
@@ -94,6 +189,7 @@ namespace ErpContent.Views.Helpers
             _wordsToCapitalize.Add("Bing cherries"); 
 
         }
+
 
         /**
          * This method will execute the process of applying our formatting 

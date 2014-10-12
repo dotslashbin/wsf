@@ -82,8 +82,10 @@
                             /// 
                             cnt++;
                                     
-                            var vintagePlusWineName = n.vintage.ToUpper() + ' ' + n.wineName;
-                            var vintagePlusWineNameBold = "<b>" + vintagePlusWineName + "</b>";
+                            var vintagePlusWineName = "";
+                            var vintagePlusWineNameBold = "";
+
+                            
                             string noteText = n.note;
                             string drinkDate = n.DrindDateToString();
                                     
@@ -94,10 +96,16 @@
                             //
                             // if vintage+label can be find within tasting note body, make it bold
                             // 
-                            noteText = noteText.Replace(vintagePlusWineName, vintagePlusWineNameBold);
+                            if (!String.IsNullOrEmpty(n.wineName))
+                            {
+                                vintagePlusWineName = n.vintage.ToUpper() + ' ' + n.wineName;
+                                vintagePlusWineNameBold = "<b>" + vintagePlusWineName + "</b>";
+                                noteText = noteText.Replace(vintagePlusWineName, vintagePlusWineNameBold);
+                            }
 
-                                    
-                            string output = NotesHelper.applyFormatting(noteText);
+
+
+                            string output = NotesHelper.applyFormatting(NotesHelper.ReplaceToAccent(noteText));
                             //
                             // add importers only to last tasting note withing that tasting record.
                             //

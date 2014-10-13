@@ -13,6 +13,7 @@ namespace ErpContent.Views.Helpers
     public class NotesHelper
     {
 
+        #region -- Constants and Members --
         static List<String> _phraseToItalize;
         static List<String> _wordsToHypenate;
         static List<String> _wordsToCapitalize; 
@@ -114,7 +115,9 @@ namespace ErpContent.Views.Helpers
 
         static Dictionary<string, string> accentMap = new Dictionary<string, string>();
         static Dictionary<string, string> itilizedWordsMap = new Dictionary<string, string>();
+        #endregion
 
+        #region -- Initializers --
         /// <summary>
         /// 
         /// </summary>
@@ -154,7 +157,7 @@ namespace ErpContent.Views.Helpers
                 }
             }
         }
-
+        #endregion
 
         /// <summary>
         /// split text into lines, sentences and finally into words. replace only words which are in accentMap, the rest of words
@@ -198,44 +201,7 @@ namespace ErpContent.Views.Helpers
             return String.Join(Environment.NewLine, newLines);
         }
 
-
-        public static string ReplaceToItilized(string src)
-        {
-
-            var lines = src.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
-            var newLines = new List<string>();
-            var newWords = new List<string>();
-            var newParts = new List<string>();
-
-            foreach (var line in lines)
-            {
-                newParts.Clear();
-                var parts = line.Split(new string[] { "," }, StringSplitOptions.None);
-
-                foreach (var part in parts)
-                {
-                    var words = part.Split(new string[] { " " }, StringSplitOptions.None);
-                    newWords.Clear();
-                    foreach (var word in words)
-                    {
-                        var key = word.ToLower();
-                        if (itilizedWordsMap.ContainsKey(key))
-                        {
-                            newWords.Add("<i>"+word+"</i>");
-                        }
-                        else
-                        {
-                            newWords.Add(word);
-                        }
-                    }
-                    newParts.Add(String.Join(" ", newWords));
-                }
-                newLines.Add(String.Join(",", newParts));
-            }
-            return String.Join(Environment.NewLine, newLines);
-        }
-
-
+        #region -- Constructor --
         static NotesHelper()
         {
             InitAccentMap();
@@ -264,8 +230,9 @@ namespace ErpContent.Views.Helpers
             _wordsToCapitalize.Add("Bing cherries"); 
 
         }
+        #endregion
 
-
+        #region -- Methods --
         /**
          * This method will execute the process of applying our formatting 
          * rules to the notes or basically anything that supplied on the paramter. 
@@ -282,17 +249,11 @@ namespace ErpContent.Views.Helpers
         {
             string evaluatedFroDotsAndSpaces = evaluateForDotAndSpaces(notes); // Call to check for space after each period
 
-            //
-            // new itilized inly words first, after that itilized phrases
-            //
-            evaluatedFroDotsAndSpaces = ReplaceToItilized(evaluatedFroDotsAndSpaces);
+            string evaluatedForItalizedWords = evaluateForItalizedWords(evaluatedFroDotsAndSpaces);
 
-            //
-            //
-            //
-            string evaluatedForItalics = evaluateForItalics(evaluatedFroDotsAndSpaces);
+            string evaluatedForItalizedPhrases = evaluateForItalizedPhrases(evaluatedForItalizedWords);
 
-            string evaluatedFoCapitalizatoin = evaluateForCapitalization(evaluatedForItalics);
+            string evaluatedFoCapitalizatoin = evaluateForCapitalization(evaluatedForItalizedPhrases);
 
             string evaluatedForIndention = HttpUtility.HtmlDecode(evaluateForParagraphIndention(evaluatedFoCapitalizatoin));
 
@@ -371,6 +332,42 @@ namespace ErpContent.Views.Helpers
             return ""; 
         }
 
+        public static string evaluateForItalizedWords(string src)
+        {
+
+            var lines = src.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+            var newLines = new List<string>();
+            var newWords = new List<string>();
+            var newParts = new List<string>();
+
+            foreach (var line in lines)
+            {
+                newParts.Clear();
+                var parts = line.Split(new string[] { "," }, StringSplitOptions.None);
+
+                foreach (var part in parts)
+                {
+                    var words = part.Split(new string[] { " " }, StringSplitOptions.None);
+                    newWords.Clear();
+                    foreach (var word in words)
+                    {
+                        var key = word.ToLower();
+                        if (itilizedWordsMap.ContainsKey(key))
+                        {
+                            newWords.Add("<i>" + word + "</i>");
+                        }
+                        else
+                        {
+                            newWords.Add(word);
+                        }
+                    }
+                    newParts.Add(String.Join(" ", newWords));
+                }
+                newLines.Add(String.Join(",", newParts));
+            }
+            return String.Join(Environment.NewLine, newLines);
+        }
+
         /**
          * This methods looks up keywords from a collection of defined workds, and implements 
          * HTML italisation on them. 
@@ -381,7 +378,7 @@ namespace ErpContent.Views.Helpers
          * 
          * @author      Joshua Fuentes  <joshua.fuentes@robertpaker.com>
          */
-        private static string evaluateForItalics(string input)
+        private static string evaluateForItalizedPhrases(string input)
         {
             
             foreach (String wordToLookFor in _phraseToItalize)
@@ -410,5 +407,7 @@ namespace ErpContent.Views.Helpers
 
             return withSpacesRemoved;
         }
+
+        #endregion 
     }
 }

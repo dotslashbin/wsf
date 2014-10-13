@@ -45,12 +45,7 @@ namespace EditorsDbLayer
         /// <returns></returns>
         public Boolean AddArticleToAssignment(int articleID, int assignmentID)
         {
-            //
-            //it does not make sense compare value type to null
-            //todo. remove asserts
-            //
-            Debug.Assert(articleID != null);
-            Debug.Assert(assignmentID != null);
+ 
 
             using (SqlConnection connection = _ISQLConnectionFactory.GetConnection())
             {

@@ -8,76 +8,212 @@ using System.Configuration;
 
 namespace ErpContent.Views.Helpers
 {
+
+
     public class NotesHelper
     {
 
-        static List<String> _wordsToItalize;
+        #region -- Constants and Members --
+        static List<String> _phraseToItalize;
         static List<String> _wordsToHypenate;
         static List<String> _wordsToCapitalize; 
         static List<String> _wordsToRepalceWithSomething; 
 
-        static NotesHelper()
+        static string[] pairs = {
+                "cuvee"         ,"cuvée" ,
+                "Rhone"         ,"Rhône" ,
+                "Rhones"        ,"Rhônes",
+                "Cote"          ,"Côte" ,
+                "Cotes"         ,"Côtes" ,
+                "Chateau"       ,"Château" ,
+                "Chateauneuf"   ,"Châteauneuf",
+                "Provencal"     ,"Provençal",
+                "Rotie"         ,"Rôtie",
+                "Romanee",      "Romanée",
+                "Echezeaux",    "Échezeaux",
+                "Rose",         "Rosé",
+                "Batard",       "Bâtard",
+                "Bearn",        "Béarn",
+                "superieur",    "supérieur",
+                "Chenas",       "Chénas",
+                "Costieres",    "Costières",
+                "Cremant",      "Crémant",
+                "Tache",        "Tâche",
+                "Macon",        "Mâcon",
+                "Medoc",        "Médoc",
+                "Pessac-Leognan","Pessac-Léognan",
+                "Fuisse"        ,"Fuissé",
+                "Fume"          ,"Fumé",
+                "Savennieres"   ,"Savennières",
+                "Vire-Clesse"   ,"Viré-Clessé",
+                "Tam"           ,"Tâm",
+                "Pean"          ,"Peàn",
+
+            };
+
+        static string[] itilizedWords = {
+            "élevage",
+            "demi-muid",
+            "négociant",
+            "lieu-dit",
+            "mélange",
+            "cepage",
+            "batonnage",
+            "garrigue",
+            "vigneron",
+            "sur-maturité",
+            "patisserie",
+            "terroir",
+            "vigneron",
+            "cru",
+            "crus",
+            "vignoble",
+            "bodega",
+            "trockenheit",
+            "feinherb",
+            "mirabelle",
+            "oechsle",
+            "trocken",
+            "halbtrocken",
+            "spaetlese",
+            "auslese",
+            "griotte",
+            "clos",
+            "pigeage",
+            "monopole",
+            "tonneliers",
+            "tirage",
+            "veraison",
+            "inter-alia",
+            "oidium",
+            "millerandage",
+            "rancio",
+            "solero",
+            "saignée",
+            "négoçe",
+            "jus",
+            "couloure",
+            "vendage",
+            "domaine" };
+
+        static string[] itilizedPhrases = {
+            "bouquet garni",
+            "vin de pays",
+            "sur lie",
+            "tour de force",
+            "creme de cassis",
+            "pain grillé",
+            "cantus firmus",
+            "herbs de provence",
+            "lutte raisonée",
+            "en route",
+            "méthode Champenoise", 
+            "premier cru", 
+            "village cru", 
+            "grand cru"};
+
+
+        static Dictionary<string, string> accentMap = new Dictionary<string, string>();
+        static Dictionary<string, string> itilizedWordsMap = new Dictionary<string, string>();
+        #endregion
+
+        #region -- Initializers --
+        /// <summary>
+        /// 
+        /// </summary>
+        private static void InitAccentMap()
+        {
+            accentMap.Clear();
+
+            int pairCount = pairs.Length / 2;
+
+            for (int i = 0; i < pairCount; i++)
+            {
+
+                var src = pairs[i * 2];
+                if (!accentMap.ContainsKey(src))
+                {
+                    accentMap.Add(src.ToLower(), pairs[i * 2 + 1]);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private static void InitItilizedWordsMap()
+        {
+            itilizedWordsMap.Clear();
+
+            int count = itilizedWords.Length;
+
+            for (int i = 0; i < count; i++)
+            {
+                string key = itilizedWords[i].ToLower();
+
+                if (!itilizedWordsMap.ContainsKey(key))
+                {
+                    itilizedWordsMap.Add(key, null);
+                }
+            }
+        }
+        #endregion
+
+        /// <summary>
+        /// split text into lines, sentences and finally into words. replace only words which are in accentMap, the rest of words
+        /// leave without changes and combine them back to sentences and lines.
+        /// </summary>
+        /// <param name="src"></param>
+        /// <returns></returns>
+        public static string ReplaceToAccent(string src)
         {
 
-            // Italization
-            _wordsToItalize = new List<String>();
-            _wordsToItalize.Add("élevage");
-            _wordsToItalize.Add("demi-muid");
-            _wordsToItalize.Add("bouquet garni");
-            _wordsToItalize.Add("négociant");
-            _wordsToItalize.Add("lieu-dit");
-            _wordsToItalize.Add("vin de pays");
-            _wordsToItalize.Add("mélange");
-            _wordsToItalize.Add("cepage");
-            _wordsToItalize.Add("batonnage");
-            _wordsToItalize.Add("sur lie");
-            _wordsToItalize.Add("garrigue");
-            _wordsToItalize.Add("tour de force");
-            _wordsToItalize.Add("vigneron");
-            _wordsToItalize.Add("creme de cassis");
-            _wordsToItalize.Add("sur-maturité");
-            _wordsToItalize.Add("patisserie");
-            _wordsToItalize.Add("pain grillé");
-            _wordsToItalize.Add("terroir");
-            _wordsToItalize.Add("vigneron");
-            _wordsToItalize.Add("cru");
-            _wordsToItalize.Add("crus");
-            _wordsToItalize.Add("vignoble");
-            _wordsToItalize.Add("bodega");
-            _wordsToItalize.Add("trockenheit");
-            _wordsToItalize.Add("feinherb");
-            _wordsToItalize.Add("mirabelle");
-            _wordsToItalize.Add("cantus firmus");
-            _wordsToItalize.Add("oechsle");
-            _wordsToItalize.Add("trocken");
-            _wordsToItalize.Add("halbtrocken");
-            _wordsToItalize.Add("spaetlese");
-            _wordsToItalize.Add("auslese");
-            _wordsToItalize.Add("griotte");
-            _wordsToItalize.Add("clos");
-            _wordsToItalize.Add("pigeage");
-            _wordsToItalize.Add("monopole");
-            _wordsToItalize.Add("tonneliers");
-            _wordsToItalize.Add("tirage");
-            _wordsToItalize.Add("veraison");
-            _wordsToItalize.Add("inter-alia");
-            _wordsToItalize.Add("oidium");
-            _wordsToItalize.Add("millerandage");
-            _wordsToItalize.Add("rancio");
-            _wordsToItalize.Add("solero");
-            _wordsToItalize.Add("herbs de provence");
-            _wordsToItalize.Add("saignée");
-            _wordsToItalize.Add("négoçe");
-            _wordsToItalize.Add("lutte raisonée");
-            _wordsToItalize.Add("en route");
-            _wordsToItalize.Add("jus");
-            _wordsToItalize.Add("couloure");
-            _wordsToItalize.Add("vendage");
-            _wordsToItalize.Add("méthode Champenoise"); 
-            _wordsToItalize.Add("premier cru"); 
-            _wordsToItalize.Add("village cru"); 
-            _wordsToItalize.Add("grand cru");
-            _wordsToItalize.Add("domaine"); 
+            var lines = src.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+            var newLines = new List<string>();
+            var newWords = new List<string>();
+            var newParts = new List<string>();
+
+            foreach (var line in lines)
+            {
+                newParts.Clear();
+                var parts = line.Split(new string[] { "," }, StringSplitOptions.None);
+
+                foreach (var part in parts)
+                {
+                    var words = part.Split(new string[] { " " }, StringSplitOptions.None);
+                    newWords.Clear();
+                    foreach (var word in words)
+                    {
+                        var key = word.ToLower();
+                        if (accentMap.ContainsKey(key))
+                        {
+                            newWords.Add(accentMap[key]);
+                        }
+                        else
+                        {
+                            newWords.Add(word);
+                        }
+                    }
+                    newParts.Add(String.Join(" ", newWords));
+                }
+                newLines.Add(String.Join(",",newParts));
+            }
+            return String.Join(Environment.NewLine, newLines);
+        }
+
+        #region -- Constructor --
+        static NotesHelper()
+        {
+            InitAccentMap();
+            InitItilizedWordsMap();
+
+            _phraseToItalize = new List<String>();
+
+            int count = itilizedPhrases.Length;
+            for (int i = 0; i < count; i++)
+            {
+                _phraseToItalize.Add(itilizedPhrases[i]);
+            }
 
 
             // Capitalization
@@ -90,11 +226,13 @@ namespace ErpContent.Views.Helpers
             _wordsToCapitalize.Add("morello");
             _wordsToCapitalize.Add("grand cru");
             _wordsToCapitalize.Add("Pradikatswein");
-            _wordsToCapitalize.Add("kabinett");
-            _wordsToCapitalize.Add("bing cherries"); 
+            _wordsToCapitalize.Add("Kabinett");
+            _wordsToCapitalize.Add("Bing cherries"); 
 
         }
+        #endregion
 
+        #region -- Methods --
         /**
          * This method will execute the process of applying our formatting 
          * rules to the notes or basically anything that supplied on the paramter. 
@@ -111,9 +249,11 @@ namespace ErpContent.Views.Helpers
         {
             string evaluatedFroDotsAndSpaces = evaluateForDotAndSpaces(notes); // Call to check for space after each period
 
-            string evaluatedForItalics = evaluateForItalics(evaluatedFroDotsAndSpaces);
+            string evaluatedForItalizedWords = evaluateForItalizedWords(evaluatedFroDotsAndSpaces);
 
-            string evaluatedFoCapitalizatoin = evaluateForCapitalization(evaluatedForItalics);
+            string evaluatedForItalizedPhrases = evaluateForItalizedPhrases(evaluatedForItalizedWords);
+
+            string evaluatedFoCapitalizatoin = evaluateForCapitalization(evaluatedForItalizedPhrases);
 
             string evaluatedForIndention = HttpUtility.HtmlDecode(evaluateForParagraphIndention(evaluatedFoCapitalizatoin));
 
@@ -192,6 +332,42 @@ namespace ErpContent.Views.Helpers
             return ""; 
         }
 
+        public static string evaluateForItalizedWords(string src)
+        {
+
+            var lines = src.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+            var newLines = new List<string>();
+            var newWords = new List<string>();
+            var newParts = new List<string>();
+
+            foreach (var line in lines)
+            {
+                newParts.Clear();
+                var parts = line.Split(new string[] { "," }, StringSplitOptions.None);
+
+                foreach (var part in parts)
+                {
+                    var words = part.Split(new string[] { " " }, StringSplitOptions.None);
+                    newWords.Clear();
+                    foreach (var word in words)
+                    {
+                        var key = word.ToLower();
+                        if (itilizedWordsMap.ContainsKey(key))
+                        {
+                            newWords.Add("<i>" + word + "</i>");
+                        }
+                        else
+                        {
+                            newWords.Add(word);
+                        }
+                    }
+                    newParts.Add(String.Join(" ", newWords));
+                }
+                newLines.Add(String.Join(",", newParts));
+            }
+            return String.Join(Environment.NewLine, newLines);
+        }
+
         /**
          * This methods looks up keywords from a collection of defined workds, and implements 
          * HTML italisation on them. 
@@ -202,10 +378,10 @@ namespace ErpContent.Views.Helpers
          * 
          * @author      Joshua Fuentes  <joshua.fuentes@robertpaker.com>
          */
-        private static string evaluateForItalics(string input)
+        private static string evaluateForItalizedPhrases(string input)
         {
             
-            foreach (String wordToLookFor in _wordsToItalize)
+            foreach (String wordToLookFor in _phraseToItalize)
             {
                 string replacement = "<i>" + wordToLookFor + "</i>";
 
@@ -231,5 +407,7 @@ namespace ErpContent.Views.Helpers
 
             return withSpacesRemoved;
         }
+
+        #endregion 
     }
 }

@@ -82,8 +82,8 @@
                             /// 
                             cnt++;
                                     
-                            var vintagePlusWineName = n.vintage.ToUpper() + ' ' + n.wineName;
-                            var vintagePlusWineNameBold = "<b>" + vintagePlusWineName + "</b>";
+
+                            
                             string noteText = n.note;
                             string drinkDate = n.DrindDateToString();
                                     
@@ -94,10 +94,25 @@
                             //
                             // if vintage+label can be find within tasting note body, make it bold
                             // 
-                            noteText = noteText.Replace(vintagePlusWineName, vintagePlusWineNameBold);
+                            if (!String.IsNullOrEmpty(n.wineName))
+                            {
+                                var vintagePlusWineName = n.vintage.ToUpper() + ' ' + n.wineName;
+                                noteText = noteText.Replace(vintagePlusWineName, "<b>" + vintagePlusWineName + "</b>");
 
-                                    
-                            string output = NotesHelper.applyFormatting(noteText);
+                                //
+                                // in case if name has been accented in the note
+                                //
+                                string vintagePlusWineNameAccent = NotesHelper.ReplaceToAccent(vintagePlusWineName);
+                                if (vintagePlusWineNameAccent.CompareTo(vintagePlusWineName) != 0)
+                                {
+                                    noteText = noteText.Replace(vintagePlusWineNameAccent, "<b>" + vintagePlusWineNameAccent + "</b>");
+                                }
+                                
+                            }
+
+
+
+                            string output = NotesHelper.applyFormatting(NotesHelper.ReplaceToAccent(noteText));
                             //
                             // add importers only to last tasting note withing that tasting record.
                             //

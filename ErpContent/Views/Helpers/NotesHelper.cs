@@ -65,8 +65,8 @@ namespace ErpContent.Views.Helpers
             "patisserie",
             "terroir",
             "vigneron",
-            "cru",
-            "crus",
+          //  "cru",
+          //  "crus",
             "vignoble",
             "bodega",
             "trockenheit",
@@ -78,7 +78,7 @@ namespace ErpContent.Views.Helpers
             "spaetlese",
             "auslese",
             "griotte",
-            "clos",
+          //  "clos",
             "pigeage",
             "monopole",
             "tonneliers",
@@ -94,7 +94,8 @@ namespace ErpContent.Views.Helpers
             "jus",
             "couloure",
             "vendage",
-            "domaine" };
+//            "domaine"
+          };
 
         static string[] itilizedPhrases = {
             "bouquet garni",
@@ -187,7 +188,17 @@ namespace ErpContent.Views.Helpers
                         var key = word.ToLower();
                         if (accentMap.ContainsKey(key))
                         {
-                            newWords.Add(accentMap[key]);
+                            var dest = accentMap[key];
+                            //
+                            // special case. source word could start with Upper case later
+                            // but replacement could be in lower case, so preserve the case of the source
+                            // Do it only if source is in Upper case, ddo not do that if it is in Lower case
+                            //
+                            if (Char.IsUpper(dest[0]) &&  dest[0] != word[0])
+                            {
+                                dest =   word.Substring(0,1) + dest.Substring(1);
+                            }
+                            newWords.Add(dest);
                         }
                         else
                         {

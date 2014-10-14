@@ -65,8 +65,6 @@ namespace ErpContent.Views.Helpers
             "patisserie",
             "terroir",
             "vigneron",
-            "cru",
-            "crus",
             "vignoble",
             "bodega",
             "trockenheit",
@@ -78,7 +76,6 @@ namespace ErpContent.Views.Helpers
             "spaetlese",
             "auslese",
             "griotte",
-            "clos",
             "pigeage",
             "monopole",
             "tonneliers",
@@ -94,7 +91,7 @@ namespace ErpContent.Views.Helpers
             "jus",
             "couloure",
             "vendage",
-            "domaine" };
+           };
 
         static string[] itilizedPhrases = {
             "bouquet garni",

@@ -20,17 +20,7 @@ namespace ErpContent.Views.Helpers
         static List<String> _wordsToRepalceWithSomething; 
 
         static string[] pairs = {
-                
-                // TODO: remove additional definitions if the proposed implementation is not approved. 
-                // Evaluation start
-                "CUVEE"         ,"CUVÉE", 
                 "cuvee"         ,"cuvée" ,
-                "cuvees"        ,"cuvée" ,
-                "cuves"         ,"cuvée" ,
-                "Cuves"         ,"Cuvée" ,
-                "Cuvee"         ,"Cuvée" ,
-                // Evaluation end
-
                 "Rhone"         ,"Rhône" ,
                 "Rhones"        ,"Rhônes",
                 "Cote"          ,"Côte" ,
@@ -58,6 +48,7 @@ namespace ErpContent.Views.Helpers
                 "Vire-Clesse"   ,"Viré-Clessé",
                 "Tam"           ,"Tâm",
                 "Pean"          ,"Peàn",
+
             };
 
         static string[] itilizedWords = {
@@ -74,6 +65,8 @@ namespace ErpContent.Views.Helpers
             "patisserie",
             "terroir",
             "vigneron",
+          //  "cru",
+          //  "crus",
             "vignoble",
             "bodega",
             "trockenheit",
@@ -85,6 +78,7 @@ namespace ErpContent.Views.Helpers
             "spaetlese",
             "auslese",
             "griotte",
+          //  "clos",
             "pigeage",
             "monopole",
             "tonneliers",
@@ -100,7 +94,8 @@ namespace ErpContent.Views.Helpers
             "jus",
             "couloure",
             "vendage",
-            };
+//            "domaine"
+          };
 
         static string[] itilizedPhrases = {
             "bouquet garni",
@@ -139,9 +134,7 @@ namespace ErpContent.Views.Helpers
                 var src = pairs[i * 2];
                 if (!accentMap.ContainsKey(src))
                 {
-                    // TODO: Revert back to commented line, if implementation is not acceptable. 
-                    // accentMap.Add(src.ToLower(), pairs[i * 2 + 1]);
-                    accentMap.Add(src, pairs[i * 2 + 1]);
+                    accentMap.Add(src.ToLower(), pairs[i * 2 + 1]);
                 }
             }
         }
@@ -173,56 +166,50 @@ namespace ErpContent.Views.Helpers
         /// </summary>
         /// <param name="src"></param>
         /// <returns></returns>
-        //public static string ReplaceToAccent(string src)
-        //{
-
-        //    var lines = src.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
-        //    var newLines = new List<string>();
-        //    var newWords = new List<string>();
-        //    var newParts = new List<string>();
-
-        //    foreach (var line in lines)
-        //    {
-        //        newParts.Clear();
-        //        var parts = line.Split(new string[] { "," }, StringSplitOptions.None);
-
-        //        foreach (var part in parts)
-        //        {
-        //            var words = part.Split(new string[] { " " }, StringSplitOptions.None);
-        //            newWords.Clear();
-        //            foreach (var word in words)
-        //            {
-        //                // var key = word.ToLower();
-        //                var key = word;
-        //                if (accentMap.ContainsKey(key))
-        //                {
-        //                    newWords.Add(accentMap[key]);
-        //                }
-        //                else
-        //                {
-        //                    newWords.Add(word);
-        //                }
-        //            }
-        //            newParts.Add(String.Join(" ", newWords));
-        //        }
-        //        newLines.Add(String.Join(",",newParts));
-        //    }
-        //    return String.Join(Environment.NewLine, newLines);
-        //}
-
-
-        /**
-         * This implementation is subject ot approval. 
-         * TODO: Revert back to commented implementation above, if this is not approved. Otherwise, insert comments for code documentation. 
-         */ 
-        public static string ReplaceToAccent(string input)
+        public static string ReplaceToAccent(string src)
         {
-            foreach(var pairing in accentMap)
-            {
-                input = Regex.Replace(input, pairing.Key, pairing.Value);
-            }
 
-            return input; 
+            var lines = src.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+            var newLines = new List<string>();
+            var newWords = new List<string>();
+            var newParts = new List<string>();
+
+            foreach (var line in lines)
+            {
+                newParts.Clear();
+                var parts = line.Split(new string[] { "," }, StringSplitOptions.None);
+
+                foreach (var part in parts)
+                {
+                    var words = part.Split(new string[] { " " }, StringSplitOptions.None);
+                    newWords.Clear();
+                    foreach (var word in words)
+                    {
+                        var key = word.ToLower();
+                        if (accentMap.ContainsKey(key))
+                        {
+                            var dest = accentMap[key];
+                            //
+                            // special case. source word could start with Upper case later
+                            // but replacement could be in lower case, so preserve the case of the source
+                            // Do it only if source is in Upper case, ddo not do that if it is in Lower case
+                            //
+                            if (Char.IsUpper(dest[0]) &&  dest[0] != word[0])
+                            {
+                                dest =   word.Substring(0,1) + dest.Substring(1);
+                            }
+                            newWords.Add(dest);
+                        }
+                        else
+                        {
+                            newWords.Add(word);
+                        }
+                    }
+                    newParts.Add(String.Join(" ", newWords));
+                }
+                newLines.Add(String.Join(",",newParts));
+            }
+            return String.Join(Environment.NewLine, newLines);
         }
 
         #region -- Constructor --

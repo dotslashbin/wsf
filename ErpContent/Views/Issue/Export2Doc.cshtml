@@ -53,7 +53,7 @@
                             <div>
                                 <b>@n.producer.ToUpper()
                                 &#09;@n.vintage.ToUpper()
-                                &#09;@NotesHelper.ReplaceToAccent(n.wineName.ToUpper())
+                                &#09;@n.wineName.ToUpper()
                                 &#09;@t.NoteAppellation(n).ToUpper()
                                 &#09;(@t.NotePrice(n))      
                                 &#09;@n.color.ToUpper()
@@ -97,12 +97,6 @@
                             if (!String.IsNullOrEmpty(n.wineName))
                             {
                                 var vintagePlusWineName = n.vintage.ToUpper() + ' ' + n.wineName;
-
-                                if (vintagePlusWineName == "CHABLIS 1ER CRU VAILLONS VAILLONS")
-                                {
-                                    var test = true;     
-                                }
-                                
                                 noteText = noteText.Replace(vintagePlusWineName, "<b>" + vintagePlusWineName + "</b>");
 
                                 //

@@ -258,9 +258,9 @@ namespace ErpContent.Views.Helpers
          */
         public static string applyFormatting(string notes)
         {
-            string evaluatedFroDotsAndSpaces = evaluateForDotAndSpaces(notes); // Call to check for space after each period
+            string evaluatedSpaces = evaluateForSpaces(notes); // Call to check for space after each period
 
-            string evaluatedForItalizedWords = evaluateForItalizedWords(evaluatedFroDotsAndSpaces);
+            string evaluatedForItalizedWords = evaluateForItalizedWords(evaluatedSpaces);
 
             string evaluatedForItalizedPhrases = evaluateForItalizedPhrases(evaluatedForItalizedWords);
 
@@ -311,32 +311,13 @@ namespace ErpContent.Views.Helpers
         }
 
         /**
-         * This private method exectues the process of evaluating for spaces after each dot. 
-         * The evaluation is based on our documented rules. This is designed to be called from 
-         * the publicly accessible method "applyFormatting"
-         * 
-         * @param       String              input
-         * 
-         * @return      String              evaluatedString      This represent the string that has been modified based on set of writing rules
-         * 
-         * @author      Joshua Fuentes      <joshua.fuentes@robertparker.com>
-         */
-        private static string evaluateForDotAndSpaces(string input)
-        {
-            string replaceDotWithSpace = ". ";
-            string evaluatedString = Regex.Replace(input, @"\.(?! |$)", replaceDotWithSpace);
-
-            return evaluatedString; 
-        }
-
-        /**
          * This method will replace matching words with their hypenated values
          * 
          * @param       String      input
          * 
          * @return      String      evaluatedString
          * 
-         * @author      Joshua Fuente  <joshua.fuentes@robertparker.com>
+         * @author      Joshua Fuentes  <joshua.fuentes@robertparker.com>
          */
         private static string evaluateForHypens(String input)
         {
@@ -417,6 +398,33 @@ namespace ErpContent.Views.Helpers
             string withSpacesRemoved = Regex.Replace(input, "^( )*", "");
 
             return withSpacesRemoved;
+        }
+
+        /**
+        * This private method exectues the process of evaluating for spaces after each dot. 
+        * The evaluation is based on our documented rules. This is designed to be called from 
+        * the publicly accessible method "applyFormatting"
+        * 
+        * @param       String              input
+        * 
+        * @return      String              evaluatedString      This represent the string that has been modified based on set of writing rules
+        * 
+        * @author      Joshua Fuentes      <joshua.fuentes@robertparker.com>
+        */
+        private static string evaluateForSpaces(string input)
+        {
+            // Initializers
+            string replaceDotWithSpace = ". ";
+            string replaceCommatWithSpace = ", ";
+            string evaluatedString = "";
+
+            // Evaluate dots
+            evaluatedString = Regex.Replace(input, @"\.(?! |$)", replaceDotWithSpace);
+
+            // Evaluate commas
+            evaluatedString = Regex.Replace(evaluatedString, @"\,(?! |$)", replaceCommatWithSpace);
+
+            return evaluatedString;
         }
 
         #endregion 

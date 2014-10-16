@@ -131,10 +131,10 @@ namespace ErpContent.Views.Helpers
             for (int i = 0; i < pairCount; i++)
             {
 
-                var src = pairs[i * 2];
-                if (!accentMap.ContainsKey(src))
+                var key = pairs[i * 2].ToLower();
+                if (!accentMap.ContainsKey(key))
                 {
-                    accentMap.Add(src.ToLower(), pairs[i * 2 + 1]);
+                    accentMap.Add(key, pairs[i * 2 + 1]);
                 }
             }
         }
@@ -160,32 +160,47 @@ namespace ErpContent.Views.Helpers
         }
         #endregion
 
+
+
+
+
+
         /// <summary>
         /// split text into lines, sentences and finally into words. replace only words which are in accentMap, the rest of words
         /// leave without changes and combine them back to sentences and lines.
         /// </summary>
         /// <param name="src"></param>
         /// <returns></returns>
-        public static string ReplaceToAccent(string src)
+        /// 
+
+        private delegate string[] SplitterDelegate(string src);
+        private delegate string MergerDelegate(string[] src);
+        private delegate string WordActionDelegate(string src);
+
+        private static string SplitterMerger(string src, SplitterDelegate splitter, MergerDelegate merger, WordActionDelegate action )
         {
-
-            var lines = src.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
-            var newLines = new List<string>();
-            var newWords = new List<string>();
-            var newParts = new List<string>();
-
-            foreach (var line in lines)
+            string[] parts = splitter(src);
+            if (action != null)
             {
-                newParts.Clear();
-                var parts = line.Split(new string[] { "," }, StringSplitOptions.None);
-
-                foreach (var part in parts)
+                for (int i = 0; i < parts.Length; i++)
                 {
-                    var words = part.Split(new string[] { " " }, StringSplitOptions.None);
-                    newWords.Clear();
-                    foreach (var word in words)
+                    parts[i] = action(parts[i]);
+                }
+            }
+            return merger(parts);
+        }
+
+
+        public static string ReplaceToAccentPrivate(string src)
+        {
+            WordActionDelegate processWords = (part) =>
+            {
+                return SplitterMerger(part,
+                    (arg) => { return arg.Split(new string[] { " " }, StringSplitOptions.None); },
+                    (arg) => { return String.Join(" ", arg); },
+                    (arg) =>
                     {
-                        var key = word.ToLower();
+                        var key = arg.ToLower();
                         if (accentMap.ContainsKey(key))
                         {
                             var dest = accentMap[key];
@@ -194,22 +209,89 @@ namespace ErpContent.Views.Helpers
                             // but replacement could be in lower case, so preserve the case of the source
                             // Do it only if source is in Upper case, ddo not do that if it is in Lower case
                             //
-                            if (Char.IsUpper(dest[0]) &&  dest[0] != word[0])
+                            if (Char.IsLower(dest[0]) && dest[0] != arg[0])
                             {
-                                dest =   word.Substring(0,1) + dest.Substring(1);
+                                return arg.Substring(0, 1) + dest.Substring(1);
                             }
-                            newWords.Add(dest);
+                            return dest;
                         }
-                        else
-                        {
-                            newWords.Add(word);
-                        }
-                    }
-                    newParts.Add(String.Join(" ", newWords));
-                }
-                newLines.Add(String.Join(",",newParts));
-            }
-            return String.Join(Environment.NewLine, newLines);
+                            return arg;
+                    });
+            };
+
+            WordActionDelegate processParts = (sentence) =>
+            {
+                return SplitterMerger(sentence,
+                    (arg) => { return arg.Split(new string[] { "," }, StringSplitOptions.None); },
+                    (arg) => { return String.Join(",", arg); },
+                    (arg) => { return processWords(arg);
+                    });
+            };
+
+            WordActionDelegate processSentences = (paragraph) =>
+            {
+                return SplitterMerger(paragraph,
+                    (arg) => { return arg.Split(new string[] { "." }, StringSplitOptions.None); },
+                    (arg) => { return String.Join(".", arg); },
+                    (arg) => { return processParts(arg); });
+            };
+
+
+
+            return  SplitterMerger(src,
+                (arg) => { return arg.Split(new string[] { Environment.NewLine }, StringSplitOptions.None); },
+                (arg) => { return String.Join(Environment.NewLine, arg); },
+                (arg) => { return processSentences(arg); });
+        }
+
+
+        public static string ReplaceToAccent(string src)
+        {
+
+            return ReplaceToAccentPrivate(src);
+
+
+            //var lines = src.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+            //var newLines = new List<string>();
+            //var newWords = new List<string>();
+            //var newParts = new List<string>();
+
+            //foreach (var line in lines)
+            //{
+            //    newParts.Clear();
+            //    var parts = line.Split(new string[] { "," }, StringSplitOptions.None);
+
+            //    foreach (var part in parts)
+            //    {
+            //        var words = part.Split(new string[] { " " }, StringSplitOptions.None);
+            //        newWords.Clear();
+            //        foreach (var word in words)
+            //        {
+            //            var key = word.ToLower();
+            //            if (accentMap.ContainsKey(key))
+            //            {
+            //                var dest = accentMap[key];
+            //                //
+            //                // special case. source word could start with Upper case later
+            //                // but replacement could be in lower case, so preserve the case of the source
+            //                // Do it only if source is in Upper case, ddo not do that if it is in Lower case
+            //                //
+            //                if (Char.IsUpper(dest[0]) &&  dest[0] != word[0])
+            //                {
+            //                    dest =   word.Substring(0,1) + dest.Substring(1);
+            //                }
+            //                newWords.Add(dest);
+            //            }
+            //            else
+            //            {
+            //                newWords.Add(word);
+            //            }
+            //        }
+            //        newParts.Add(String.Join(" ", newWords));
+            //    }
+            //    newLines.Add(String.Join(",",newParts));
+            //}
+            //return String.Join(Environment.NewLine, newLines);
         }
 
         #region -- Constructor --

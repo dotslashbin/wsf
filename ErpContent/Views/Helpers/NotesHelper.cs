@@ -111,7 +111,8 @@ namespace ErpContent.Views.Helpers
             "méthode Champenoise", 
             "premier cru", 
             "village cru", 
-            "grand cru"};
+            "grand cru"
+            };
 
 
         static Dictionary<string, string> accentMap = new Dictionary<string, string>();
@@ -169,47 +170,56 @@ namespace ErpContent.Views.Helpers
         public static string ReplaceToAccent(string src)
         {
 
-            var lines = src.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
-            var newLines = new List<string>();
-            var newWords = new List<string>();
-            var newParts = new List<string>();
+            var paragraphs          = src.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+            var newSentences        = new List<string>(); 
+            var newParts            = new List<string>();
+            var newLines            = new List<string>();
+            var newWords            = new List<string>();
 
-            foreach (var line in lines)
+            foreach (var paragraph in paragraphs)
             {
-                newParts.Clear();
-                var parts = line.Split(new string[] { "," }, StringSplitOptions.None);
 
-                foreach (var part in parts)
+                newSentences.Clear(); 
+                var sentences = paragraph.Split(new string[] { "." } , StringSplitOptions.None);
+
+                foreach (var sentence in sentences)
                 {
-                    var words = part.Split(new string[] { " " }, StringSplitOptions.None);
-                    newWords.Clear();
-                    foreach (var word in words)
+                    newParts.Clear();
+                    var parts = sentence.Split(new string[] { "," }, StringSplitOptions.None);
+
+                    foreach (var part in parts)
                     {
-                        var key = word.ToLower();
-                        if (accentMap.ContainsKey(key))
+                        var words = part.Split(new string[] { " " }, StringSplitOptions.None);
+                        newWords.Clear();
+                        foreach (var word in words)
                         {
-                            var dest = accentMap[key];
-                            //
-                            // special case. source word could start with Upper case later
-                            // but replacement could be in lower case, so preserve the case of the source
-                            // Do it only if source is in Upper case, ddo not do that if it is in Lower case
-                            //
-                            if (Char.IsUpper(dest[0]) &&  dest[0] != word[0])
+                            var key = word.ToLower();
+                            if (accentMap.ContainsKey(key))
                             {
-                                dest =   word.Substring(0,1) + dest.Substring(1);
+                                var dest = accentMap[key];
+                                //
+                                // special case. source word could start with Upper case later
+                                // but replacement could be in lower case, so preserve the case of the source
+                                // Do it only if source is in Upper case, ddo not do that if it is in Lower case
+                                //
+                                if (Char.IsUpper(dest[0]) && dest[0] != word[0])
+                                {
+                                    dest = word.Substring(0, 1) + dest.Substring(1);
+                                }
+                                newWords.Add(dest);
                             }
-                            newWords.Add(dest);
+                            else
+                            {
+                                newWords.Add(word);
+                            }
                         }
-                        else
-                        {
-                            newWords.Add(word);
-                        }
+                        newParts.Add(String.Join(" ", newWords));
                     }
-                    newParts.Add(String.Join(" ", newWords));
+                    newLines.Add(String.Join(",", newParts));
                 }
-                newLines.Add(String.Join(",",newParts));
+                newSentences.Add(String.Join(".", newLines)); 
             }
-            return String.Join(Environment.NewLine, newLines);
+            return String.Join(Environment.NewLine, newSentences);
         }
 
         #region -- Constructor --
@@ -416,10 +426,13 @@ namespace ErpContent.Views.Helpers
             // Initializers
             string replaceDotWithSpace = ". ";
             string replaceCommatWithSpace = ", ";
+
             string evaluatedString = "";
 
             // Evaluate dots
             evaluatedString = Regex.Replace(input, @"\.(?! |$)", replaceDotWithSpace);
+
+            evaluatedString = Regex.Replace(evaluatedString, @"(\.\ )+", replaceDotWithSpace);
 
             // Evaluate commas
             evaluatedString = Regex.Replace(evaluatedString, @"\,(?! |$)", replaceCommatWithSpace);

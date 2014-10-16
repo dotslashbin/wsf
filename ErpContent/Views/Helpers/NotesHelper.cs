@@ -223,8 +223,8 @@ namespace ErpContent.Views.Helpers
             {
                 return SplitterMerger(sentence,
                     (arg) => { return arg.Split(new string[] { "," }, StringSplitOptions.None); },
-                    (arg) => { return String.Join(",", arg); },
-                    (arg) => { return processWords(arg);
+                    (arg) => { return String.Join(", ", arg); },
+                    (arg) => { return processWords(arg.Trim());
                     });
             };
 
@@ -232,8 +232,8 @@ namespace ErpContent.Views.Helpers
             {
                 return SplitterMerger(paragraph,
                     (arg) => { return arg.Split(new string[] { "." }, StringSplitOptions.None); },
-                    (arg) => { return String.Join(".", arg); },
-                    (arg) => { return processParts(arg); });
+                    (arg) => { return String.Join(". ", arg); },
+                    (arg) => { return processParts(arg.Trim()); });
             };
 
 
@@ -340,19 +340,21 @@ namespace ErpContent.Views.Helpers
          */
         public static string applyFormatting(string notes)
         {
-            string evaluatedFroDotsAndSpaces = evaluateForDotAndSpaces(notes); // Call to check for space after each period
 
-            string evaluatedForItalizedWords = evaluateForItalizedWords(evaluatedFroDotsAndSpaces);
+            string result = ReplaceToAccent(notes);
 
-            string evaluatedForItalizedPhrases = evaluateForItalizedPhrases(evaluatedForItalizedWords);
+            // previous method will take care of  this formatting
+            //result = evaluateForDotAndSpaces(result); // Call to check for space after each period
 
-            string evaluatedFoCapitalizatoin = evaluateForCapitalization(evaluatedForItalizedPhrases);
+            result = evaluateForItalizedWords(result);
 
-            string evaluatedForIndention = HttpUtility.HtmlDecode(evaluateForParagraphIndention(evaluatedFoCapitalizatoin));
+            result = evaluateForItalizedPhrases(result);
 
-            string formattedNotes = evaluatedForIndention; 
+            result = evaluateForCapitalization(result);
 
-            return formattedNotes;
+            result = HttpUtility.HtmlDecode(evaluateForParagraphIndention(result));
+
+            return result;
         }
 
         /**

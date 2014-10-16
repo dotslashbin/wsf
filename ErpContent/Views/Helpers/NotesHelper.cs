@@ -241,22 +241,26 @@ namespace ErpContent.Views.Helpers
                 return input.ToUpper();
             return input.Remove(1).ToUpper() + input.Substring(1);
         }
-        
+
         /**
          * This method will break down the large inputted string into segments, and evaluates them individually. 
-         *  Evaluation will look for periods "." and will check if they are to be accepted or replaced. Segments 
+         *  Evaluation will look for periods "." or commans ","  and will check if they are to be accepted or replaced. Segments 
          *  that are numeric values ( ex 123.123 or 123.2% ) are accpeted as is. Corrections are only done 
-         *  for segments having unconventional usage of periods, such as "...", or ".    XYZ". 
+         *  for segments having unconventional usage of periods, such as "...", or ".    XYZ", ",   " , or ", ,, , ". 
          *  
          * @param       String      input
+         * @param       String      evaluatedSeparator
          * @return      String      correctedString
          * 
          * @author      Joshua Fuentes  <joshua.fuentes@robertpaker.com>
          */
-        private static string correctPeriodPlacements(string input)
+        private static string correctPeriodAndCommaPlacements(string input, Boolean isPeriod)
         {
+
             string correctedString = "";
-            List<String> correctedSegments = new List<string>(); 
+            List<String> correctedSegments = new List<string>();
+
+            // Determine which character to use
 
             // Creating segments out of the inputted string
             var segments = input.Split(new string[] { " " }, StringSplitOptions.None);
@@ -267,20 +271,41 @@ namespace ErpContent.Views.Helpers
             {
             
                 // Accept if it is a valid percentage value
-                var isValidNumericValue = Regex.Match(segment, @"[0-9]+\.[0-9]+%?");
+                string regexToMatch = ""; 
+                if(isPeriod == true)
+                {
+                    regexToMatch = "[0-9]+(.)[0-9]+%?"; 
+                }
+                else
+                {
+                    regexToMatch = "[0-9]+(,)[0-9]+%?"; 
+                }
+
+                var isValidNumericValue = Regex.Match(segment, @regexToMatch);
+
                 if (isValidNumericValue.ToString() != "")
                 {
-                    correctedSegments.Add(isValidNumericValue.Value.ToString());
+                    correctedSegments.Add(isValidNumericValue.Value.ToString().Trim());
                 }
                 // Accept if segment does not contain any periods
-                else if (!segment.Contains("."))
+                else if ( (isPeriod == true && !segment.Contains(".")) )
                 {
-                    correctedSegments.Add(segment); 
+                    correctedSegments.Add(segment.Trim()); 
                 }
                 // Replace inappropriate periods with correct ones
-                else if(segment.Contains("."))
+                else if((isPeriod == true && segment.Contains(".")))
                 {
-                    String correctedSegment = Regex.Replace(segment, @"(\.)+", ". ");
+                    String correctedSegment = ""; 
+
+                    if (isPeriod == true)
+                    {
+                        correctedSegment = Regex.Replace(segment, @"(\.)+", ". ");
+                    }
+                    else
+                    {
+                        correctedSegment = Regex.Replace(segment, @"(,)+", ", ");
+                    }
+                    
                     correctedSegments.Add(correctedSegment); 
                 }
             }
@@ -413,28 +438,17 @@ namespace ErpContent.Views.Helpers
         private static string evaluateForSpaces(string input)
         {
             // Initializers
-            string replaceDotWithSpace = ". ";
-            string replaceCommatWithSpace = ", ";
-
             string evaluatedString = "";
 
-
-            // Regex to match periods in sentences "\.( |$)*[^\d]" 
-            // Regex to match percentage [0-9]+\.(\s|$)*(\d)*%
-
             // Compress spaces after dots
-            evaluatedString = Regex.Replace(input, @"\.(\s)*", ".");
+            evaluatedString = Regex.Replace(input, @"\.+", ".");
 
-            evaluatedString = correctPeriodPlacements(evaluatedString); 
+            // evaluatedString = Regex.Replace(evaluatedString, @",+", ",");
 
-            // Evaluate dots
-            // evaluatedString = Regex.Replace(input, @"\.( |$)*[^\d]", replaceDotWithSpace);
-            // var matches = Regex.Matches(input, @"\.( |$)*[^\d]"); 
+            // Evaluate for period
+            evaluatedString = correctPeriodAndCommaPlacements(evaluatedString, true);
 
-            //evaluatedString = Regex.Replace(evaluatedString, @"\.( )+", replaceDotWithSpace);
-
-            // Evaluate commas
-            //evaluatedString = Regex.Replace(evaluatedString, @"\,(?! |$)[^\d]", replaceCommatWithSpace);
+            // evaluatedString = correctPeriodAndCommaPlacements(evaluatedString, false); 
 
             return evaluatedString;
         }

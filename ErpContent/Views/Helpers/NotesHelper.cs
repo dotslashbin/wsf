@@ -161,66 +161,7 @@ namespace ErpContent.Views.Helpers
         }
         #endregion
 
-        /// <summary>
-        /// split text into lines, sentences and finally into words. replace only words which are in accentMap, the rest of words
-        /// leave without changes and combine them back to sentences and lines.
-        /// </summary>
-        /// <param name="src"></param>
-        /// <returns></returns>
-        public static string ReplaceToAccent(string src)
-        {
-
-            var paragraphs          = src.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
-            var newSentences        = new List<string>(); 
-            var newParts            = new List<string>();
-            var newLines            = new List<string>();
-            var newWords            = new List<string>();
-
-            foreach (var paragraph in paragraphs)
-            {
-
-                newSentences.Clear(); 
-                var sentences = paragraph.Split(new string[] { "." } , StringSplitOptions.None);
-
-                foreach (var sentence in sentences)
-                {
-                    newParts.Clear();
-                    var parts = sentence.Split(new string[] { "," }, StringSplitOptions.None);
-
-                    foreach (var part in parts)
-                    {
-                        var words = part.Split(new string[] { " " }, StringSplitOptions.None);
-                        newWords.Clear();
-                        foreach (var word in words)
-                        {
-                            var key = word.ToLower();
-                            if (accentMap.ContainsKey(key))
-                            {
-                                var dest = accentMap[key];
-                                //
-                                // special case. source word could start with Upper case later
-                                // but replacement could be in lower case, so preserve the case of the source
-                                // Do it only if source is in Upper case, ddo not do that if it is in Lower case
-                                //
-                                if (Char.IsUpper(dest[0]) && dest[0] != word[0])
-                                {
-                                    dest = word.Substring(0, 1) + dest.Substring(1);
-                                }
-                                newWords.Add(dest);
-                            }
-                            else
-                            {
-                                newWords.Add(word);
-                            }
-                        }
-                        newParts.Add(String.Join(" ", newWords));
-                    }
-                    newLines.Add(String.Join(",", newParts));
-                }
-                newSentences.Add(String.Join(".", newLines)); 
-            }
-            return String.Join(Environment.NewLine, newSentences);
-        }
+       
 
         #region -- Constructor --
         static NotesHelper()
@@ -269,7 +210,7 @@ namespace ErpContent.Views.Helpers
         public static string applyFormatting(string notes)
         {
             string evaluatedSpaces = evaluateForSpaces(notes); // Call to check for space after each period
-
+            
             string evaluatedForItalizedWords = evaluateForItalizedWords(evaluatedSpaces);
 
             string evaluatedForItalizedPhrases = evaluateForItalizedPhrases(evaluatedForItalizedWords);
@@ -299,6 +240,54 @@ namespace ErpContent.Views.Helpers
             if (input.Length == 1)
                 return input.ToUpper();
             return input.Remove(1).ToUpper() + input.Substring(1);
+        }
+        
+        /**
+         * This method will break down the large inputted string into segments, and evaluates them individually. 
+         *  Evaluation will look for periods "." and will check if they are to be accepted or replaced. Segments 
+         *  that are numeric values ( ex 123.123 or 123.2% ) are accpeted as is. Corrections are only done 
+         *  for segments having unconventional usage of periods, such as "...", or ".    XYZ". 
+         *  
+         * @param       String      input
+         * @return      String      correctedString
+         * 
+         * @author      Joshua Fuentes  <joshua.fuentes@robertpaker.com>
+         */
+        private static string correctPeriodPlacements(string input)
+        {
+            string correctedString = "";
+            List<String> correctedSegments = new List<string>(); 
+
+            // Creating segments out of the inputted string
+            var segments = input.Split(new string[] { " " }, StringSplitOptions.None);
+
+            List<string> testContainer = new List<string>();  
+
+            foreach (var segment in segments)
+            {
+            
+                // Accept if it is a valid percentage value
+                var isValidNumericValue = Regex.Match(segment, @"[0-9]+\.[0-9]+%?");
+                if (isValidNumericValue.ToString() != "")
+                {
+                    correctedSegments.Add(isValidNumericValue.Value.ToString());
+                }
+                // Accept if segment does not contain any periods
+                else if (!segment.Contains("."))
+                {
+                    correctedSegments.Add(segment); 
+                }
+                // Replace inappropriate periods with correct ones
+                else if(segment.Contains("."))
+                {
+                    String correctedSegment = Regex.Replace(segment, @"(\.)+", ". ");
+                    correctedSegments.Add(correctedSegment); 
+                }
+            }
+
+            correctedString = String.Join(" ", correctedSegments); 
+
+            return correctedString; 
         }
 
         /**
@@ -429,17 +418,88 @@ namespace ErpContent.Views.Helpers
 
             string evaluatedString = "";
 
-            // Evaluate dots
-            evaluatedString = Regex.Replace(input, @"\.(?! |$)", replaceDotWithSpace);
 
-            evaluatedString = Regex.Replace(evaluatedString, @"(\.\ )+", replaceDotWithSpace);
+            // Regex to match periods in sentences "\.( |$)*[^\d]" 
+            // Regex to match percentage [0-9]+\.(\s|$)*(\d)*%
+
+            // Compress spaces after dots
+            evaluatedString = Regex.Replace(input, @"\.(\s)*", ".");
+
+            evaluatedString = correctPeriodPlacements(evaluatedString); 
+
+            // Evaluate dots
+            // evaluatedString = Regex.Replace(input, @"\.( |$)*[^\d]", replaceDotWithSpace);
+            // var matches = Regex.Matches(input, @"\.( |$)*[^\d]"); 
+
+            //evaluatedString = Regex.Replace(evaluatedString, @"\.( )+", replaceDotWithSpace);
 
             // Evaluate commas
-            evaluatedString = Regex.Replace(evaluatedString, @"\,(?! |$)", replaceCommatWithSpace);
+            //evaluatedString = Regex.Replace(evaluatedString, @"\,(?! |$)[^\d]", replaceCommatWithSpace);
 
             return evaluatedString;
         }
 
+        /// <summary>
+        /// split text into lines, sentences and finally into words. replace only words which are in accentMap, the rest of words
+        /// leave without changes and combine them back to sentences and lines.
+        /// </summary>^
+        /// <param name="src"></param>
+        /// <returns></returns>
+        public static string ReplaceToAccent(string src)
+        {
+
+            var paragraphs = src.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+            var newSentences = new List<string>();
+            var newParts = new List<string>();
+            var newLines = new List<string>();
+            var newWords = new List<string>();
+
+            foreach (var paragraph in paragraphs)
+            {
+
+                newSentences.Clear();
+                var sentences = paragraph.Split(new string[] { "." }, StringSplitOptions.None);
+
+                foreach (var sentence in sentences)
+                {
+                    newParts.Clear();
+                    var parts = sentence.Split(new string[] { "," }, StringSplitOptions.None);
+
+                    foreach (var part in parts)
+                    {
+                        var words = part.Split(new string[] { " " }, StringSplitOptions.None);
+                        newWords.Clear();
+                        foreach (var word in words)
+                        {
+                            var key = word.ToLower();
+                            if (accentMap.ContainsKey(key))
+                            {
+                                var dest = accentMap[key];
+                                //
+                                // special case. source word could start with Upper case later
+                                // but replacement could be in lower case, so preserve the case of the source
+                                // Do it only if source is in Upper case, ddo not do that if it is in Lower case
+                                //
+                                if (Char.IsUpper(dest[0]) && dest[0] != word[0])
+                                {
+                                    dest = word.Substring(0, 1) + dest.Substring(1);
+                                }
+                                newWords.Add(dest);
+                            }
+                            else
+                            {
+                                newWords.Add(word);
+                            }
+                        }
+                        newParts.Add(String.Join(" ", newWords));
+                    }
+                    newLines.Add(String.Join(",", newParts));
+                }
+                newSentences.Add(String.Join(".", newLines));
+            }
+            return String.Join(Environment.NewLine, newSentences);
+        }
+        
         #endregion 
     }
 }

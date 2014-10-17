@@ -246,15 +246,14 @@ namespace ErpContent.Views.Helpers
          * This method will break down the large inputted string into segments, and evaluates them individually. 
          *  Evaluation will look for periods "." or commans ","  and will check if they are to be accepted or replaced. Segments 
          *  that are numeric values ( ex 123.123 or 123.2% ) are accpeted as is. Corrections are only done 
-         *  for segments having unconventional usage of periods, such as "...", or ".    XYZ", ",   " , or ", ,, , ". 
+         *  for segments having unconventional usage of periods, such as "...", or ".    XYZ". 
          *  
          * @param       String      input
-         * @param       String      evaluatedSeparator
          * @return      String      correctedString
          * 
          * @author      Joshua Fuentes  <joshua.fuentes@robertpaker.com>
          */
-        private static string correctPeriodAndCommaPlacements(string input, Boolean isPeriod)
+        private static string correctPeriodAndCommaPlacements(string input, string regexString, string replacement, string checker)
         {
 
             string correctedString = "";
@@ -271,41 +270,20 @@ namespace ErpContent.Views.Helpers
             {
             
                 // Accept if it is a valid percentage value
-                string regexToMatch = ""; 
-                if(isPeriod == true)
-                {
-                    regexToMatch = "[0-9]+(.)[0-9]+%?"; 
-                }
-                else
-                {
-                    regexToMatch = "[0-9]+(,)[0-9]+%?"; 
-                }
+                var isValidNumericValue = Regex.Match(segment, @"[0-9]+(.)[0-9]+%?");
 
-                var isValidNumericValue = Regex.Match(segment, @regexToMatch);
-
+                String correctedSegment = ""; 
                 if (isValidNumericValue.ToString() != "")
                 {
                     correctedSegments.Add(isValidNumericValue.Value.ToString().Trim());
-                }
-                // Accept if segment does not contain any periods
-                else if ( (isPeriod == true && !segment.Contains(".")) )
+                } 
+                else if (!segment.Contains(checker)) 
                 {
-                    correctedSegments.Add(segment.Trim()); 
+                    correctedSegments.Add(segment.Trim());
                 }
-                // Replace inappropriate periods with correct ones
-                else if((isPeriod == true && segment.Contains(".")))
+                else if (segment.Contains(checker))
                 {
-                    String correctedSegment = ""; 
-
-                    if (isPeriod == true)
-                    {
-                        correctedSegment = Regex.Replace(segment, @"(\.)+", ". ");
-                    }
-                    else
-                    {
-                        correctedSegment = Regex.Replace(segment, @"(,)+", ", ");
-                    }
-                    
+                    correctedSegment = Regex.Replace(segment, regexString, replacement);
                     correctedSegments.Add(correctedSegment); 
                 }
             }
@@ -443,12 +421,13 @@ namespace ErpContent.Views.Helpers
             // Compress spaces after dots
             evaluatedString = Regex.Replace(input, @"\.+", ".");
 
-            // evaluatedString = Regex.Replace(evaluatedString, @",+", ",");
+            evaluatedString = Regex.Replace(evaluatedString, @",+", ",");
 
             // Evaluate for period
-            evaluatedString = correctPeriodAndCommaPlacements(evaluatedString, true);
+            evaluatedString = correctPeriodAndCommaPlacements(evaluatedString, @"(\.)+", ". ", ".");
 
-            // evaluatedString = correctPeriodAndCommaPlacements(evaluatedString, false); 
+            // Evaluate for comma
+            evaluatedString = correctPeriodAndCommaPlacements(evaluatedString, @"(,)+", ", ", ",");
 
             return evaluatedString;
         }

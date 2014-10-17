@@ -419,7 +419,7 @@ namespace ErpContent.Views.Helpers
             // Compress spaces after dots
             evaluatedString = Regex.Replace(input, @"\.+", ".");
 
-            evaluatedString = Regex.Replace(evaluatedString, @",+", ",");
+            evaluatedString = Regex.Replace(evaluatedString, @"(,)+", ",");
 
             // Evaluate for period
             evaluatedString = correctPeriodAndCommaPlacements(evaluatedString, @"(\.)+", ". ", ".");

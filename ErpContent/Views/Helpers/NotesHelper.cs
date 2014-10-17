@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using System.Web;
 using System.Net;
 using System.Configuration;
+using System.Text;
 
 namespace ErpContent.Views.Helpers
 {
@@ -191,6 +192,18 @@ namespace ErpContent.Views.Helpers
         }
 
 
+        public static bool endsWithDigit(string str)
+        {
+            return String.IsNullOrEmpty(str) ? false : Char.IsDigit(str[str.Length - 1]);
+        }
+
+        public static bool startsWithDigit(string str)
+        {
+            return String.IsNullOrEmpty(str) ? false : Char.IsDigit(str[0]);
+        }
+
+
+
         public static string ReplaceToAccentPrivate(string src)
         {
             WordActionDelegate processWords = (part) =>
@@ -219,20 +232,67 @@ namespace ErpContent.Views.Helpers
                     });
             };
 
+            // special cases 
+            //  number 1,000,000.00
+            //
             WordActionDelegate processParts = (sentence) =>
             {
                 return SplitterMerger(sentence,
                     (arg) => { return arg.Split(new string[] { "," }, StringSplitOptions.None); },
-                    (arg) => { return String.Join(", ", arg); },
+                    (arg) => {
+                        StringBuilder sb = new StringBuilder(arg[0]);
+                        for (int i = 1; i < arg.Length; i++)
+                        {
+                            if (startsWithDigit(arg[i-1]) && endsWithDigit(arg[i]))
+                            {
+                                sb.Append(",");
+                                sb.Append(arg[i]);
+                            }
+                            else
+                            {
+                                sb.Append(", ");
+                                sb.Append(arg[i]);
+                            }
+                        }
+                        return sb.ToString();
+                    },
                     (arg) => { return processWords(arg.Trim());
                     });
             };
+
+
+            // special cases 
+            //  number 1,000,000.00
+            //  multiple dots ...
+            //
+
 
             WordActionDelegate processSentences = (paragraph) =>
             {
                 return SplitterMerger(paragraph,
                     (arg) => { return arg.Split(new string[] { "." }, StringSplitOptions.None); },
-                    (arg) => { return String.Join(". ", arg); },
+                    (arg) => {
+                        StringBuilder sb = new StringBuilder(arg[0]);
+                        for (int i = 1; i < arg.Length; i++)
+                        {
+                            if (startsWithDigit(arg[i-1]) && endsWithDigit(arg[i]))
+                            {
+                                sb.Append(".");
+                                sb.Append(arg[i]);
+                            }
+                            else if (String.IsNullOrEmpty(arg[i - 1]) && String.IsNullOrEmpty(arg[i]))
+                            {
+                                sb.Append(".");
+                                sb.Append(arg[i]);
+                            }
+                            else
+                            {
+                                sb.Append(". ");
+                                sb.Append(arg[i]);
+                            }
+                        }
+                        return sb.ToString();
+                    },
                     (arg) => { return processParts(arg.Trim()); });
             };
 

@@ -246,9 +246,13 @@ namespace ErpContent.Views.Helpers
          * This method will break down the large inputted string into segments, and evaluates them individually. 
          *  Evaluation will look for periods "." or commans ","  and will check if they are to be accepted or replaced. Segments 
          *  that are numeric values ( ex 123.123 or 123.2% ) are accpeted as is. Corrections are only done 
-         *  for segments having unconventional usage of periods, such as "...", or ".    XYZ". 
+         *  for segments having unconventional usage of periods, such as "...", or ".    XYZ", and ",,,,", or ",       ABC" . 
          *  
          * @param       String      input
+         * @param       String      regexString         regex to find the matches for instances on comma's and periods.
+         * @param       String      replacement         replacement string ( either ". " , or ", " ) 
+         * @param       String      checker             Character to used for checking if either comma or period is present
+         * 
          * @return      String      correctedString
          * 
          * @author      Joshua Fuentes  <joshua.fuentes@robertpaker.com>
@@ -270,7 +274,8 @@ namespace ErpContent.Views.Helpers
             {
             
                 // Accept if it is a valid percentage value
-                var isValidNumericValue = Regex.Match(segment, @"[0-9]+(.)[0-9]+%?");
+                //var isValidNumericValue = Regex.Match(segment, @"[0-9]+(.)[0-9]+%?");
+                var isValidNumericValue = Regex.Match(segment, @"([0-9]+\.[0-9](%)?)|([0-9]+,[0-9]+[0-9]+(\.)?[0-9]+)");
 
                 String correctedSegment = ""; 
                 if (isValidNumericValue.ToString() != "")

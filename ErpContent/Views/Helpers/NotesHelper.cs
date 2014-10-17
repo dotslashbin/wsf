@@ -8,8 +8,6 @@ using System.Configuration;
 
 namespace ErpContent.Views.Helpers
 {
-
-
     public class NotesHelper
     {
 
@@ -161,8 +159,6 @@ namespace ErpContent.Views.Helpers
         }
         #endregion
 
-       
-
         #region -- Constructor --
         static NotesHelper()
         {
@@ -263,8 +259,6 @@ namespace ErpContent.Views.Helpers
             string correctedString = "";
             List<String> correctedSegments = new List<string>();
 
-            // Determine which character to use
-
             // Creating segments out of the inputted string
             var segments = input.Split(new string[] { " " }, StringSplitOptions.None);
 
@@ -272,7 +266,6 @@ namespace ErpContent.Views.Helpers
 
             foreach (var segment in segments)
             {
-            
                 // Accept if it is a valid percentage value
                 //var isValidNumericValue = Regex.Match(segment, @"[0-9]+(.)[0-9]+%?");
                 var isValidNumericValue = Regex.Match(segment, @"([0-9]+\.[0-9](%)?)|([0-9]+,[0-9]+[0-9]+(\.)?[0-9]+)");

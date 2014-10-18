@@ -140,7 +140,7 @@
 
                                         'note-edit-rating': {
                                             required: false,
-                                            range: [60, 100]
+                                            rating: true
                                         },
 
                                         'note-edit-drink-from': {

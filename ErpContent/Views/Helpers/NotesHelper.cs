@@ -203,6 +203,33 @@ namespace ErpContent.Views.Helpers
         }
 
 
+        static WordActionDelegate WordProcessorAccent = (part) =>
+        {
+            return SplitterMerger(part,
+                (arg) => { return arg.Split(new string[] { " " }, StringSplitOptions.None); },
+                (arg) => { return String.Join(" ", arg); },
+                (arg) =>
+                {
+                    var key = arg.ToLower();
+                    if (accentMap.ContainsKey(key))
+                    {
+                        var dest = accentMap[key];
+                        //
+                        // special case. source word could start with Upper case later
+                        // but replacement could be in lower case, so preserve the case of the source
+                        // Do it only if source is in Upper case, ddo not do that if it is in Lower case
+                        //
+                        if (Char.IsLower(dest[0]) && dest[0] != arg[0])
+                        {
+                            return arg.Substring(0, 1) + dest.Substring(1);
+                        }
+                        return dest;
+                    }
+                    return arg;
+                });
+        };
+
+
 
         public static string ReplaceToAccentPrivate(string src)
         {
@@ -307,51 +334,7 @@ namespace ErpContent.Views.Helpers
 
         public static string ReplaceToAccent(string src)
         {
-
             return ReplaceToAccentPrivate(src);
-
-
-            //var lines = src.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
-            //var newLines = new List<string>();
-            //var newWords = new List<string>();
-            //var newParts = new List<string>();
-
-            //foreach (var line in lines)
-            //{
-            //    newParts.Clear();
-            //    var parts = line.Split(new string[] { "," }, StringSplitOptions.None);
-
-            //    foreach (var part in parts)
-            //    {
-            //        var words = part.Split(new string[] { " " }, StringSplitOptions.None);
-            //        newWords.Clear();
-            //        foreach (var word in words)
-            //        {
-            //            var key = word.ToLower();
-            //            if (accentMap.ContainsKey(key))
-            //            {
-            //                var dest = accentMap[key];
-            //                //
-            //                // special case. source word could start with Upper case later
-            //                // but replacement could be in lower case, so preserve the case of the source
-            //                // Do it only if source is in Upper case, ddo not do that if it is in Lower case
-            //                //
-            //                if (Char.IsUpper(dest[0]) &&  dest[0] != word[0])
-            //                {
-            //                    dest =   word.Substring(0,1) + dest.Substring(1);
-            //                }
-            //                newWords.Add(dest);
-            //            }
-            //            else
-            //            {
-            //                newWords.Add(word);
-            //            }
-            //        }
-            //        newParts.Add(String.Join(" ", newWords));
-            //    }
-            //    newLines.Add(String.Join(",",newParts));
-            //}
-            //return String.Join(Environment.NewLine, newLines);
         }
 
         #region -- Constructor --

@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -240,6 +241,13 @@ namespace EditorsCommon
     }
 
 
+    public String noteFormated
+    {
+        get
+        {
+            return String.IsNullOrEmpty(note) ? "" : TastingNoteHelpers.ReplaceToItilized(TastingNoteHelpers.ReplaceToAccent(note));
+        }
+    }
 
     }
 

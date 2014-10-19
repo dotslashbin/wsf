@@ -59,6 +59,10 @@
 
             o.drinkDateLo = erp.utils.Year2ValidDate(o.drinkDateLo);
             o.drinkDateHi = erp.utils.Year2ValidDate(o.drinkDateHi);
+            //
+            // to prevent error message about potential cross-siting scripting
+            //
+            o.noteFormated = "";
 
             return o;
         }

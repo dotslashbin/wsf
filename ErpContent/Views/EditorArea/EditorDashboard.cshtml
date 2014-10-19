@@ -128,7 +128,7 @@
 
                                         <div class="row" style="border-bottom: solid 1px gray">
                                             <div class="col-sm-11  pull-right" style="background-color: white;cursor:pointer" data-bind="click: editNote,visible : wfState() < '@EditorsCommon.WorkFlowState.READY_APPROVED' ">
-                                                <span data-bind="html: erp.utils.Str2Html($data.note()) "></span>
+                                                <span data-bind="html: erp.utils.Str2Html($data.noteFormated()) "></span>
                                             </div>
                                         </div>
                                         <!-- /ko -->

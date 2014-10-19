@@ -109,6 +109,7 @@
     <Compile Include="IAssignmentStorage.cs" />
     <Compile Include="IIssueStorage.cs" />
     <Compile Include="IWineProducer.cs" />
+    <Compile Include="TastingNoteHelpers.cs" />
     <Compile Include="WorkFlowStatus.cs" />
   </ItemGroup>
   <ItemGroup>

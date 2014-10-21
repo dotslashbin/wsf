@@ -138,7 +138,7 @@ namespace ErpContent.Views.Helpers
                     accentMap.Add(key, pairs[i * 2 + 1]);
                 }
             }
-        }
+       } 
 
         /// <summary>
         /// 
@@ -231,7 +231,7 @@ namespace ErpContent.Views.Helpers
 
 
 
-        public static string ReplaceToAccentPrivate(string src)
+        private static string ReplaceToAccentPrivate(string src)
         {
             WordActionDelegate processWords = (part) =>
             {
@@ -334,7 +334,13 @@ namespace ErpContent.Views.Helpers
 
         public static string ReplaceToAccent(string src)
         {
-            return ReplaceToAccentPrivate(src);
+            string replacedString = ReplaceToAccentPrivate(src);
+
+            // Cleaning leftover spaces
+            string cleanedString = Regex.Replace(replacedString, @"(, )+", ", ");
+            cleanedString = Regex.Replace(cleanedString, @"(\. )+", ". "); 
+
+            return cleanedString; 
         }
 
         #region -- Constructor --

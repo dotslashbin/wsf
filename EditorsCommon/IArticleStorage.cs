@@ -10,32 +10,31 @@ namespace EditorsCommon
     #region -- Members --
     public class Article
     {
-        public int? ID { get; set; }
-        public int? PublicationID { get; set; }
-        public string Publication { get; set; }
-        public int? AuthorId { get; set; }
-        public string Author { get; set; }
-        public string AuthorName { get; set; }
-        public string Title { get; set; }
-        public string ShortTitle { get; set; }
-        public DateTime Date { get; set; }
-        public string Notes { get; set; }
-        public string MetaTags { get; set; }
-        public string Event { get; set; }
-        public int? CuisineID { get; set; }
-        public string Cuisine { get; set; }
-        public int? LocCountryID { get; set; }
-        public int? LocRegionID { get; set; }
-        public int? locLocationID { get; set; }
-        public int? WF_StatusID { get; set; }
-        public int? OldArticleIdN { get; set; }
-        public int? OldArticleId { get; set; }
-        public int? OldArticleIdNKey { get; set; }
+        public int id;
+        public int publicationId;
+        public string publication;
+        public int authorId;
+        public string author;
+        public string authorName;
+        public string title;
+        public string shortTitle;
+        public DateTime date;
+        public string notes;
+        public string metaTags;
+        public string Event;
+        public int cuisineID;
+        public string cuisine;
+        public int LocCountryID;
+        public int LocRegionID;
+        public int locLocationID;
+        public int WF_StatusID;
+        public int OldArticleIdN;
+        public int OldArticleId;
+        public int OldArticleIdNKey;
         
     }
     #endregion
 
-    #region --interface--
     public interface IArticleStorage : IStorage<Article>
     {
         //IEnumerable<Article> Search(Article article);
@@ -48,5 +47,5 @@ namespace EditorsCommon
 
         Boolean AddArticleToAssignment(int articleID, int assignmentID);
     }
-    #endregion
+
 }

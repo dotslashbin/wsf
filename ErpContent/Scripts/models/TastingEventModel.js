@@ -138,6 +138,11 @@
                                 rules:
                                     {
 
+                                        'note-edit-vintage': {
+                                            required: true,
+                                            vintage: true
+                                        },
+
                                         'note-edit-rating': {
                                             required: false,
                                             rating: true

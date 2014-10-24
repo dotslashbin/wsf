@@ -44,11 +44,11 @@ namespace ErpContent.Controllers
         {
             Article newArticle = new JavaScriptSerializer().Deserialize<Article>(article);
 
-            newArticle.AuthorId = (int)Membership.GetUser(User.Identity.Name).ProviderUserKey;
+            newArticle.authorId = (int)Membership.GetUser(User.Identity.Name).ProviderUserKey;
 
             newArticle = _articleStorage.Create(newArticle);
 
-            bool result = _articleStorage.AddArticleToAssignment(Convert.ToInt32(newArticle.ID), Convert.ToInt32(assignmentID));
+            bool result = _articleStorage.AddArticleToAssignment(Convert.ToInt32(newArticle.id), Convert.ToInt32(assignmentID));
 
             if (result == false)
             {
@@ -65,7 +65,7 @@ namespace ErpContent.Controllers
 
             _articleStorage.Delete(article); 
 
-            return Json(article.ID, JsonRequestBehavior.AllowGet); 
+            return Json(article.id, JsonRequestBehavior.AllowGet); 
         }
 
         /**
@@ -118,7 +118,7 @@ namespace ErpContent.Controllers
                 article = this._articleStorage.SearchArticleByID(ID); 
             }
 
-            if (article.ID == null)
+            if (article.id == null)
             {
                 return null;
             }

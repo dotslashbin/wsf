@@ -13,6 +13,7 @@ namespace EditorsCommon
 
         static string[] pairs = {
                 "cuvee"         ,"cuvée" ,
+                "Cuvee"         ,"Cuvée" ,
                 "Rhone"         ,"Rhône" ,
                 "Rhones"        ,"Rhônes",
                 "Cote"          ,"Côte" ,
@@ -40,65 +41,84 @@ namespace EditorsCommon
                 "Vire-Clesse"   ,"Viré-Clessé",
                 "Tam"           ,"Tâm",
                 "Pean"          ,"Peàn",
+                "creme"         ,"crème",
 
             };
 
         static string[] itilizedWords = {
-            "élevage",
-            "demi-muid",
-            "négociant",
-            "lieu-dit",
-            "mélange",
-            "cepage",
+            "auslese",
             "batonnage",
+            "bodega",
+            "cepage",
+            "coulure",
+            "demi-muid",
+            "elevage",
+            "élevage",
+            "inter-alia",
+            "lieu-dit",
+            "lieux-dits", 
+            "mélange",
+            "melange",
+            "millerandage",
+            "mirabelle",
+            "monopole",
+            "négociant",
+            "négoçe",
+            "negociant",
+            "négociant",
+            "halbtrocken",
             "garrigue",
-            "vigneron",
-            "sur-maturité",
+            "griotte",
+            "oechsle",
+            "pain grille", 
             "patisserie",
-            "terroir",
-            "vigneron",
+            "pigeage",
+            "terroir", 
           //  "cru",
           //  "crus",
-            "vignoble",
-            "bodega",
-            "trockenheit",
-            "feinherb",
-            "mirabelle",
-            "oechsle",
-            "trocken",
-            "halbtrocken",
             "spaetlese",
-            "auslese",
-            "griotte",
+            "sur-maturité",
+            "sur-maturite",
           //  "clos",
-            "pigeage",
-            "monopole",
-            "tonneliers",
             "tirage",
             "veraison",
-            "inter-alia",
             "oidium",
-            "millerandage",
+            "oechesle",
             "rancio",
             "solero",
             "saignée",
-            "négoçe",
+            "saignee",
+            "spatlese",
             "jus",
-            "couloure",
+            "trockenheit",
+            "feinherb",
+            "tonneliers",
+            "trocken",
             "vendage",
-//            "domaine"
+            "vignoble",
+            "vigneron",
+            "vigneron",
+
           };
 
+
+        /// <summary>
+        /// will require exact match. leters and cases
+        /// </summary>
         static string[] itilizedPhrases = {
             "bouquet garni",
             "vin de pays",
             "sur lie",
             "tour de force",
             "creme de cassis",
+            "crème de cassis",
             "pain grillé",
             "cantus firmus",
-            "herbs de provence",
+            "herbes de Provence",
             "lutte raisonée",
+            "lutte raisonee",
+            "Lutte raisonee", 
+            "Lutte raisonée", 
             "en route",
             "méthode Champenoise", 
             "premier cru", 
@@ -130,7 +150,7 @@ namespace EditorsCommon
             for (int i = 0; i < pairCount; i++)
             {
 
-                var key = pairs[i * 2].ToLower();
+                var key = pairs[i * 2];
                 if (!accentMap.ContainsKey(key))
                 {
                     accentMap.Add(key, pairs[i * 2 + 1]);
@@ -173,12 +193,12 @@ namespace EditorsCommon
             {
                 string[] words = itilizedPhrases[i].Split(splitter);
 
-                string key = words[0].ToLower();
-                if (!itilizedWordsMap.ContainsKey(key))
+                string key = words[0];
+                if (!itilizedPhrasesMap.ContainsKey(key))
                 {
                     for (int j = 0; j < words.Length; j++)
                     {
-                        words[j] = words[j].ToLower(); 
+                        words[j] = words[j]; 
                     }
                     itilizedPhrasesMap.Add(key, words);
                 }
@@ -254,9 +274,12 @@ namespace EditorsCommon
                     var key = arg.ToLower();
                     StringBuilder sb = new StringBuilder("");
 
+                    //
+                    // itilized phrases are case sensative
+                    //
                     if (phraseToMatch != null)
                     {
-                       if( key.CompareTo( phraseToMatch[ phraseToMatchIndex] ) == 0){
+                       if( arg.CompareTo( phraseToMatch[ phraseToMatchIndex] ) == 0){
                            queue.Enqueue(arg);
 
                            phraseToMatchIndex++;
@@ -302,9 +325,9 @@ namespace EditorsCommon
 
                     if (!lastLocal)
                     {
-                        if (itilizedPhrasesMap.ContainsKey(key))
+                        if (itilizedPhrasesMap.ContainsKey(arg))
                         {
-                            phraseToMatch = itilizedPhrasesMap[key];
+                            phraseToMatch = itilizedPhrasesMap[arg];
                             phraseToMatchIndex = 1;
                             queue.Enqueue(arg);
                             return sb.ToString();
@@ -335,20 +358,10 @@ namespace EditorsCommon
                 (arg) => { return String.Join(" ", arg); },
                 (arg, lastLocal) =>
                 {
-                    var key = arg.ToLower();
+                    var key = arg;
                     if (accentMap.ContainsKey(key))
                     {
-                        var dest = accentMap[key];
-                        //
-                        // special case. source word could start with Upper case later
-                        // but replacement could be in lower case, so preserve the case of the source
-                        // Do it only if source is in Upper case, ddo not do that if it is in Lower case
-                        //
-                        if (Char.IsLower(dest[0]) && dest[0] != arg[0])
-                        {
-                            return arg.Substring(0, 1) + dest.Substring(1);
-                        }
-                        return dest;
+                        return accentMap[key];
                     }
                     return arg;
                 });
@@ -421,7 +434,7 @@ namespace EditorsCommon
             {
                 return SplitterMerger(paragraph,
                     (arg) => { return arg.Split(new string[] { "." }, StringSplitOptions.None); },
-                    (arg) => { return SentencePartMerger(arg); },
+                    (arg) => { return SentenceMerger(arg); },
                     (arg,lastLocal) => { return processParts(arg.Trim(),lastLocal); });
             };
 

@@ -23,7 +23,7 @@ namespace EditorsDbLayer
         /// </summary>
         /// <Author>Joshua.Fuentes <joshua.fuentes@robertparker.com></Author>
 
-        private ISqlConnectionFactory _ISQLConnectionFactory;
+        private ISqlConnectionFactory _connectionFactory;
 
         /// <summary>
         /// 
@@ -31,7 +31,7 @@ namespace EditorsDbLayer
         /// <param name="connectionFactory"></param>
         public ArticleStorage(ISqlConnectionFactory connectionFactory)
         {
-            _ISQLConnectionFactory = connectionFactory;
+            _connectionFactory = connectionFactory;
         }
 
 
@@ -47,7 +47,7 @@ namespace EditorsDbLayer
         {
  
 
-            using (SqlConnection connection = _ISQLConnectionFactory.GetConnection())
+            using (SqlConnection connection = _connectionFactory.GetConnection())
             {
 
                 string SQL = ("Assignment_Article_Add");
@@ -99,13 +99,13 @@ namespace EditorsDbLayer
 
         public Article Delete(Article article)
         {
-            using (var connection = _ISQLConnectionFactory.GetConnection())
+            using (var connection = _connectionFactory.GetConnection())
             {
                 using (var command = new SqlCommand("Article_Del", connection))
                 {
 
                     command.CommandType = CommandType.StoredProcedure;
-                    command.Parameters.AddWithValue("@ID", article.ID);
+                    command.Parameters.AddWithValue("@ID", article.id);
                     SqlDataReader reader = command.ExecuteReader();
                 }
             }
@@ -116,11 +116,11 @@ namespace EditorsDbLayer
         private Article GetArticle(string fieldName, int ID)
         {
             Debug.Assert(fieldName != null);
-            Debug.Assert(ID != null);
+ 
 
             Article article = new Article();
 
-            using (var connection = _ISQLConnectionFactory.GetConnection())
+            using (var connection = _connectionFactory.GetConnection())
             {
                 using (var command = new SqlCommand("Article_GetList", connection))
                 {
@@ -132,19 +132,19 @@ namespace EditorsDbLayer
                     {
                             while (reader.Read())
                             {
-                                article.ID              = reader.GetInt32(0);
-                                article.PublicationID   = reader.IsDBNull(1) ? 0 : reader.GetInt32(1);
-                                article.Publication     = reader.IsDBNull(2) ? null : reader.GetString(2);
-                                article.AuthorId        = reader.IsDBNull(3) ? 0 : reader.GetInt32(3);
-                                article.AuthorName      = reader.IsDBNull(4) ? null : reader.GetString(4);
-                                article.Author          = reader.IsDBNull(5) ? null : reader.GetString(5);
-                                article.Title           = reader.IsDBNull(6) ? null : reader.GetString(6);
-                                article.ShortTitle      = reader.IsDBNull(7) ? null : reader.GetString(7);
-                                article.Notes           = reader.IsDBNull(9) ? null : reader.GetString(9);
-                                article.MetaTags        = reader.IsDBNull(10) ? null : reader.GetString(10);
+                                article.id              = reader.GetInt32(0);
+                                article.publicationId   = reader.IsDBNull(1) ? 0 : reader.GetInt32(1);
+                                article.publication     = reader.IsDBNull(2) ? null : reader.GetString(2);
+                                article.authorId        = reader.IsDBNull(3) ? 0 : reader.GetInt32(3);
+                                article.authorName      = reader.IsDBNull(4) ? null : reader.GetString(4);
+                                article.author          = reader.IsDBNull(5) ? null : reader.GetString(5);
+                                article.title           = reader.IsDBNull(6) ? null : reader.GetString(6);
+                                article.shortTitle      = reader.IsDBNull(7) ? null : reader.GetString(7);
+                                article.notes           = reader.IsDBNull(9) ? null : reader.GetString(9);
+                                article.metaTags        = reader.IsDBNull(10) ? null : reader.GetString(10);
                                 article.Event           = reader.IsDBNull(11) ? null : reader.GetString(11);
-                                article.CuisineID       = reader.IsDBNull(12) ? 0 : reader.GetInt32(12);
-                                article.Cuisine         = reader.IsDBNull(13) ? null : reader.GetString(13);
+                                article.cuisineID       = reader.IsDBNull(12) ? 0 : reader.GetInt32(12);
+                                article.cuisine         = reader.IsDBNull(13) ? null : reader.GetString(13);
                                 article.LocCountryID    = reader.IsDBNull(14) ? 0 : reader.GetInt32(14);
                                 article.LocRegionID     = reader.IsDBNull(15) ? 0 : reader.GetInt32(15);
                                 article.locLocationID   = reader.IsDBNull(16) ? 0 : reader.GetInt32(16);
@@ -164,7 +164,7 @@ namespace EditorsDbLayer
         {
             List<Article> result = new List<Article>();
 
-            using (var connection = _ISQLConnectionFactory.GetConnection())
+            using (var connection = _connectionFactory.GetConnection())
             {
 
                 using (var command = new SqlCommand("Article_GetList", connection))
@@ -193,20 +193,20 @@ namespace EditorsDbLayer
                         while (reader.Read() && counter < 10)
                         {
                             Article article = new Article();
-                            article.ID = reader.GetInt32(0);
-                            article.PublicationID = reader.IsDBNull(1) ? 0 : reader.GetInt32(1);
-                            article.Publication = reader.IsDBNull(2) ? null : reader.GetString(2);
-                            article.AuthorId = reader.IsDBNull(3) ? 0 : reader.GetInt32(3);
-                            article.AuthorName = reader.IsDBNull(4) ? null : reader.GetString(4);
-                            article.Author = reader.IsDBNull(5) ? null : reader.GetString(5);
-                            article.Title = reader.IsDBNull(6) ? null : reader.GetString(6);
-                            article.ShortTitle = reader.IsDBNull(7) ? null : reader.GetString(7);
+                            article.id = reader.GetInt32(0);
+                            article.publicationId = reader.IsDBNull(1) ? 0 : reader.GetInt32(1);
+                            article.publication = reader.IsDBNull(2) ? null : reader.GetString(2);
+                            article.authorId = reader.IsDBNull(3) ? 0 : reader.GetInt32(3);
+                            article.authorName = reader.IsDBNull(4) ? null : reader.GetString(4);
+                            article.author = reader.IsDBNull(5) ? null : reader.GetString(5);
+                            article.title = reader.IsDBNull(6) ? null : reader.GetString(6);
+                            article.shortTitle = reader.IsDBNull(7) ? null : reader.GetString(7);
                             // article.Date                = reader.GetDateTime(7);
-                            article.Notes = reader.IsDBNull(9) ? null : reader.GetString(9);
-                            article.MetaTags = reader.IsDBNull(10) ? null : reader.GetString(10);
+                            article.notes = reader.IsDBNull(9) ? null : reader.GetString(9);
+                            article.metaTags = reader.IsDBNull(10) ? null : reader.GetString(10);
                             article.Event = reader.IsDBNull(11) ? null : reader.GetString(11);
-                            article.CuisineID = reader.IsDBNull(12) ? 0 : reader.GetInt32(12);
-                            article.Cuisine = reader.IsDBNull(13) ? null : reader.GetString(13);
+                            article.cuisineID = reader.IsDBNull(12) ? 0 : reader.GetInt32(12);
+                            article.cuisine = reader.IsDBNull(13) ? null : reader.GetString(13);
                             article.LocCountryID = reader.IsDBNull(14) ? 0 : reader.GetInt32(14);
                             article.LocRegionID = reader.IsDBNull(15) ? 0 : reader.GetInt32(15);
                             article.locLocationID = reader.IsDBNull(16) ? 0 : reader.GetInt32(16);
@@ -226,15 +226,15 @@ namespace EditorsDbLayer
             throw new NotImplementedException();
         }
 
-        /**
-         * Executes the process of saving an article into the database
-         */
+ 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="article"></param>
+        /// <returns></returns>
         protected Article Save(Article article)
         {
-            // 
-            //
-            // TODO: Remove the asserts and dependency to the Debug class after development period
-            Debug.Assert(article != null, "This expects an article to be passed");
+  
 
             if (article == null)
             {
@@ -242,20 +242,20 @@ namespace EditorsDbLayer
             }
 
 
-            using (SqlConnection connection = _ISQLConnectionFactory.GetConnection())
+            using (SqlConnection connection = _connectionFactory.GetConnection())
             {
-                string SQL = (article.ID > 0 ? "Article_Update" : "Article_Add");
+                string SQL = (article.id > 0 ? "Article_Update" : "Article_Add");
 
                 using (SqlCommand command = new SqlCommand(SQL, connection))
                 {
                     // TODO: add implementation to build stored procedure command with paramteres
                     command.CommandType = CommandType.StoredProcedure;
 
-                    if (article.ID > 0)
+                    if (article.id > 0)
                     {
                         // Assigns ID if present. This will be the determining factor for update
                         // This also means that the date UPDATED should be updated logged
-                        command.Parameters.AddWithValue("@ID", article.ID);
+                        command.Parameters.AddWithValue("@ID", article.id);
                     }
                     else
                     {
@@ -265,12 +265,12 @@ namespace EditorsDbLayer
                     }
 
                     // Assigning paramters for the stored procedure call
-                    command.Parameters.AddWithValue("@PublicationID", article.PublicationID);
-                    command.Parameters.AddWithValue("@Title", article.Title);
-                    command.Parameters.AddWithValue("@ShortTitle", article.ShortTitle);
-                    command.Parameters.AddWithValue("@Notes", article.Notes);
-                    command.Parameters.AddWithValue("@AuthorId", article.AuthorId); 
-                    command.Parameters.AddWithValue("@Author", article.Author);
+                    command.Parameters.AddWithValue("@PublicationID", article.publicationId);
+                    command.Parameters.AddWithValue("@Title", article.title);
+                    command.Parameters.AddWithValue("@ShortTitle", article.shortTitle);
+                    command.Parameters.AddWithValue("@Notes", article.notes);
+                    command.Parameters.AddWithValue("@AuthorId", article.authorId); 
+                    command.Parameters.AddWithValue("@Author", article.author);
                     command.Parameters.AddWithValue("@ShowRes", 1);
                     
 
@@ -280,10 +280,7 @@ namespace EditorsDbLayer
 
                         if (dataReader.Read())
                         {
-                            if (article.ID == 0 || article.ID == null)
-                            {
-                                article.ID = dataReader.GetInt32(0);
-                            }
+                          article.id = dataReader.GetInt32(0);
                         }
                     }
                 }

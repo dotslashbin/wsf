@@ -113,7 +113,7 @@
                                                     valueUpdate: 'blur'"></select>
                                 </div>
                                 <div class="col-sm-3 pull-right">
-                                    <button class="btn  btn-primary btn-xs inner-window-button" data-bind="click: createNoteFromExisting">Add New Note From Exsiting</button>
+                                    <button class="btn  btn-primary btn-xs inner-window-button" data-bind="click: createNoteFromExisting">Add New Note From Existing</button>
                                     <button class="btn  btn-primary btn-xs inner-window-button" data-bind="click: createNote">Add New Note</button>
                                 </div>
                             </div>
@@ -669,11 +669,16 @@
                             rules :
                                 {
 
+                                    'note-edit-vintage': {
+                                        required: true,
+                                        vintage: true
+                                    },
+
                                     'note-edit-rating': {
                                         required: false,
                                         rating: true
                                     },
-                                    'note-edit-drink-from' : {
+                                    'note-edit-drink-from': {
                                         required : false,    
                                         range    : [2000,2400]
                                     },
@@ -1398,7 +1403,7 @@
             //
             //
             //
-            pageData.drillDownExt("search-tasting-note-template-window",VinSearchModel,"Search Extisting Notes");
+            pageData.drillDownExt("search-tasting-note-template-window",VinSearchModel,"Search Existing Notes");
         }
 
 

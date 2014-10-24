@@ -235,6 +235,28 @@
          "Must be more than 50 or range like 90-94"
          );
 
+    //
+    // add validation rule rating
+    // idea borrowed at http://stackoverflow.com/questions/280759/jquery-validate-how-to-add-a-rule-for-regular-expression-validation
+    //
+
+    $.validator.addMethod(
+        "vintage",
+         function (value, element) {
+             var result = true;
+             if (value) {
+
+                 result = false;
+                 result = result || /^[1-9][0-9][0-9][0-9]$/.test(value);
+                 result = result || /^NV$/.test(value);
+             }
+             return this.optional(element) || result;
+         },
+         "Vintage should be an Year like 2013 or NV"
+         );
+
+
+
 
     //
     // borrowed at http://www.robsearles.com/2010/05/jquery-validate-url-adding-http/

@@ -21,9 +21,7 @@
 
 <div id="dialog-placeholder" data-bind="template: { name: dmv().view, data: dmv().model, afterRender: $root.dialogInit }"></div>
 
-<!--
-<div id="dialog-publish-placeholder" data-bind="template: { name: dmv().view, data: dmv().model, afterRender: $root.dialogInit }"></div>
--->
+
 <div id="error-dialog-placeholder" data-bind="template: { name: dmvError().view, data: dmvError().model, afterRender: $root.errorDialogInit }"></div>
 
 
@@ -202,7 +200,7 @@
             <b><span class="col-sm-8" data-bind="text: notesWaitingForApproval"></span></b>
         </div>
         <br />
-        <div class="alert alert-warning">Please be patient. After you click "Save Changes", it make take up to one minute to complete operation</div>
+        <div class="alert alert-warning">Please be patient. After you click "Save Changes", it make take up to 5 minutes to complete operation</div>
 
     </div>
 </script>
@@ -367,11 +365,10 @@
                                 <td data-bind="text: editor.name, click: goToAssignmentDetails.bind($data, $parent)"></td>
                                 <td data-bind="text: proofread.name, click: goToAssignmentDetails.bind($data, $parent)">reader</td>
                                 <td data-bind="text: notesCount, click: goToAssignmentDetails.bind($data, $parent)">#notes?</td>
-                                <td data-bind="">#notes?</td>
-                                <td data-bind="">#notes?</td>
+                                <td data-bind="text: notesCountApproved">#notes?</td>
+                                <td data-bind="text: notesCountWaiting">#notes?</td>
                                 <td data-bind="text: approveDate"></td>
                                 <td data-bind="text: proofreadDate">proofread?</td>
-
 
                                 <td><span data-bind="click: $parent.deleteAssignment, visible: notesCount() == 0 " class='glyphicon glyphicon-trash' style="cursor:pointer" title="Delete Assignment (if empty)"></span></td>
                             </tr>
@@ -530,22 +527,20 @@
                     url: '@Url.Content("~/Issue/IssueInfo")',
                     data: { id: self.id() },
                     success: function (r) {
-
-
                         var m = {};
 
                         m.init = function (elements) {
                         };
 
                         m.save = function (o) {
-
-                            if( o.notesApproved > 0 ){
-                                    $.ajax({
+                            if (o.notesApproved > 0) {
+                                $.ajax({
+                                        async: false,   // block
                                         type: 'POST',
                                         url: '@Url.Content("~/Issue/Publish")',
                                         data: { id: self.id() },
                                         success: function (r) {
-                                            self.wfState(100);
+                                        self.wfState(100);
 
                                             ko.utils.arrayForEach(self.assignmentList(), function (item) {
                                                 item.wfState(100);
@@ -553,7 +548,6 @@
 
                                         },
                                         error: function (request, status, error) {
-
                                             PAGE_CONTEXT.error(request, status, error);
                                         }
                                     });
@@ -592,8 +586,10 @@
 
                         m.save = function (o) {
 
+
                             if( o.notesPublished > 0 ){
                                     $.ajax({
+                                        async: false,   // block
                                         type: 'POST',
                                         url: '@Url.Content("~/Issue/RollbackPublish")',
                                         data: { id: self.id() },
@@ -1697,12 +1693,15 @@
                 AutoPostBack: "false",
                 buttons: {
                     "Execute": {
+                        id: "dialogExecute",
                         text: "Execute",
                         class: "save_button",
                         click: function () {
+                            $("#dialogExecute").hide();
                             if (pageData.CloseDialog()) {
                                 $(this).dialog("close");
                             }
+                            $("#dialogExecute").show();
                         }
                     },
                     Cancel: function () {

@@ -293,6 +293,8 @@ select
                                 if (!dr.IsDBNull(11)) item.publication = dr.GetString(11);
 
                                 item.notesCount = dr.GetInt32(12);
+                                item.notesCountWaiting = dr.GetInt32(13);
+                                item.notesCountApproved = dr.GetInt32(14);
 
                                 dict.Add(item.id, item);
                         }

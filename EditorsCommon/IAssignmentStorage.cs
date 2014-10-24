@@ -114,6 +114,8 @@ namespace EditorsCommon.Publication {
 
 
         public int notesCount;
+        public int notesCountWaiting;
+        public int notesCountApproved;
 
     }
 

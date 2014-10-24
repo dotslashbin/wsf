@@ -444,7 +444,7 @@ namespace EditorsDbLayer.Data.Publication
 
                     cmd.CommandText = "Issue_Publish";
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.CommandTimeout = 120;
+                    cmd.CommandTimeout = 360;
                     cmd.Parameters.AddWithValue("@ID", issueId);
                     cmd.ExecuteScalar();
 
@@ -465,7 +465,7 @@ namespace EditorsDbLayer.Data.Publication
                 {
                     cmd.CommandText = "Issue_Unpublish";
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.CommandTimeout = 120;
+                    cmd.CommandTimeout = 360;
                     cmd.Parameters.AddWithValue("@ID", issueId);
                     cmd.ExecuteScalar();
                 }

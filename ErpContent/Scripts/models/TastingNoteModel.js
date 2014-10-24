@@ -92,15 +92,21 @@
             if (!self.note() || self.note().length == 0)
                 self.validateResult += "\n\r" + "Tasting Note is empty";
 
-            if (!self.rating() || self.rating().length == 0)
-                self.validateResult += "\n\r" + "Rating is invalid";
+            if (!self.rating() || self.rating().length == 0) {
+                if (!self.ratingQ() || self.ratingQ().length == 0)
+                  self.validateResult += "\n\r" + "Rating is invalid";
+            }
 
-            if (!self.drinkDateLo || self.drinkDateLo.length == 0)
-                self.validateResult += "\n\r" + "Drink From is invalid";
+            if (!self.drinkDateLo || self.drinkDateLo.length == 0) {
+                if (!self.isBarrelTasting() || self.isBarrelTasting() == false)
+                    self.validateResult += "\n\r" + "Drink From is invalid";
+            }
 
 
-            if (!self.drinkDateHi || self.drinkDateHi.length == 0)
-                self.validateResult += "\n\r" + "Drink To is invalid";
+            if (!self.drinkDateHi || self.drinkDateHi.length == 0) {
+                if (!self.isBarrelTasting() || self.isBarrelTasting() == false)
+                    self.validateResult += "\n\r" + "Drink To is invalid";
+            }
 
 
 

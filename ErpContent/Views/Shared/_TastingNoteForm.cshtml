@@ -110,24 +110,24 @@
                     <label for="note-edit-color" class="control-label">Color:</label>
                 </div>
                 <div class="col-sm-3 input-group-md">
-                    <input type="text"
-                        data-bind="value: color, valueUpdate: 'blur'"
-                        class="form-control" 
-                        id="note-edit-color" 
-                        name="note-edit-color" 
-                        placeholder="Color" required />
+                        <select  name="note-edit-color"
+                            data-bind="options: wineColorLookup,
+                            optionsText: 'name',
+                            optionsValue: 'name',
+                            value: color,
+                            valueUpdate: 'blur'" required></select>
                 </div>
 
                 <div class="col-sm-2 input-group-md">
                     <label for="note-edit-dryness" class="control-label">Dryness:</label>
                 </div>
                 <div class="col-sm-3 input-group-md">
-                    <input type="text"
-                        data-bind="value: dryness, valueUpdate: 'blur'"
-                        class="form-control" 
-                        id="note-edit-dryness" 
-                        name="note-edit-dryness" 
-                        placeholder="Dryness" required />
+                    <select name="note-edit-dryness"
+                        data-bind="options: wineDrynessLookup,
+                            optionsText: 'name',
+                            optionsValue: 'name',
+                            value: dryness,
+                            valueUpdate: 'blur'" required></select>
                 </div>
         </div>
         </div>

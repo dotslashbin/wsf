@@ -29,6 +29,25 @@
             { id: 4, name: 'Old'}
         ];
 
+
+        self.wineColorLookup = [
+            { id: 0, name: '' },
+            { id: 1, name: 'Red' },
+            { id: 2, name: 'Rose' },
+            { id: 3, name: 'White' },
+        ];
+
+
+        self.wineDrynessLookup = [
+            { id: 0, name: '' },
+            { id: 1, name: 'Dry' },
+            { id: 2, name: 'Medium Dry' },
+            { id: 3, name: 'Sweet' },
+            { id: 4, name: 'Very Dry' },
+        ];
+
+
+
         self.wineTypeLookup = [
             { id: 0	, name: '' },
             { id: 9, name: 'Table' },

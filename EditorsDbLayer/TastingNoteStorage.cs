@@ -1073,15 +1073,15 @@ select  top 200
         ,RatingQ
         ,Importers =  STUFF(  (select '+'+'---new-line---'+ Name 
                      +  case
-                          when LEN( isnull(Address,'')) > 0 then (',' + Address )
+                          when LEN( isnull(Address,'')) > 0 then (', ' + Address )
                           else ''
                         end   
                      +  case
-                          when LEN( isnull(Phone1,'')) > 0 then (',' + Phone1 )
+                          when LEN( isnull(Phone1,'')) > 0 then (', ' + Phone1 )
                           else ''
                         end   
                      +  case
-                          when LEN( isnull(URL,'')) > 0 then (',' + URL)
+                          when LEN( isnull(URL,'')) > 0 then (', ' + URL)
                           else ''
                         end   
                     from WineImporter wi

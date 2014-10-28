@@ -32,7 +32,7 @@ namespace ErpContent.Controllers
         /// <param name="term"></param>
         /// <param name="p"></param>
         /// <returns></returns>
-         [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameReviewer + "," + EditorsCommon.Constants.roleNameAdmin)]
+         [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
          [OutputCache(Duration = 0, VaryByParam = "none")]
          public ActionResult SearchWineLabel(String term, String p)
          {
@@ -46,7 +46,7 @@ namespace ErpContent.Controllers
         /// </summary>
         /// <param name="term"></param>
         /// <returns></returns>
-         [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameReviewer + "," + EditorsCommon.Constants.roleNameAdmin)]
+         [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
          [OutputCache(Duration = 0, VaryByParam = "none")]
          public ActionResult SearchProducer(String term)
          {
@@ -59,7 +59,7 @@ namespace ErpContent.Controllers
         /// </summary>
         /// <param name="term"></param>
         /// <returns></returns>
-         [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameReviewer + "," + EditorsCommon.Constants.roleNameAdmin)]
+         [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
          [OutputCache(Duration = 0, VaryByParam = "none")]
          public ActionResult SearchProducerExtended(String term)
          {
@@ -77,7 +77,7 @@ namespace ErpContent.Controllers
         /// <param name="lc"></param>
         /// <param name="s"></param>
         /// <returns></returns>
-         [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameReviewer + "," + EditorsCommon.Constants.roleNameAdmin)]
+         [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
          [OutputCache(Duration = 0, VaryByParam = "none")]
          public ActionResult SearchLocation(String c, String r, String l, String lc, String s)
          {
@@ -91,7 +91,7 @@ namespace ErpContent.Controllers
          /// </summary>
          /// <param name="term"></param>
          /// <returns></returns>
-         [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameReviewer + "," + EditorsCommon.Constants.roleNameAdmin)]
+         [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
          [OutputCache(Duration = 0, VaryByParam = "none")]
          public ActionResult SearchWineN(String term, int state = EditorsCommon.WorkFlowState.STATE_GROUP_ALL)
          {
@@ -126,7 +126,7 @@ namespace ErpContent.Controllers
          /// </summary>
          /// <param name="term"></param>
          /// <returns></returns>
-         [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameReviewer + "," + EditorsCommon.Constants.roleNameAdmin)]
+         [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
          [OutputCache(Duration = 0, VaryByParam = "none")]
          public ActionResult ApproveVinN(int id)
          {

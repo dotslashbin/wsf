@@ -1,0 +1,535 @@
+﻿
+@{
+    ViewBag.Title = "Similar Vins";
+    ViewBag.PageTitle = "ADMIN DASHBOARD: Similar Vins";
+    Layout = "~/Views/Shared/_LayoutBootstrap.cshtml";
+}
+
+
+
+
+@section LeftMenu{
+   @Html.Partial("_AdminMenuPartial")
+ }
+
+
+<h2>Similar Vins</h2>
+
+<div data-bind="template: { name: mv().view, data: mv().model, afterRender: $root.modelInit } "></div>
+
+<div id="dialog-placeholder" data-bind="  template: { name: dmv().view, data: dmv().model, afterRender: $root.dialogInit }"></div>
+
+<div id="error-dialog-placeholder" data-bind="  template: { name: dmvError().view, data: dmvError().model, afterRender: $root.errorDialogInit }"></div>
+
+
+
+@section scripts {
+
+    <script src="~/Scripts/models/PageDataModel.js"></script>
+
+
+    <script id="search-wine-template" type="text/html">
+
+         <div class="row">
+            <div class="col-sm-2  input-group-md">
+                <input type="checkbox" data-bind="checked: similarProducer"/>Producer
+            </div>
+            <div class="col-sm-2 input-group-md">
+                <input type="checkbox" data-bind="checked: similarCountry"/>Country
+            </div>
+            <div class="col-sm-2 input-group-md">
+                <input type="checkbox" data-bind="checked: similarLocale"/>Locale
+            </div>
+            <div class="col-sm-2 input-group-md">
+                <input type="checkbox" data-bind="checked: similarType"/>Wine Type
+            </div>
+        </div>
+
+         <div class="row">
+            <div class="col-sm-2  input-group-md">
+                <input type="checkbox" data-bind="checked: similarLabel"/>Label
+            </div>
+            <div class="col-sm-2 input-group-md">
+                <input type="checkbox" data-bind="checked: similarRegion"/>Region
+            </div>
+            <div class="col-sm-2 input-group-md">
+                <input type="checkbox" data-bind="checked: similarSite"/>Site
+            </div>
+            <div class="col-sm-2 input-group-md">
+                <input type="checkbox" data-bind="checked: similarVariety"/>Variety
+            </div>
+        </div>
+
+         <div class="row">
+            <div class="col-sm-2  input-group-md">
+                 <button class="btn btn-sm" data-bind="click: search" >Search</button>
+            </div>
+            <div class="col-sm-2 input-group-md">
+                <input type="checkbox" data-bind="checked: similarLocation"/>Location
+            </div>
+            <div class="col-sm-2  input-group-md">
+                &nbsp;
+            </div>
+            <div class="col-sm-2 input-group-md">
+                <input type="checkbox" data-bind="checked: similarDryness"/>Dryness
+            </div>
+        </div>
+
+        <br />
+        <div class="row" style="height: 550px; overflow:auto">
+
+            <!-- ko foreach: items -->
+            <div class="row"  style="border-bottom: solid 1px gray;">
+
+                <div class='col-sm-1' >
+                  <button class="btn btn-primary btn-xs" style="cursor:pointer" data-bind="click : $parent.resolve">Resolve</button>
+               </div>
+                <div class='col-sm-9' >
+                        <span class='glyphicon glyphicon-glass' data-bind="style: { color: wineColor($data.colorClass()) }" ></span>
+                        <span data-bind="text: producer"></span>
+                        <span data-bind="text: label"></span>, 
+                        <span data-bind="text: appellation"></span>, 
+                        <span data-bind="text: variety"></span>, 
+                        <span data-bind="text: colorClass"></span>, 
+                        <span data-bind="text: dryness"></span>
+                </div>
+            </div>
+            <!-- /ko -->
+
+        </div>
+    </script>
+
+    <script id="side-by-side-comparison-template" type="text/html">
+        <div class="row">
+            <div class="col-sm-2  input-group-md">
+                Producer
+            </div>
+            <div class="col-sm-5 input-group-md">
+                <span data-bind="text: v1.producer()"></span>
+            </div>
+            <div class="col-sm-5 input-group-md">
+                <span data-bind="text: v2.producer()"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-2  input-group-md">
+                Label
+            </div>
+            <div class="col-sm-5 input-group-md">
+                <span data-bind="text: v1.label()"></span>
+            </div>
+            <div class="col-sm-5 input-group-md">
+                <span data-bind="text: v2.label()"></span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-2  input-group-md">
+                Wine Type
+            </div>
+            <div class="col-sm-5 input-group-md">
+                <span data-bind="text: v1.wineType()"></span>
+            </div>
+            <div class="col-sm-5 input-group-md">
+                <span data-bind="text: v2.wineType()"></span>
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-sm-2  input-group-md">
+                Variety
+            </div>
+            <div class="col-sm-5 input-group-md">
+                <span data-bind="text: v1.variety()"></span>
+            </div>
+            <div class="col-sm-5 input-group-md">
+                <span data-bind="text: v2.variety()"></span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-2  input-group-md">
+                Dryness
+            </div>
+            <div class="col-sm-5 input-group-md">
+                <span data-bind="text: v1.dryness()"></span>
+            </div>
+            <div class="col-sm-5 input-group-md">
+                <span data-bind="text: v2.dryness()"></span>
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-sm-2  input-group-md">
+                Color Class
+            </div>
+            <div class="col-sm-5 input-group-md">
+                <span data-bind="text: v1.colorClass()"></span>
+            </div>
+            <div class="col-sm-5 input-group-md">
+                <span data-bind="text: v2.colorClass()"></span>
+            </div>
+        </div>
+
+
+
+        <div class="row">
+            <div class="col-sm-2  input-group-md">
+                Country
+            </div>
+            <div class="col-sm-5 input-group-md">
+                <span data-bind="text: v1.country()"></span>
+            </div>
+            <div class="col-sm-5 input-group-md">
+                <span data-bind="text: v2.country()"></span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-2  input-group-md">
+                Region
+            </div>
+            <div class="col-sm-5 input-group-md">
+                <span data-bind="text: v1.region()"></span>
+            </div>
+            <div class="col-sm-5 input-group-md">
+                <span data-bind="text: v2.region()"></span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-2  input-group-md">
+                Location
+            </div>
+            <div class="col-sm-5 input-group-md">
+                <span data-bind="text: v1.location()"></span>
+            </div>
+            <div class="col-sm-5 input-group-md">
+                <span data-bind="text: v2.location()"></span>
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-sm-2  input-group-md">
+                Locale
+            </div>
+            <div class="col-sm-5 input-group-md">
+                <span data-bind="text: v1.locale()"></span>
+            </div>
+            <div class="col-sm-5 input-group-md">
+                <span data-bind="text: v2.locale()"></span>
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-sm-2  input-group-md">
+                Site
+            </div>
+            <div class="col-sm-5 input-group-md">
+                <span data-bind="text: v1.site()"></span>
+            </div>
+            <div class="col-sm-5 input-group-md">
+                <span data-bind="text: v2.site()"></span>
+            </div>
+        </div>
+
+
+    </script>
+
+<script type="text/javascript">
+
+
+
+    function VinModel(src) {
+        var self = this;
+
+
+        self.toObject = function () {
+            var o = ko.mapping.toJS(self);
+            return o;
+        }
+
+        self.fromObject = function (o) {
+            ko.mapping.fromJS(o,
+                {
+
+                }, self);
+        }
+
+        //
+        //
+        //
+        if (src)
+            self.fromObject(src);
+
+        self.needApprove = function(){
+            if( self.workflow() < 100 )
+                return true;
+
+            for(var i =0; i < self.wines().length; i++){
+                if( self.wines()[i].workflow() < 100 ){
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        self.approve = function(){
+            alert('approve');
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Vin/ApproveVinN")',
+                data:
+                    {   id: self.id()},
+                success: function (result) {
+
+                    if(result > 0 ){
+
+                        self.wfState(100);
+                        
+                        for(var i =0; i < self.wines().length; i++){
+                            if( self.wines()[i].workflow() < 100 ){
+                                self.wines()[i].workflow(100);
+                            }
+                        }
+
+                    }
+                },
+                error: function (request, status, error) {
+
+                    alert("server error. report to admin");
+
+                }
+               });
+
+        }
+
+    }
+
+
+    function WinesPageModel() {
+        var self = this;
+
+        self.items = ko.observableArray();
+
+        self.similarProducer  = ko.observable(true);
+        self.similarLabel = ko.observable(true);
+
+        self.similarType = ko.observable(true);
+        self.similarVariety = ko.observable(true);
+        self.similarDryness = ko.observable(true);
+
+        self.similarCountry = ko.observable(true);
+        self.similarRegion = ko.observable(true);
+        self.similarLocation = ko.observable(true);
+        self.similarLocale = ko.observable(true);
+        self.similarSite = ko.observable(true);
+
+
+
+        self.resolve = function(item){
+            //
+            // search for item with ID equial ID! of the selected item
+            //
+            var item1 = null
+
+            for(var i=0;i < self.items().length; i++){
+                if( self.items()[i].id() == item.id1() ){
+
+                    item1 = self.items()[i];
+                    break;
+                }
+            }
+
+            if( item1 == null ){
+                // 
+                // did not not find similar item
+                //
+                alert('did not find similar VinN');
+                return;
+            }
+
+
+            var m = {};
+
+            m.v1 = item;
+            m.v2 = item1;
+            
+ 
+            m.init = function (elements) {
+            };
+
+            m.validate = function () {
+                return true;
+            }
+
+
+            m.save = function (o) {
+
+                alert('Save');
+
+                return true;
+            };
+
+
+            var d = pageData.OpenDialog(m, m, "side-by-side-comparison-template");
+            d.dialog("option", "title", "Select Proper Vin");
+        }
+
+
+        self.search = function () {
+            // do nothing at the moment
+            //
+            var flag = 0;
+
+
+            if( self.similarProducer() )
+                flag |=  0x0001; 
+            if( self.similarLabel() )
+                flag |=  0x0002; 
+            if( self.similarType() )
+                flag |=  0x0004; 
+            if( self.similarVariety() )
+                flag |=  0x0008; 
+            if( self.similarDryness() )
+                flag |=  0x0010; 
+            if( self.similarCountry() )
+                flag |=  0x0020; 
+            if( self.similarRegion() )
+                flag |=  0x0040; 
+            if( self.similarLocation() )
+                flag |=  0x0080; 
+            if( self.similarLocale() )
+                flag |=  0x0100; 
+            if( self.similarSite() )
+                flag |=  0x0200; 
+
+
+
+            $.get('@Url.Content("~/vin/LoadSimilar")', { flag: flag },
+                function (result) {
+                    var t = ko.mapping.fromJS(
+                        { 'children': result },
+                        {
+                            'children':
+                            {
+                                create: function (options) {
+                                    var result = new VinModel(options.data);
+                                    return result;
+                                }
+                            }
+                        }, {});
+
+                    self.items(t.children());
+                });
+        }
+
+        self.stateGroupId = ko.observable(0);
+        self.stateGroups = ko.observableArray();
+
+
+        self.initOnce = false;
+        self.init = function () {
+
+            if( ! self.initOnce ){
+
+                self.stateGroups([
+                    {name:'ALL',id:@EditorsCommon.WorkFlowState.STATE_GROUP_ALL},
+                   {name:'In Process',id:@EditorsCommon.WorkFlowState.STATE_GROUP_IN_PROCESS},
+                   {name:'Published',id:@EditorsCommon.WorkFlowState.STATE_GROUP_PUBLISHED},
+                    ]);
+
+                  self.stateGroupId(@EditorsCommon.WorkFlowState.STATE_GROUP_ALL);
+                  self.initOnce = !self.initOnce;
+                }
+
+            }
+    }
+
+
+
+
+    var PAGE_CONTEXT = {};
+
+    var pageData = new PageData();
+
+    pageData.init = function(){
+    }
+
+
+    ko.applyBindings(pageData);
+
+  
+
+    function wineColor(color) {
+        if (color == "Red" || color == "red")
+            return 'maroon';
+
+        if (color == "White" || color == "white")
+            return 'yellow';
+
+        if (color == "Rose" || color == "rose")
+            return 'red';
+
+        return 'maroon';
+    };
+
+
+
+    $(document).ready(function () {
+
+        $("#dialog-placeholder").dialog({
+            autoOpen: false,
+            height: 500,
+            width: 800,
+            modal: true,
+            buttons: {
+                "Save Changes": function () {
+
+                    if (pageData.CloseDialog()) {
+                        $(this).dialog("close");
+                    }
+                },
+                Cancel: function () {
+                    pageData.CancelDialog();
+                    $(this).dialog("close");
+                }
+            },
+            close: function () {
+            }
+        });
+
+
+        $("#error-dialog-placeholder").dialog({
+            autoOpen: false,
+            height: 500,
+            width: 800,
+            modal: true,
+            buttons: {
+                Close: function () {
+                    pageData.CancelErrorDialog();
+                    $(this).dialog("close");
+                }
+            },
+            close: function () {
+            }
+        });
+
+
+        pageData.init();
+        pageData.drillDown('search-wine-template', new WinesPageModel());
+
+        $("#page-left-menu #similar_wines").addClass("active");
+
+
+    });
+
+</script>
+
+}

@@ -16,8 +16,21 @@ namespace EditorsCommon
 
     public class VinN
     {
+
+
+        public const int SIMILAR_PRODUCER = 0X0001;
+        public const int SIMILAR_LABEL = 0X0002;
+        public const int SIMILAR_TYPE = 0X0004;
+        public const int SIMILAR_VARIETY = 0X0008;
+        public const int SIMILAR_DRYNESS = 0X0010;
+        public const int SIMILAR_COUNTRY = 0X0020;
+        public const int SIMILAR_REGION = 0X0040;
+        public const int SIMILAR_LOCATION = 0X0080;
+        public const int SIMILAR_LOCALE = 0X0100;
+        public const int SIMILAR_SITE = 0X0200;
+
+
         public Int32 id;
-        public Int32 count;
         public String producer;
         public String label;
 
@@ -38,7 +51,6 @@ namespace EditorsCommon
         protected DateTime created;
         protected DateTime updated;
 
-        public List<WineN> wines;
 
         public String appellation
         {
@@ -60,6 +72,20 @@ namespace EditorsCommon
             }
         }
 
+
+
+
+             //if (state == EditorsCommon.WorkFlowState.STATE_GROUP_IN_PROCESS)
+             //{
+             //    result = from r in result where r.workflow < EditorsCommon.WorkFlowState.PUBLISHED select r;
+             //}
+
+             /////
+             //if (state == EditorsCommon.WorkFlowState.STATE_GROUP_PUBLISHED)
+        /// <summary>
+        /// 
+        /// </summary>
+        public List<WineN> wines;
         public bool HasState(int state)
         {
 
@@ -108,16 +134,28 @@ namespace EditorsCommon
         }
 
 
-
-             //if (state == EditorsCommon.WorkFlowState.STATE_GROUP_IN_PROCESS)
-             //{
-             //    result = from r in result where r.workflow < EditorsCommon.WorkFlowState.PUBLISHED select r;
-             //}
-
-             /////
-             //if (state == EditorsCommon.WorkFlowState.STATE_GROUP_PUBLISHED)
+    }
 
 
+    public class VinExt : VinN
+    {
+
+
+        
+        /// <summary>
+        /// count of tasting notes refer to this VinN
+        /// </summary>
+        public Int32 count;
+
+
+        //
+        //
+        //
+        public Int32 id1;
+
+
+    
+    
     }
 
 
@@ -206,7 +244,19 @@ namespace EditorsCommon
         IEnumerable<VinN> SearchLocation(string country, string region, string location, string locale, string site);
 
 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         int ApproveVin(int id);
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="flag"></param>
+        /// <returns></returns>
+        IEnumerable<VinN> LoadSimilar(int flag);
     }
 }

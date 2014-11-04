@@ -111,6 +111,9 @@
             if (!self.note() || self.note().length == 0)
                 self.validateResult += "\n\r" + "Tasting Note is empty";
 
+            // 10.30.2014
+            //  Sarah is entering Neals's notes, but they do not have ratings
+            //
             if (!self.rating() || self.rating().length == 0) {
                 if (!self.ratingQ() || self.ratingQ().length == 0)
                   self.validateResult += "\n\r" + "Rating is invalid";
@@ -119,16 +122,16 @@
             // 10.28.2014
             //  Sarah is entering Bob's note, but they do not have drinking dates
             //
-            //if (!self.drinkDateLo || self.drinkDateLo.length == 0) {
-            //    if (!self.isBarrelTasting() || self.isBarrelTasting() == false)
-            //        self.validateResult += "\n\r" + "Drink From is invalid";
-            //}
+            if (!self.drinkDateLo || self.drinkDateLo.length == 0) {
+                if (!self.isBarrelTasting() || self.isBarrelTasting() == false)
+                    self.validateResult += "\n\r" + "Drink From is invalid";
+            }
 
 
-            //if (!self.drinkDateHi || self.drinkDateHi.length == 0) {
-            //    if (!self.isBarrelTasting() || self.isBarrelTasting() == false)
-            //        self.validateResult += "\n\r" + "Drink To is invalid";
-            //}
+            if (!self.drinkDateHi || self.drinkDateHi.length == 0) {
+                if (!self.isBarrelTasting() || self.isBarrelTasting() == false)
+                    self.validateResult += "\n\r" + "Drink To is invalid";
+            }
 
 
 

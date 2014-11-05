@@ -17,6 +17,13 @@
 </div>
 
 
+
+ @section LeftMenu{
+   @Html.Partial("_ChiefEditorLeftMenu")        
+ }
+
+
+
 <div data-bind="template: { name: mv().view, data: mv().model, afterRender: $root.modelInit } "></div>
 
 <div id="dialog-placeholder" data-bind="template: { name: dmv().view, data: dmv().model, afterRender: $root.dialogInit }"></div>
@@ -1758,6 +1765,9 @@
 
             pageData.init();
             pageData.drillDownExt('issue-list-template', new IssueTable(),"Issues");
+
+            $("#page-left-menu #dashboard").addClass("active");
+
 
         });
 

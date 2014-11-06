@@ -83,8 +83,8 @@
                       <span data-bind="text: nameToShow"></span>
                 </div>
                <div class='col-sm-2' >
-                  <button class="btn btn-primary btn-xs" style="cursor:pointer" data-bind="click: loadNotes, visible: notesLoaded() == false">Load Notes</button>
-                  <button class="btn btn-primary btn-xs" style="cursor:pointer" data-bind="click: clearNotes, visible: notesLoaded() == true">Clear Notes</button>
+                  <button class="btn btn-primary btn-xs" style="cursor:pointer" data-bind="click: loadNotes, visible: notesLoaded() == false">Show Notes</button>
+                  <button class="btn btn-primary btn-xs" style="cursor:pointer" data-bind="click: clearNotes, visible: notesLoaded() == true">Hide Notes</button>
                   <button class="btn btn-primary btn-xs" style="cursor:pointer" data-bind="click: approve, visible: needApprove() == true">Approve</button>
                </div>
             </div>
@@ -272,7 +272,7 @@
                     $.ajax({
                         type: 'POST',
                         async: false,
-                        url: '@Url.Content("~/Producer/SearchName")',
+                        url: '@Url.Content("~/Producer/SearchNameToShow")',
                         data:
                             {
                                 name: m.nameToShow().trim()
@@ -284,7 +284,8 @@
                             }
                         },
                         error: function (request, status, error) {
-                            alert('error while checking for existing name');
+                            alert('error while checking for existing "Name To Show"');
+                            return;
                         }
                     });
 
@@ -441,7 +442,7 @@
 
         if (color == "Rose" || color == "rose")
             return 'red';
-
+         no
         return 'maroon';
     };
 

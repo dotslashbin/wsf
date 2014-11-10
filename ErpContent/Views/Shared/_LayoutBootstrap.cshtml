@@ -130,12 +130,7 @@
     <script src="@Url.Content("~/Scripts/bootstrap.min.js")"></script>
     <script src="@Url.Content("~/Scripts/ckeditor/ckeditor.js")"></script>
 
-    <!-- MINI UPLOAD : JQuery ajax upload plugin    START -->
-    <script src="@Url.Content("~/Scripts/miniupload/js/jquery.ui.widget.js")"></script>
-    <script src="@Url.Content("~/Scripts/miniupload/js/jquery.iframe-transport.js")"></script>
-    <script src="@Url.Content("~/Scripts/miniupload/js/jquery.fileupload.js")"></script>
-    <!-- MINI UPLOAD : JQuery ajax upload plugin    END   -->
-
+  
     @Scripts.Render("~/bundles/jqueryval")
     @Scripts.Render("~/bundles/jqueryui")
     @Scripts.Render("~/bundles/knockout")
@@ -143,30 +138,6 @@
 
     @RenderSection("scripts", required: false)
 
-    <script>
-
-        // WORKING, BUT MESSAGE CANNOT BE CUSTOMIZED OR AVOIDED
-        //$(window).on('beforeunload', function (event) {
-        //    return " "; 
-        //});
-
-        //$(window).on('popstate', function () {
-        //    alert('back or forward button was clicked'); 
-        //})
-
-        // Test: testing jquery-ba.bbq.js 
-        // Finding: WORKS but not in our scenario 
-        //
-        //console.log("START BINDING..."); 
-        //$(window).bind("hashchange", function (e) {
-        //    console.log('hashchange: ' + location.hash);
-        //});
-        //console.log("FINISH BINDING...");
-
-        //console.log("EVENT IS ABOUT TO TRIGGER"); 
-        //$(window).trigger('hashchange');
-
-    </script>
 
 </body>
 </html>

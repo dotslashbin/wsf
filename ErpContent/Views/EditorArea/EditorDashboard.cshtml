@@ -30,11 +30,16 @@
 @section scripts {
 
 
-
+    <script  src="~/Scripts/models/IssueItemModel.js"></script>
+    <script  src="~/Scripts/models/IssueListUserModel.js"></script>
+    <script  src="~/Scripts/models/AssignmentModel.js"></script>
     <script  src="~/Scripts/models/TastingNoteModel.js"></script>
     <script  src="~/Scripts/models/TastingEventModel.js"></script>
     <script  src="~/Scripts/models/PageDataModel.js"></script>
 
+  <script id="issue-list-template"  type="text/html">
+        @Html.Partial("_IssueListUserTemplate")
+    </script>
 
 
     <script id="assignment-details-template" type="text/html">
@@ -144,7 +149,41 @@
     </script>
 
 
+
     <script id="issue-details-template" type="text/html">
+
+        <div class="row" style="height: 850px; overflow: scroll;" data-bind="visible:  assignmentList().length > 0">
+            <table id="list-of-assignments" data-bind="visible : assignmentList().length > 0" class="table table-condensed table-responsive table-sel">
+                <thead>
+                    <tr>
+                        <th>Publication(Issue#)</th>
+                        <th>Title</th>                      
+                        <th># Notes</th>
+                        <th>Approval Deadline</th>
+                        <!--<th>PubDate</th>-->
+
+                    </tr>
+                </thead>
+
+             
+
+                <tbody data-bind="foreach: assignmentList">
+                    <tr  style="cursor: pointer" data-bind="click: goToAssignmentDetails.bind($data, $parent), style: { color: wfState() != 100  ? 'red' : 'black' }">
+                        <td><span data-bind="text: publication"></span>(<span data-bind="    text: issue"></span>)</td>
+                        <td data-bind="text: title"></td>                
+                        <td><span class="label label-info " data-bind="text: notesCount"></span></td>              
+                        <td data-bind="text: approveDate"></td>
+                        <!--<td data-bind="text: publishDate"></td>-->
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </script>
+
+
+
+    <script id="issue-details-template-prev" type="text/html">
         <div>
             <div class="well">
                 <form class="form-horizontal" role="form">
@@ -326,109 +365,6 @@
 
 
 
-        function IssueModel() {
-            var self = this;
-
-
-            self.loaded = false;
-
-
-            self.publicationId = ko.observable(0);
-            self.publications = ko.observableArray();
-
-
-            self.stateGroupId = ko.observable(0);
-            self.stateGroups = ko.observableArray();
-
-
-
-            self.assignmentList = ko.observableArray();
-            self.workflow = ko.observable(0);
-
-
-
-
-            self.init = function () {
-
-                if (!self.loaded) {
-                    self.loaded = !self.loaded;
-
-
-                    $.get('@Url.Content("~/ChiefEditor/Publications")', {},
-                        function (result) {
-                            //alert("load publications");
-                            self.publications(result);
-                        });
-
-
-                    self.stateGroups([
-                        {name:'ALL',id:@EditorsCommon.WorkFlowState.STATE_GROUP_ALL},
-                        {name:'In Process',id:@EditorsCommon.WorkFlowState.STATE_GROUP_IN_PROCESS},
-                        {name:'Published',id:@EditorsCommon.WorkFlowState.STATE_GROUP_PUBLISHED},
-                    ]);
-
-                    self.stateGroupId(@EditorsCommon.WorkFlowState.STATE_GROUP_IN_PROCESS);
-
-                    // now we can load assignments
-
-                    self.loadAssignements();
-                }
-            }
-
-
-            self.loadAssignements = function () {
-
-                var id = 0;
-
-                if (self.publicationId() !== undefined) {
-                    id = self.publicationId();
-                }
-
-
-
-                $.get('@Url.Content("~/Assignment/GetAssignmentsForEditor")', { publicationid: id, state : self.stateGroupId() },
-                 function (result) {
-
-                     var a = new Array();
-
-                     for (var i = 0; i < result.length; i++) {
-                         var r = result[i];
-
-                         var v = new AssigmentModel();
-                         v.id(r.id);
-                         v.wfState(r.wfState);
-                         v.title(r.title);
-                         v.issue(r.issue);
-                         v.publication(r.publication);
-
-
-                         v.publicationDate = r.publicationDate;
-                         v.createdDate = r.createdDate;
-
-                         v.author = r.author;
-                         v.editor = r.editor;
-                         v.proofread = r.proofread;
-
-
-                         v.submitDate= erp.utils.Json2Date( r.submitDate);
-                         v.proofreadDate=erp.utils.Json2Date(r.proofreadDate);
-                         v.approveDate=erp.utils.Json2Date( r.approveDate);
-                         v.publishDate=erp.utils.Json2Date(r.publishDate);
-                         v.notesCount=r.notesCount;
-
-                         a.push(v);
-
-                     }
-
-                     self.assignmentList(a);
-                 });
-
-            }
-
-
-
-    }
-
 
 
         function NotesModel(issue, assignment) {
@@ -441,258 +377,6 @@
         }
 
 
-    function AssigmentModel() {
-        var self = this;
-
-        self.loaded = false;
-
-        self.id = ko.observable(0);
-        self.wfState = ko.observable(0);
-        self.title = ko.observable('');
-
-        self.issue = ko.observable('');
-        self.publication = ko.observable('');
-
-        self.publicationDate = '';
-        self.createdDate = '';
-
-
-        self.author = ko.observable({id:0,name:''});
-        self.editor = ko.observable({id:0,name:''});
-        self.proofread = ko.observable({id:0,name:''});
-
-        self.submitDate = ko.observable('');
-        self.proofreadDate = ko.observable('');
-        self.approveDate = ko.observable('');
-        self.publishDate = ko.observable('');
-
-
-        self.notes = ko.observableArray();
-        self.events = ko.observableArray();
-        self.noteCounts = 0;
-
-
-        self.copy = function (o) {
-            self.title(o.title());
-            self.author(o.author());
-            self.editor(o.editor());
-        }
-
-
-
-        self.goToDetails = function () {
-
-            pageData.drillDownExt('assignment-details-template', self, self.title());
-        }
-
-
-
-        self.deleteTastingEvent = function(item){
-
-            if( !window.confirm("Do you really want delete '" + item.title() + "' tasting record?"))
-            {
-                return;
-            }
-
-            $.ajax({
-                type: 'POST',
-                url: '@Url.Content("~/TastingEvent/DeleteTastingEvent")',
-                            data:
-                                {
-                                    str: JSON.stringify( item.toObject())
-                                },
-                            success: function (r) {
-                                if( r )
-                                    self.events.remove(item);
-                            },
-                            error: function (request, status, error) {
-
-                                var dlg = pageData.OpenErrorDialog({ error: request.responseText }, null, "error-view-template");
-
-                                dlg.dialog("option", "title", "Server Error").
-                                    dialog("option", "width", 600).
-                                    dialog("option", "height", 300);
-
-                            }
-                        });
-
-            };
-
-
-        self.editTastingEvent = function(item){
-                        try {
-                            var m = new TastingEventModel(item.toObject(), '@Url.Content("~/")');
-
-                    m.init = function () {
-                        initTastingEventEditForm(m);
-                    };
-
-                    m.save = function (o) {
-
-                        $.ajax({
-                            type: 'POST',
-                            url: '@Url.Content("~/TastingEvent/EditTastingEvent")',
-                            data:
-                                {
-                                    str: JSON.stringify( m.toObject())
-                                },
-                            success: function (r) {
-
-                                item.fromObject(r);
-                            },
-                            error: function (request, status, error) {
-
-                                var dlg = pageData.OpenErrorDialog({ error: request.responseText }, null, "error-view-template");
-
-                                dlg.dialog("option", "title", "Server Error").
-                                    dialog("option", "width", 600).
-                                    dialog("option", "height", 300);
-
-                            }
-                        });
-
-                        return true;
-                    };
-
-                    m.assignmentId = self.id();
-
-                    var dlg = pageData.OpenDialog(m, m, "tasting-event-template");
-
-                    dlg.dialog("option", "title", "Edit Tasting Record").
-                        dialog("option", "width", 600).
-                        dialog("option", "height", 350);
-
-                } catch (e) {
-                    alert(e);
-                }
-
-            }
-
-
-
-
-
-        self.createNote = function (item) {
-
-            var m = new TastingNoteModel(item,'@Url.Content("~")');
-
-
-            //m.tastingEventId = item.id;
-            m.init = function (elements) {
-                initNoteEditForm(elements,m,'@Url.Content("~")');
-            };
-
-            m.save = function (o) {
-
-                $.ajax({
-                    type: 'POST',
-                    url: '@Url.Content("~/TastingNote/AddTastingNote")',
-                    data:
-                        {
-                            str: JSON.stringify(o.toObject())
-                        },
-                    success: function (r) {
-
-                        r.editNote = self.editNote;
-                        r.approveNote = self.approveNote;
-                        r.sendBackNote = self.sendBackNote;
-                        item.notes.unshift(r);
-
-                    },
-                    error: function (request, status, error) {
-
-
-                        var dlg = pageData.OpenErrorDialog({ error: request.responseText }, null, "error-view-template");
-
-                        dlg.dialog("option", "title", "Server Error").
-                            dialog("option", "width", 600).
-                            dialog("option", "height", 300);
-
-                    }
-                });
-
-                return true;
-            };
-
-
-            var dlg = pageData.OpenDialog(m, m, "tasting-note-template");
-
-            dlg.dialog("option", "title", "Create New Note").
-                dialog("option", "width", 850).
-                dialog("option", "height", 600);
-
-        }
-
-
-
-        self.setApproved = function(){
-
-
-            var result = window.confirm("You are about to set all notes in this\r\nassignment as 'approved'.\r\n\r\nDo you wish to continue?");
-            if (!result)
-                return;
-
-
-
-
-            $.ajax({
-                type: 'POST',
-                url: '@Url.Content("~/Assignment/SetAssignmentApproved")',
-                data:
-                    {
-                        assignmentId: self.id
-                    },
-                success: function (r) {
-                    //
-                    // reload
-                    //
-                    self.load();
-                }
-            });
-
-        }
-
-
-
-        self.load = function(){
-            $.get('@Url.Content("~/TastingEvent/GetTastingEventByAssignment")', { assignmentId: self.id },
-                 function (result) {
-
-                     var t = ko.mapping.fromJS(
-                           {'children' : result}, 
-                           {'children': 
-                               {
-                                   create: function(options) {
-                                       var r = new TastingEventModel(options.data, '@Url.Content("~/")');
-                                           r.open = ko.observable(false);
-                                           r.loaded = ko.observable(false);
-                                           r.sortBy = self.sortBy;
-                                           r.showNotes = eventShowItemsCallback; 
-
-                                           return r;
-                                       }
-                                   }},{});
-
-                         self.events(t.children());
-                     });
-        }
-
-
-        self.goToAssignmentDetails = function (issue) {
-
-            if (!self.loaded) {
-                self.loaded = !self.loaded;
-                self.load();
-            }
-
-            pageData.drillDownExt('assignment-details-template', new NotesModel(issue, self),self.title());
-        }
-
-
-        self.edit = function () {
-        }
-
-    }
 
 
         //************************************ ***************************************
@@ -930,6 +614,23 @@
 
 
 
+        //
+        // R&D
+        //
+
+
+
+        TastingNoteModel.prototype.editNote = editNoteCallback;
+        TastingNoteModel.prototype.approveNote = approveNoteCallback;
+        TastingNoteModel.prototype.sendBackNote = sendBackNoteCallback;
+
+        TastingNoteModel.prototype.setReadyNote = setReadyNoteCallback;
+
+
+
+        //
+        //
+        //
 
 
      var PAGE_CONTEXT = {};
@@ -1059,7 +760,8 @@
 
 
          pageData.init();
-         pageData.drillDownExt('issue-details-template', new IssueModel(),"Assignments");
+         //pageData.drillDownExt('issue-details-template', new IssueModel(),"Assignments");
+         pageData.drillDownExt('issue-list-template', new IssueListUserModel('@Url.Content("~")'), "Issues");
 
 
      });

@@ -1,0 +1,56 @@
+﻿<div>
+    <div class="well" style="padding:0px; margin-bottom:0px">
+            <div class="row">
+                <div class="col-sm-8">
+                    <label for="publications" class="col-sm-2 control-label">Publications:</label>
+                    <div class="col-sm-4">
+                        <select class="form-control input-sm" id="publications"
+                                data-bind="options: publications,
+                                optionsText: 'name',
+                                optionsValue: 'id',
+                                value: publicationId,
+                                valueUpdate: 'blur',
+                                optionsCaption: 'ALL'"></select>
+
+                    </div>
+                    <div class="col-sm-2">
+                        <select class="form-control input-sm col-sm-4" data-bind="options: stateGroups,
+                        optionsText: 'name',
+                        optionsValue: 'id',
+                        value: stateGroupId,
+                        valueUpdate: 'blur'"></select>
+                    </div>
+                    <div class="col-sm-2 input-group-md">
+                        <button class="btn btn-sm" data-bind="click: loadIssues">Load</button>
+                    </div>
+
+                </div>
+            </div>
+    </div>
+</div>
+
+<div id="table-with-header"  class="panel panel-success" data-bind="visible: issueList().length > 0" style="height: 640px; overflow: scroll;">
+
+            <div class="row panel-heading">
+                <h5><span class="col-sm-2">Publication</span></h5>
+                
+                <h5><span class="col-sm-6">Issue</span></h5>
+                <h5><span class="col-sm-1"># Reports</span></h5>
+                <h5><span class="col-sm-1"># Notes</span></h5>
+                <h5><span class="col-sm-1">Created</span></h5>
+                <h5><span class="col-sm-1">Publish</span></h5>
+            </div>
+
+            <!-- ko foreach: issueList -->
+            <div class="row table table-condensed table-responsive table-sel" data-bind=" style: { color: wfState() != 100 ? 'red' : 'black' }">
+                <span style="cursor:pointer" class="col-sm-2" data-bind="text: publicationName, click: drillDown"></span>
+                <span style="cursor:pointer" class="col-sm-6" data-bind="text: title, click: drillDown"></span>
+                <span class="col-sm-1" data-bind="text: articlesCnt">0</span>
+                <span class="col-sm-1" data-bind="text: tasteNotesCnt">0</span>
+                <span class="col-sm-1" data-bind="text: createdDate"></span>
+                <span class="col-sm-1" data-bind="text: publicationDate"></span>
+            </div>
+            <!-- /ko  -->
+
+
+</div>

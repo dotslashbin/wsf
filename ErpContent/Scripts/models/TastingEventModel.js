@@ -14,9 +14,52 @@
         self.comments = ko.observable('');
         self.notes = ko.observableArray();
 
+        self.open = ko.observable(false);
+        self.loaded = ko.observable(false);
+        self.sortById = ko.observable(0);
+        self.sortBy = self.sortBy;
+
+
+
+
         self.toObject = function () {
             return ko.mapping.toJS(self);
         }
+
+        self.showNotes = function (item) {
+            if (!item.loaded()) {
+                $.get(docRoot +  'TastingNote/GetNotesByTastingEvent', { eventId: item.id },
+                function (result) {
+                    var t = ko.mapping.fromJS(
+                        { 'children': result },
+                        {
+                            'children':
+                               {
+                                   create: function (options) {
+                                       var tnm = new TastingNoteModel(options.data);
+
+                                       //tnm.editNote = editNoteCallback;
+                                       //tnm.approveNote = approveNoteCallback;
+                                       //tnm.sendBackNote = sendBackNoteCallback;
+
+                                       return tnm;
+
+                                   }
+                               }
+                        }, {});
+
+
+                    item.loaded(true);
+                    item.notes(t.children());
+                    item.open(!item.open());
+                });
+            } else {
+                item.open(!item.open());
+            }
+        }
+
+
+
 
         self.showUploadForm = function (tastingEvent) {
             var dlg = pageData.OpenErrorDialog(this, this, "tasting-note-upload-form");

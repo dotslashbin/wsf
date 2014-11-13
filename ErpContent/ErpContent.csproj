@@ -536,7 +536,7 @@
     <Content Include="Scripts\models\PageDataModel.js" />
     <Content Include="Scripts\models\erp-core.js" />
     <Content Include="Views\Shared\_IssueListUserTemplate.cshtml" />
-    <None Include="Views\Shared\_IssueListTemplate.cshtml" />
+    <Content Include="Views\Shared\_IssueListTemplate.cshtml" />
     <Content Include="Scripts\modernizr-2.7.1.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>

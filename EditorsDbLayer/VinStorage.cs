@@ -55,15 +55,7 @@ namespace EditorsDbLayer
         //{
         //}
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="e"></param>
-        /// <returns></returns>
-        public VinN Update(VinN e)
-        {
-            throw new NotImplementedException();
-        }
+   
 
 
         /// <summary>
@@ -326,7 +318,10 @@ namespace EditorsDbLayer
                         , COALESCE(Location, '')
                         , COALESCE(locale, '')
                         , COALESCE(site, '')  
-                        , COALESCE(color, ''), COALESCE(variety, ''),  COALESCE(dryness, '') 
+                        , COALESCE(color, '')
+                        , COALESCE(variety, '')
+                        , COALESCE(dryness, '') 
+                        , COALESCE(type, 'Table') 
                         , v.Wine_VinN_WF_StatusID
 
                           FROM vWineVinNDetails as v  WITH (NOEXPAND) 
@@ -385,7 +380,8 @@ namespace EditorsDbLayer
                                     colorClass = rdr.GetString(8),
                                     variety = rdr.GetString(9),
                                     dryness = rdr.GetString(10),
-                                    workflow = rdr.GetFieldValue<Int16>(11)
+                                    wineType = rdr.GetString(11),
+                                    workflow = rdr.GetFieldValue<Int16>(12)
 
                                 };
                                 vinN.wines = new List<WineN>();
@@ -452,6 +448,7 @@ namespace EditorsDbLayer
             , COALESCE(color, '')    as color
             , COALESCE(variety, '')  as variety
             ,  COALESCE(dryness, '') as dryness 
+            , COALESCE(type, 'Table') as type 
             , v.Wine_VinN_WF_StatusID
 
               FROM vWineVinNDetails as v  WITH (NOEXPAND)
@@ -470,6 +467,7 @@ namespace EditorsDbLayer
             , COALESCE(color, '')    as color
             , COALESCE(variety, '')  as variety
             ,  COALESCE(dryness, '') as dryness 
+            , COALESCE(type, 'Table') as type 
             , v.Wine_VinN_WF_StatusID
 
               FROM vWineVinNDetails as v  WITH (NOEXPAND)
@@ -543,7 +541,8 @@ namespace EditorsDbLayer
                                 colorClass = rdr.GetString(8),
                                 variety = rdr.GetString(9),
                                 dryness = rdr.GetString(10),
-                                workflow = rdr.GetFieldValue<Int16>(11)
+                                wineType = rdr.GetString(11),
+                                workflow = rdr.GetFieldValue<Int16>(12)
 
                             };
                             vinN.wines = new List<WineN>();
@@ -808,7 +807,7 @@ namespace EditorsDbLayer
 
 
 
- sb.Append( @" 
+ sb.Append(@" 
 
         join WineProducer wp1  on v1.ProducerID = wp1.ID
         join WineLabel    wl1  on v1.LabelID    = wl1.ID
@@ -823,6 +822,9 @@ namespace EditorsDbLayer
         join LocationLocation locLoc on v1.locLocationID   = locLoc.ID
         join LocationLocale   locL   on v1.locLocaleID     = locL.ID
         join LocationSite     locS   on v1.locSiteID       = locS.ID
+
+     
+        order by Label, Producer
 
 ");
 
@@ -871,6 +873,122 @@ namespace EditorsDbLayer
                         }
                     }
                     return result;
+                }
+
+            }
+        }
+
+
+        VinN IVinStorage.Search(VinN vinN)
+        {
+            string sb = @" exec WineVin_GetID
+	                        @Producer=@Producer
+                           , @WineType=@WineType
+                           , @Label=@Label
+                           , @Variety=@Variety
+                           , @Dryness = @Dryness 
+                           , @Color = @Color
+                           , @locCountry = @locRegion
+                           , @locRegion = @locRegion
+                           , @locLocation = @locLocation
+                           , @locLocale = @locLocale
+                           , @locSite = @locSite
+                           , @IsAutoCreate bit = 0  ";
+
+            using (SqlConnection conn = _connFactory.GetConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("", conn))
+                {
+                    cmd.CommandText = sb.ToString();
+
+                    cmd.Parameters.AddWithValue("@Producer",String.IsNullOrEmpty(vinN.producer) == true ? "" : vinN.producer);
+                    cmd.Parameters.AddWithValue("@WineType",String.IsNullOrEmpty(vinN.wineType) == true ? "" : vinN.wineType);
+                    cmd.Parameters.AddWithValue("@Label",String.IsNullOrEmpty(vinN.label) == true ? "" : vinN.label);
+                    cmd.Parameters.AddWithValue("@Variety",String.IsNullOrEmpty(vinN.variety) == true ? "" : vinN.variety);
+                    cmd.Parameters.AddWithValue("@Dryness",String.IsNullOrEmpty(vinN.dryness) == true ? "" : vinN.dryness); 
+                    cmd.Parameters.AddWithValue("@Color",String.IsNullOrEmpty(vinN.colorClass) == true ? "" : vinN.colorClass);
+                    cmd.Parameters.AddWithValue("@locCountry",String.IsNullOrEmpty(vinN.country) == true ? "" : vinN.country);
+                    cmd.Parameters.AddWithValue("@locRegion",String.IsNullOrEmpty(vinN.region) == true ? "" : vinN.region);
+                    cmd.Parameters.AddWithValue("@locLocation",String.IsNullOrEmpty(vinN.location) == true ? "" : vinN.location);
+                    cmd.Parameters.AddWithValue("@locLocale",String.IsNullOrEmpty(vinN.locale) == true ? "" : vinN.locale);
+                    cmd.Parameters.AddWithValue("@locSite", String.IsNullOrEmpty(vinN.site) == true ? "" : vinN.site);
+
+
+
+                    using(SqlDataReader rdr = cmd.ExecuteReader()){
+
+                        if (rdr.Read())
+                        {
+                            vinN.id = rdr.GetInt32(0);
+                        }
+                        else
+                        {
+                            vinN.id = 0;
+                        }
+                    }
+
+                    return vinN;
+
+                }
+
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        public VinN Update(VinN vinN)
+        {
+            string sb = @" exec WineVin_UpdateEx
+	                        @ID=@ID
+	                       , @Producer=@Producer
+                           , @WineType=@WineType
+                           , @Label=@Label
+                           , @Variety=@Variety
+                           , @Dryness = @Dryness 
+                           , @Color = @Color
+                           , @locCountry = @locCountry
+                           , @locRegion = @locRegion
+                           , @locLocation = @locLocation
+                           , @locLocale = @locLocale
+                           , @locSite = @locSite";
+
+
+            using (SqlConnection conn = _connFactory.GetConnection())
+            {
+
+                using (SqlCommand cmd = new SqlCommand("", conn))
+                {
+                    cmd.CommandText = sb.ToString();
+
+                    cmd.Parameters.AddWithValue("@ID", vinN.id);
+                    cmd.Parameters.AddWithValue("@Producer", String.IsNullOrEmpty(vinN.producer) == true ? "" : vinN.producer);
+                    cmd.Parameters.AddWithValue("@WineType", String.IsNullOrEmpty(vinN.wineType) == true ? "" : vinN.wineType);
+                    cmd.Parameters.AddWithValue("@Label", String.IsNullOrEmpty(vinN.label) == true ? "" : vinN.label);
+                    cmd.Parameters.AddWithValue("@Variety", String.IsNullOrEmpty(vinN.variety) == true ? "" : vinN.variety);
+                    cmd.Parameters.AddWithValue("@Dryness", String.IsNullOrEmpty(vinN.dryness) == true ? "" : vinN.dryness);
+                    cmd.Parameters.AddWithValue("@Color", String.IsNullOrEmpty(vinN.colorClass) == true ? "" : vinN.colorClass);
+                    cmd.Parameters.AddWithValue("@locCountry", String.IsNullOrEmpty(vinN.country) == true ? "" : vinN.country);
+                    cmd.Parameters.AddWithValue("@locRegion", String.IsNullOrEmpty(vinN.region) == true ? "" : vinN.region);
+                    cmd.Parameters.AddWithValue("@locLocation", String.IsNullOrEmpty(vinN.location) == true ? "" : vinN.location);
+                    cmd.Parameters.AddWithValue("@locLocale", String.IsNullOrEmpty(vinN.locale) == true ? "" : vinN.locale);
+                    cmd.Parameters.AddWithValue("@locSite", String.IsNullOrEmpty(vinN.site) == true ? "" : vinN.site);
+
+                    using (SqlDataReader rdr = cmd.ExecuteReader())
+                    {
+                        if (rdr.Read())
+                        {
+                            vinN.id = rdr.GetInt32(0);
+                        }
+                        else
+                        {
+                            vinN.id = 0;
+                        }
+                    }
+
+                    return vinN;
                 }
 
             }

@@ -555,75 +555,6 @@
 
 
 
-        var setDraftNoteCallback = function (data) {
-
-            if (!data.validate()) {
-                window.alert(data.validateResult);
-                return;
-            }
-
-
-            var state = '@EditorsCommon.WorkFlowState.DRAFT';
-
-            $.ajax({
-                type: 'POST',
-                url: '@Url.Content("~/TastingNote/SetTastingNoteState")',
-                data:
-                    { noteId: data.id, stateId: state },
-                success: function (result) {
-
-                    if (result == state) {
-                        data.wfState(result);
-                    }
-                },
-                error: function (request, status, error) {
-                    var dlg = pageData.OpenErrorDialog({ error: request.responseText }, null, "error-view-template");
-                    dlg.dialog("option", "title", "Server Error").
-                        dialog("option", "width", 600).
-                        dialog("option", "height", 300);
-
-                }
-            });
-
-        }
-
-//************************************ ***************************************
-        var setReadyNoteCallback = function (data) {
-
-            if (!data.validate()) {
-                window.alert(data.validateResult);
-                return;
-            }
-           
-
-
-            var state = '@EditorsCommon.WorkFlowState.READY_FOR_REVIEW';
-
-            $.ajax({
-                type: 'POST',
-                url: '@Url.Content("~/TastingNote/SetTastingNoteState")',
-                data:
-                    {   noteId: data.id, stateId : state},
-                success: function (result) {
-
-                    if(result == state ){
-                        data.wfState(result); 
-                    }
-                },
-                error: function (request, status, error) {
-
-                    var dlg = pageData.OpenErrorDialog({ error: request.responseText }, null, "error-view-template");
-
-                    dlg.dialog("option", "title", "Server Error").
-                        dialog("option", "width", 600).
-                        dialog("option", "height", 300);
-
-                }
-            });
-
-        }
-
-
 
 //************************************ ***************************************
         var editNoteCallback = function (data) {
@@ -814,13 +745,13 @@
 
 
         VinSearchModel.createNote = function(vin){
-            var m = new TastingEventModel(null, '@Url.Content("~/")');
+            var m = new TastingEventModel(null);
             m.createNote(VinSearchModel.tastingEvent,null,vin,null);
         };
 
         VinSearchModel.createNoteVintage = function(vin, vintage){
 
-            var m = new TastingEventModel(null, '@Url.Content("~/")');
+            var m = new TastingEventModel(null);
             m.createNote(VinSearchModel.tastingEvent,null,vin, vintage);
 
         };
@@ -860,8 +791,12 @@
                                          {'children': 
                                              {
                                                  create: function(options) {
-                                     
-                                                     var result = new AssigmentModel(options.data);
+
+                                                     var result = {};
+                                                     ko.mapping.fromJS(options.data  // source
+                                                        , {}
+                                                        , result    // target
+                                                        );
                                                      return result;
 
                                                  }
@@ -878,20 +813,47 @@
 
         // *****************************************************************************************************
 
+        var readyForReviewNoteCallback = function (data) {
+
+            if (!data.validate()) {
+                window.alert(data.validateResult);
+                return;
+            }
+
+
+            var state = '@EditorsCommon.WorkFlowState.READY_FOR_REVIEW';
+
+            setNoteStateCallback(data, state);
+        };
+
+
+        var setDraftNoteCallback = function (data) {
+
+
+            var state = '@EditorsCommon.WorkFlowState.DRAFT';
+
+            setNoteStateCallback(data, state);
+
+        }
+
+
+
+
+
         var approveNoteCallback = function (data) {
 
             var state = '@EditorsCommon.WorkFlowState.READY_FOR_PROOF_READ';
 
-            setReadyNoteCallback(data, state);
+            setNoteStateCallback(data, state);
         };
 
         var sendBackNoteCallback = function (data) {
             var state = '@EditorsCommon.WorkFlowState.DRAFT';
 
-            setReadyNoteCallback(data, state);
+            setNoteStateCallback(data, state);
         };
 
-        var setReadyNoteCallback = function (data, state) {
+        var setNoteStateCallback = function (data, state) {
 
             $.ajax({
                 type: 'POST',
@@ -971,9 +933,41 @@
         TastingNoteModel.prototype.approveNote = approveNoteCallback;
         TastingNoteModel.prototype.sendBackNote = sendBackNoteCallback;
 
-        TastingNoteModel.prototype.setReadyNote = setReadyNoteCallback;
+        TastingNoteModel.prototype.setReadyNote = readyForReviewNoteCallback;
         TastingNoteModel.prototype.setDraftNote = setDraftNoteCallback;
 
+
+
+        var issueDrillDownCallback = function () {
+            if (!this.loaded) {
+                this.loaded = !this.loaded;
+
+                var s = this;
+                $.get('@Url.Content("~/Assignment/GetAssignmentsByIssueByReviewer")', { issueId: this.id() },
+                     function (result) {
+
+                         var t = ko.mapping.fromJS(
+                                 { 'children': result },
+                                 { 'children':
+                                        {
+                                            create: function (options) {
+                                                return new AssignmentModel(options.data);
+                                            }
+                                        }
+                                 }, {});
+
+                         if (t.children().length == 0) {
+                             alert("there are no assignments for that issue assigned to your account.");
+                         }
+
+                         s.assignmentList(t.children());
+                     });
+
+            }
+            pageData.drillDownExt('issue-details-template', this, this.title());
+        }
+
+        IssueItemModel.prototype.drillDown = issueDrillDownCallback;
 
 
         //

@@ -1,4 +1,4 @@
-﻿function IssueListModel( docRoot) {
+﻿function IssueListModel( ) {
 
 
     var self = this;
@@ -44,7 +44,7 @@
 
     self.loadPublications = function () {
 
-        $.get(docRoot +  'ChiefEditor/Publications', {},
+        $.get(erp.wsf_path +  'ChiefEditor/Publications', {},
                     function (result) {
                         self.publications(result);
                         PAGE_CONTEXT.publications = result;
@@ -69,7 +69,7 @@
     self.addPublication = function () {
         $.ajax({
             type: 'POST',
-            url:  docRoot +  'Publication/GetPublications',
+            url:  erp.wsf_path +  'Publication/GetPublications',
             data: {},
             success: function (r) {
 
@@ -106,12 +106,12 @@
                     o.ID('0');
                     $.ajax({
                         type: 'POST',
-                        url: docRoot +  'Publication/AddPublication',
+                        url: erp.wsf_path +  'Publication/AddPublication',
                         data: {PublicationData: JSON.stringify(o.toObject())},
                         success: function (result) {
                             if (result != null) {
                                 if (!result.Errorexist) {
-                                    $.get(docRoot + 'ChiefEditor/Publications', {},
+                                    $.get(erp.wsf_path + 'ChiefEditor/Publications', {},
                                        function (result) {
                                            self.publications(result);
                                            PAGE_CONTEXT.publications = result;
@@ -153,7 +153,7 @@
     self.addIssue = function () {
         $.ajax({
             type: 'POST',
-            url: docRoot +  'Issue/GetNewIssue',
+            url: erp.wsf_path +  'Issue/GetNewIssue',
             data: {},
             success: function (r) {
                 //
@@ -209,7 +209,7 @@
                             
                     $.ajax({
                         type: 'POST',
-                        url: docRoot +  'Issue/AddIssue',
+                        url: erp.wsf_path +  'Issue/AddIssue',
                         data: { str: JSON.stringify(o.toObject()) },
                         success: function (r) {
                             if (r != null) {
@@ -253,7 +253,7 @@
         if( window.confirm("Do you want delete issue '" + item.title() + "'?" ) ) {
             $.ajax({
                 type: 'POST',
-                url: docRoot +  'Issue/DeleteIssue',
+                url: erp.wsf_path +  'Issue/DeleteIssue',
                 data:
                     {
                         str: JSON.stringify(item.toObject())
@@ -272,7 +272,7 @@
 
     self.load = function (publicationId, state) {
 
-        $.get(docRoot +  'Issue/Issues', { publicationId: publicationId, state : state },
+        $.get(erp.wsf_path +  'Issue/Issues', { publicationId: publicationId, state : state },
                  function (result) {
 
                      var t = ko.mapping.fromJS(

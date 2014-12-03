@@ -325,5 +325,13 @@ namespace EditorsCommon
         /// 
         /// </summary>
         void PublishFromQueue();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        TastingNote UpdateInPlace(TastingNote e);
+
     }
 }

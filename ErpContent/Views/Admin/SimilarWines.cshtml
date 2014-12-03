@@ -32,7 +32,7 @@
 
          <div class="row">
             <div class="col-sm-2  input-group-md">
-                <input type="checkbox" data-bind="checked: similarProducer"/>Producer
+                <input type="checkbox" data-bind="checked: similarProducer" disabled/>Producer
             </div>
             <div class="col-sm-2 input-group-md">
                 <input type="checkbox" data-bind="checked: similarCountry"/>Country
@@ -47,7 +47,7 @@
 
          <div class="row">
             <div class="col-sm-2  input-group-md">
-                <input type="checkbox" data-bind="checked: similarLabel"/>Label
+                <input type="checkbox" data-bind="checked: similarLabel"  disabled/>Label
             </div>
             <div class="col-sm-2 input-group-md">
                 <input type="checkbox" data-bind="checked: similarRegion"/>Region
@@ -78,25 +78,166 @@
         <br />
         <div class="row" style="height: 550px; overflow:auto">
 
+            <div class="row" style="border-bottom: solid 1px gray;">
+                <div class='col-sm-1' >&nbsp;</div>
+                <div class='col-sm-3' >Producer</div>
+                <div class='col-sm-3' >Label</div>
+                <div class='col-sm-1' >Appellation</div>
+                <div class='col-sm-1' >Type</div>
+                <div class='col-sm-1' >Variety</div>
+                <div class='col-sm-1' >Color</div>
+                <div class='col-sm-1' >Dryness</div>
+            </div>
             <!-- ko foreach: items -->
             <div class="row"  style="border-bottom: solid 1px gray;">
-
                 <div class='col-sm-1' >
-                  <button class="btn btn-primary btn-xs" style="cursor:pointer" data-bind="click : $parent.resolve">Resolve</button>
-               </div>
-                <div class='col-sm-9' >
-                        <span class='glyphicon glyphicon-glass' data-bind="style: { color: wineColor($data.colorClass()) }" ></span>
-                        <span data-bind="text: producer"></span>
-                        <span data-bind="text: label"></span>, 
-                        <span data-bind="text: appellation"></span>, 
-                        <span data-bind="text: variety"></span>, 
-                        <span data-bind="text: colorClass"></span>, 
-                        <span data-bind="text: dryness"></span>
+                     <div class="row">
+                        <div class='col-sm-3' >
+                            <span class='glyphicon glyphicon-pencil' data-bind="click: edit"  style="cursor:pointer" title="Edit VIN" ></span>
+                        </div>
+                        <div class='col-sm-3' >
+                            <span class='glyphicon glyphicon-glass' data-bind="style: { color: wineColor($data.colorClass()) }" ></span>
+                        </div>
+                        <div class='col-sm-6' data-bind="text: id"></div>
+                     </div>
                 </div>
+                <div class='col-sm-3' data-bind="text: producer"></div>
+                <div class='col-sm-3' data-bind="text: label"></div>
+                <div class='col-sm-1' data-bind="text: appellation"></div>
+                <div class='col-sm-1' data-bind="text: wineType"></div>
+                <div class='col-sm-1' data-bind="text: variety"></div>
+                <div class='col-sm-1' data-bind="text: colorClass"></div>
+                <div class='col-sm-1' data-bind="text: dryness"></div>
+
             </div>
             <!-- /ko -->
 
         </div>
+    </script>
+
+
+    <script id="vin-edit-template" type="text/html">
+        <div class="row">
+            <div class="col-sm-2  input-group-md">
+                Producer
+            </div>
+            <div class="col-sm-5 input-group-md">
+              <input type="text" 
+                    data-bind="value: producer, valueUpdate: 'blur'" 
+                    class="form-control" 
+                    name="vin-edit-producer" 
+                    id="vin-edit-producer" 
+                    placeholder="Producer" required/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-2  input-group-md">
+                Label
+            </div>
+            <div class="col-sm-5 input-group-md">
+              <input type="text" 
+                    data-bind="value: label, valueUpdate: 'blur'" 
+                    class="form-control" 
+                    name="vin-edit-label" 
+                    id="vin-edit-label" 
+                    placeholder="Label" required/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-2  input-group-md">
+                Wine Type
+            </div>
+            <div class="col-sm-5 input-group-md">
+               <select  name="vin-edit-color"
+                    data-bind="options: wineTypeLookup,
+                    optionsText: 'name',
+                    optionsValue: 'name',
+                    value: wineType,
+                    valueUpdate: 'blur'" required></select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-2  input-group-md">
+                Variety
+            </div>
+            <div class="col-sm-5 input-group-md">
+              <input type="text" 
+                    data-bind="value: variety, valueUpdate: 'blur'" 
+                    class="form-control" 
+                    name="vin-edit-variety" 
+                    id="vin-edit-variety" 
+                    placeholder="Variety" required/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-2  input-group-md">
+                Color
+            </div>
+            <div class="col-sm-5 input-group-md">
+            <select  name="vin-edit-color"
+                data-bind="options: wineColorLookup,
+                optionsText: 'name',
+                optionsValue: 'name',
+                value: colorClass,
+                valueUpdate: 'blur'" required></select>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-2  input-group-md">
+                Dryness
+            </div>
+            <div class="col-sm-5 input-group-md">
+
+            <select  name="vin-edit-dryness"
+                data-bind="options: wineDrynessLookup,
+                optionsText: 'name',
+                optionsValue: 'name',
+                value: dryness,
+                valueUpdate: 'blur'" required></select>
+
+
+            </div>
+        </div>
+
+
+      <div class="row">
+            <label class="col-sm-2 control-label">Country:</label>
+            <div class="col-sm-5">
+                <input type="text" 
+                    id="vin-edit-location-country" data-bind="value: country, valueUpdate: 'blur'" class="form-control" placeholder="Country" />
+            </div>
+        </div>
+
+        <div class="row">
+            <label class="col-sm-2 control-label">Region:</label>
+            <div class="col-sm-5">
+                <input type="text" id="vin-edit-location-region" data-bind="value: region, valueUpdate: 'blur'" class="form-control" placeholder="Region" />
+            </div>
+        </div>
+
+        <div class="row">
+            <label class="col-sm-2 control-label">Location:</label>
+            <div class="col-sm-5">
+                <input type="text" id="vin-edit-location-location" data-bind="value: location, valueUpdate: 'blur'" class="form-control" placeholder="Location"/>
+            </div>
+        </div>
+
+        <div class="row">
+            <label class="col-sm-2 control-label">Locale:</label>
+            <div class="col-sm-5">
+                <input type="text" id="vin-edit-location-locale" data-bind="value: locale, valueUpdate: 'blur'" class="form-control" placeholder="Locale" />
+            </div>
+        </div>
+
+        <div class="row">
+            <label class="col-sm-2 control-label">Site:</label>
+            <div class="col-sm-5">
+                <input type="text" id="note-edit-location-site" data-bind="value: site, valueUpdate: 'blur'" class="form-control" placeholder="Site" />
+            </div>
+        </div>
+
+
     </script>
 
     <script id="side-by-side-comparison-template" type="text/html">
@@ -260,6 +401,38 @@
                 }, self);
         }
 
+
+        self.wineColorLookup = [
+                  { id: 0, name: '' },
+                  { id: 1, name: 'Red' },
+                  { id: 2, name: 'Rose' },
+                  { id: 3, name: 'White' },
+        ];
+
+
+        self.wineDrynessLookup = [
+            { id: 0, name: '' },
+            { id: 1, name: 'Dry' },
+            { id: 2, name: 'Medium Dry' },
+            { id: 3, name: 'Sweet' },
+            { id: 4, name: 'Very Dry' },
+        ];
+
+
+
+        self.wineTypeLookup = [
+            { id: 0	, name: '' },
+            { id: 9, name: 'Table' },
+            { id: 1	, name: 'Dessert' },
+            { id: 2	, name: 'Fortified' },
+            { id: 3	, name: 'Madeira' },
+            { id: 4	, name: 'Port' },
+            { id: 5	, name: 'Sake' },
+            { id: 6	, name: 'Sherry' },
+            { id: 7	, name: 'Sparkling' },
+            { id: 8	, name: 'Sweet' }
+        ];
+
         //
         //
         //
@@ -309,6 +482,60 @@
                });
 
         }
+
+
+        self.edit = function(item){
+
+            var m = new VinModel( item.toObject());
+ 
+            m.init = function (elements) {
+            };
+
+            m.validate = function () {
+                return true;
+            }
+
+
+            m.save = function (o) {
+
+
+                if( !window.confirm("Do you want save changes?")){
+                    return false;
+                }
+
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Content("~/vin/Update")',
+                    data:
+                        {
+                            str: JSON.stringify(o.toObject())
+                        },
+                    success: function (r) {
+                        if (r)
+                            item.fromObject(r);
+                    },
+                    error: function (request, status, error) {
+
+                        var dlg = pageData.OpenErrorDialog({ error: request.responseText }, null, "error-view-template");
+                        dlg.dialog("option", "title", "Server Error").
+                            dialog("option", "width", 600).
+                            dialog("option", "height", 300);
+                    }
+                });
+
+
+                return true;
+            };
+
+
+            var d = pageData.OpenDialog(m, m, "vin-edit-template");
+            d.dialog("option", "title", "Edit Vin").
+                dialog("option", "width", 860).
+                dialog("option", "height", 600);
+            ;
+        }
+
+
 
     }
 

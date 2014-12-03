@@ -1,13 +1,12 @@
 ﻿
 
-    function TastingEventModel(src, docRoot) {
+    function TastingEventModel(src) {
         var self = this;
 
         var dt2js = function (options) { return erp.utils.Json2Date(options.data) };
         //
         // 
         //
-        self.docRoot = docRoot;
 
         self.title = ko.observable('');
         self.location = ko.observable('');
@@ -28,7 +27,7 @@
 
         self.showNotes = function (item) {
             if (!item.loaded()) {
-                $.get(docRoot +  'TastingNote/GetNotesByTastingEvent', { eventId: item.id },
+                $.get(erp.wsf_path +  'TastingNote/GetNotesByTastingEvent', { eventId: item.id },
                 function (result) {
                     var t = ko.mapping.fromJS(
                         { 'children': result },
@@ -96,9 +95,9 @@
                                 var tastingNote = tastingNotes[iterator];
 
                                 var result = new TastingNoteModel(tastingNote);
-                                result.editNote = editNoteCallback;
-                                result.setReadyNote = setReadyNoteCallback;
-                                result.setDraftNote = setDraftNoteCallback;
+                                //result.editNote = editNoteCallback;
+                                //result.setReadyNote = setReadyNoteCallback;
+                                //result.setDraftNote = setDraftNoteCallback;
 
                                 tastingEvent.notes.unshift(result);
                             }
@@ -128,7 +127,7 @@
 
             $.ajax({
                 type: 'POST',
-                url: docRoot +  'TastingNote/GetNewNoteForEvent',
+                url: erp.wsf_path +  'TastingNote/GetNewNoteForEvent',
                 data:
                     {
                         eventId: tastingEvent.id
@@ -146,7 +145,7 @@
                         m.vinEditable(false);
                         m.vintageEditable(true);
 
-                        $.get(docRoot +  'TastingNote/GetNotesByVinN', { vinN: vin.id() },
+                        $.get(erp.wsf_path +  'TastingNote/GetNotesByVinN', { vinN: vin.id() },
                                      function (result) {
 
                                          var t = ko.mapping.fromJS(
@@ -171,7 +170,7 @@
                     }
 
                     m.init = function (elements) {
-                        initNoteEditForm(elements, m, self.docRoot);
+                        initNoteEditForm(elements, m);
 
 
 
@@ -261,7 +260,7 @@
 
                         $.ajax({
                             type: 'POST',
-                            url: docRoot + 'TastingNote/AddTastingNote',
+                            url: erp.wsf_path + 'TastingNote/AddTastingNote',
                             data:
                                 {
                                     str: JSON.stringify(o.toObject())
@@ -270,9 +269,9 @@
 
 
                                 var result = new TastingNoteModel(r);
-                                result.editNote = editNoteCallback;
-                                result.setReadyNote = setReadyNoteCallback;
-                                result.setDraftNote = setDraftNoteCallback;
+                                //result.editNote = editNoteCallback;
+                                //result.setReadyNote = setReadyNoteCallback;
+                                //result.setDraftNote = setDraftNoteCallback;
 
 
                                 tastingEvent.notes.unshift(result);
@@ -326,7 +325,7 @@
 
             $.ajax({
                 type: 'POST',
-                url: docRoot + 'TastingNote/DeleteTastingNote',
+                url: erp.wsf_path + 'TastingNote/DeleteTastingNote',
                             data:
                                 {
                                     str: JSON.stringify( item.toObject())

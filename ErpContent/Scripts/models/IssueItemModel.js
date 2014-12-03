@@ -1,4 +1,4 @@
-﻿function IssueItemModel(src, docRoot) {
+﻿function IssueItemModel(src) {
     var self = this;
 
     var dt2js = function (options) { return erp.utils.Json2Date(options.data) };
@@ -32,7 +32,7 @@
 
         $.ajax({
             type: 'POST',
-            url: docRoot +  'Issue/IssueInfo',
+            url: erp.wsf_path +  'Issue/IssueInfo',
             data: { id: self.id() },
             success: function (r) {
                 var m = {};
@@ -45,7 +45,7 @@
                         $.ajax({
                             async: false,   // block
                             type: 'POST',
-                            url: docRoot + 'Issue/Publish',
+                            url: erp.wsf_path + 'Issue/Publish',
                             data: { id: self.id() },
                             success: function (r) {
                                 self.wfState(100);
@@ -77,12 +77,12 @@
     };
 
 
-    self.PublishRollack = function () {
+    self.PublishRollback = function () {
 
 
         $.ajax({
             type: 'POST',
-            url: docRoot + 'Issue/IssueInfo',
+            url: erp.wsf_path + 'Issue/IssueInfo',
             data: { id: self.id() },
             success: function (r) {
 
@@ -99,7 +99,7 @@
                         $.ajax({
                             async: false,   // block
                             type: 'POST',
-                            url: docRoot + 'Issue/RollbackPublish',
+                            url: erp.wsf_path + 'Issue/RollbackPublish',
                             data: { id: self.id() },
                             success: function (r) {
                                 self.wfState(0);
@@ -134,7 +134,7 @@
 
     self.Export = function () {
 
-        erp.utils.ajaxDownload(docRoot + 'Issue/Export"', { id: self.id() });
+        erp.utils.ajaxDownload(erp.wsf_path + 'Issue/Export"', { id: self.id() });
 
     };
 
@@ -145,7 +145,7 @@
 
         $.ajax({
             type: 'POST',
-            url: docRoot + 'Assignment/GetNewAssignment',
+            url: erp.wsf_path + 'Assignment/GetNewAssignment',
             data: {},
             success: function (r) {
                 //
@@ -253,7 +253,7 @@
 
             $.ajax({
                 type: 'POST',
-                url: docRoot + 'Assignment/DeleteAssignment',
+                url: erp.wsf_path + 'Assignment/DeleteAssignment',
                 data: { assignmentID: objectToEvaluate.id },
                 success: function (r) {
                     $('#assignment_' + objectToEvaluate.id).remove();
@@ -313,7 +313,7 @@
 
             $.ajax({
                 type: 'POST',
-                url: docRoot + 'Issue/EditIssue',
+                url: erp.wsf_path + 'Issue/EditIssue',
                 data: { str: JSON.stringify(o.toObject()) },
                 success: function (r) {
                     self.fromObject(r);
@@ -336,12 +336,16 @@
 
     }
 
-    self.drillDown = function () {
+    /*
+    drillDown = function () {
+
+        alert("has to be oveloaded");
+        return;
+
 
         if (!self.loaded) {
             self.loaded = !self.loaded;
-            //$.get(docRoot + 'Assignment/GetAssignmentsByIssue', { issueId: self.id() },
-            $.get(docRoot + 'Assignment/GetAssignmentsByIssueByUser', { issueId: self.id() },
+            $.get(erp.wsf_path + 'Assignment/GetAssignmentsByIssueByUser', { issueId: self.id() },
                  function (result) {
 
                      var t = ko.mapping.fromJS(
@@ -350,7 +354,7 @@
                                  'children':
                                     {
                                         create: function (options) {
-                                            var result = new AssignmentModel(options.data,docRoot);
+                                            var result = new AssignmentModel(options.data);
                                             return result;
                                         }
                                     }
@@ -367,4 +371,5 @@
         }
         pageData.drillDownExt('issue-details-template', self, self.title());
     }
+    */
 }

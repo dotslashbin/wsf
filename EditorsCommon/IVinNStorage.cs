@@ -258,5 +258,16 @@ namespace EditorsCommon
         /// <param name="flag"></param>
         /// <returns></returns>
         IEnumerable<VinN> LoadSimilar(int flag);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="vinN"></param>
+        /// <returns></returns>
+        VinN Search(VinN vinN);
+
+      
+    
+    
     }
 }

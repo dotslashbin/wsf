@@ -1,4 +1,4 @@
-﻿function IssueListUserModel( docRoot) {
+﻿function IssueListUserModel( ) {
 
 
     var self = this;
@@ -44,7 +44,7 @@
 
     self.loadPublications = function () {
 
-        $.get(docRoot +  'ChiefEditor/Publications', {},
+        $.get(erp.wsf_path +  'ChiefEditor/Publications', {},
                     function (result) {
                         self.publications(result);
                         PAGE_CONTEXT.publications = result;
@@ -70,7 +70,7 @@
 
     self.load = function (publicationId, state) {
 
-        $.get(docRoot +  'Issue/IssuesForUser', { publicationId: publicationId, state : state },
+        $.get(erp.wsf_path +  'Issue/IssuesForUser', { publicationId: publicationId, state : state },
                  function (result) {
 
                      var t = ko.mapping.fromJS(
@@ -78,7 +78,7 @@
                          {'children':
                              {
                                  create: function(options) {
-                                     return new IssueItemModel(options.data, docRoot);
+                                     return new IssueItemModel(options.data);
                                  }
                              }},{});
 

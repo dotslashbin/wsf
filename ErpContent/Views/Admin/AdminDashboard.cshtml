@@ -258,7 +258,7 @@
 
                     <div class="row panel panel-success" data-bind="visible: open">
                         <!-- ko foreach: notes -->
-                        <div class="row panel-heading">
+                        <div class="row panel-heading" >
                             <h5>
                                 <b>
                                     <span data-bind="text: vintage"></span>
@@ -326,7 +326,7 @@
                         <a href="#" class="btn btn-xs" data-bind="click: Publish"><span class='glyphicon glyphicon-refresh' title="Publish">&nbsp;</span>Publish</a>
                     </div>
                     <div class="col-sm-12">
-                        <a href="#" class="btn btn-xs" data-bind="click: PublishRollack"><span class='glyphicon glyphicon-refresh' title="Rollback">&nbsp;</span>Rollback Publish</a>
+                        <a href="#" class="btn btn-xs" data-bind="click: PublishRollback"><span class='glyphicon glyphicon-refresh' title="Rollback">&nbsp;</span>Rollback Publish</a>
                     </div>
                     <div class="col-sm-12">
                         <a href="#" class="btn btn-xs" data-bind="click: Export"><span class='glyphicon glyphicon-list-alt' title="Export to Doc">&nbsp;</span>Export to Doc</a>
@@ -588,7 +588,7 @@
             };
 
 
-            self.PublishRollack = function(){
+            self.PublishRollback = function(){
 
 
                 $.ajax({
@@ -1646,7 +1646,11 @@
 
                       });
                   }
-             }
+        }
+
+
+
+
 
         //
         // do all init here
@@ -1675,6 +1679,9 @@
         ko.applyBindings(pageData);
 
         $(document).ready(function () {
+
+
+
             //
             // if session expires
             //

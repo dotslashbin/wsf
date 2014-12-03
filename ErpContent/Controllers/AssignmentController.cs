@@ -95,6 +95,94 @@ namespace ErpContent.Controllers
         }
 
 
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
+        [OutputCache(Duration = 0, VaryByParam = "none")]
+        public ActionResult GetAssignmentsByIssueByReviewer(int issueId)
+        {
+            var id = (int)Membership.GetUser(User.Identity.Name).ProviderUserKey;
+
+            //
+            // select all issues for a user
+            //
+            var result = _assignmentStorage.SearchByUser(id);
+
+
+            //
+            // filter out only assignment for that user as reviewer
+            //
+            result = from r in result where  r.author != null && r.author.id == id select r;
+
+            //
+            // filter out only assignment for that issue
+            //
+            result = from r in result where r.issueId == issueId select r;
+
+
+            //var result = _assignmentStorage.SearchByIssueByUser(issueId, id);
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
+        [OutputCache(Duration = 0, VaryByParam = "none")]
+        public ActionResult GetAssignmentsByIssueByEditor(int issueId)
+        {
+            var id = (int)Membership.GetUser(User.Identity.Name).ProviderUserKey;
+
+            //
+            // select all issues for a user
+            //
+            var result = _assignmentStorage.SearchByUser(id);
+
+
+            //
+            // filter out only assignment for that user as editor
+            //
+            result = from r in result where r.editor != null && r.editor.id == id select r;
+
+            //
+            // filter out only assignment for that issue
+            //
+            result = from r in result where r.issueId == issueId select r;
+
+
+            //var result = _assignmentStorage.SearchByIssueByUser(issueId, id);
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+
+
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
+        [OutputCache(Duration = 0, VaryByParam = "none")]
+        public ActionResult GetAssignmentsByIssueByProofreader(int issueId)
+        {
+            var id = (int)Membership.GetUser(User.Identity.Name).ProviderUserKey;
+
+            //
+            // select all issues for a user
+            //
+            var result = _assignmentStorage.SearchByUser(id);
+
+
+            //
+            // filter out only assignment for that user as editor
+            //
+            result = from r in result where r.proofread != null && r.proofread.id == id select r;
+
+            //
+            // filter out only assignment for that issue
+            //
+            result = from r in result where r.issueId == issueId select r;
+
+
+            //var result = _assignmentStorage.SearchByIssueByUser(issueId, id);
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+
 
         [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
         [OutputCache(Duration = 0, VaryByParam = "none")]
@@ -118,6 +206,9 @@ namespace ErpContent.Controllers
 
             return Json(result, JsonRequestBehavior.AllowGet);
         }
+
+
+
 
         /// <summary>
         /// 

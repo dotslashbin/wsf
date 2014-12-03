@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Script.Serialization;
 
 namespace ErpContent.Controllers
 {
@@ -154,6 +155,28 @@ namespace ErpContent.Controllers
 
              return Json(result, JsonRequestBehavior.AllowGet);
          }
+
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="flag">flag will define set of bit and they define how similar VINs should  be</param>
+        /// <returns></returns>
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
+        [OutputCache(Duration = 0, VaryByParam = "none")]
+        public ActionResult Update(string  str)
+        {
+            var o = new JavaScriptSerializer().Deserialize<VinN>(str);
+
+            var result = _vinStorage.Update(o);
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+
+
+
 
 
 	}

@@ -127,14 +127,19 @@
     </footer>
 
     @Scripts.Render("~/bundles/jquery")
-    <script src="@Url.Content("~/Scripts/bootstrap.min.js")"></script>
-    <script src="@Url.Content("~/Scripts/ckeditor/ckeditor.js")"></script>
-
-  
+    @Scripts.Render("~/bundles/bootstrap")
     @Scripts.Render("~/bundles/jqueryval")
     @Scripts.Render("~/bundles/jqueryui")
     @Scripts.Render("~/bundles/knockout")
     @Scripts.Render("~/bundles/erp")
+
+
+<script type="text/javascript">
+    //
+    // this is global setting. could be used in js file while calling ajax get/post
+    //
+    erp.wsf_path = '@Url.Content("~/")';
+</script>
 
     @RenderSection("scripts", required: false)
 

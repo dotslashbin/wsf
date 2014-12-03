@@ -616,6 +616,41 @@
 
 
 
+
+        var issueDrillDownCallback = function () {
+            if (!this.loaded) {
+                this.loaded = !this.loaded;
+
+                var s = this;
+                $.get( '@Url.Content("~/Assignment/GetAssignmentsByIssueByProofreader")', { issueId: this.id() },
+                     function (result) {
+
+                         var t = ko.mapping.fromJS(
+                                 { 'children': result },
+                                 {
+                                     'children':
+                                        {
+                                            create: function (options) {
+                                                var result = new AssignmentModel(options.data);
+                                                return result;
+                                            }
+                                        }
+                                 }, {});
+
+                         if (t.children().length == 0) {
+                             alert("there are no assignments for that issue assigned to your account.");
+                         }
+
+                         s.assignmentList(t.children());
+                     });
+
+                                }
+            pageData.drillDownExt('issue-details-template', this, this.title());
+        }
+
+        IssueItemModel.prototype.drillDown = issueDrillDownCallback;
+
+
         //
         //
         //

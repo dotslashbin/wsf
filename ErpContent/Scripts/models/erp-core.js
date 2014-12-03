@@ -8,6 +8,9 @@
     window['erp'] = {};
 
     erp.version = '1.0.0.0';
+    erp.wsf_path = '/';
+
+
 
     erp.utils = {};
 

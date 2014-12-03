@@ -1,6 +1,6 @@
 ﻿
 
-function AssignmentModel(src, docRoot) {
+function AssignmentModel(src) {
     var self = this;
 
 
@@ -24,6 +24,9 @@ function AssignmentModel(src, docRoot) {
                     "author",
                     "editor",
                     "proofread"]
+
+
+                , "CreatedDate":   { create: dt2js }
                 , "submitDate":    { create: dt2js }
                 , "proofreadDate": { create: dt2js }
                 , "approveDate":   { create: dt2js }
@@ -45,6 +48,83 @@ function AssignmentModel(src, docRoot) {
     }
 
 
+    self.createTastingEvent = function () {
+
+        $.ajax({
+            type: 'POST',
+            url: erp.wsf_path + 'TastingEvent/GetNewTastingEventToAssignment',
+            data:
+                {
+                    assignmentId: self.id()
+                },
+            success: function (r) {
+
+                try {
+
+                    var m = new TastingEventModel(r );
+
+                    m.init = function () {
+                        initTastingEventEditForm(m);
+                        m.validator = $("#tasting-event-form").validate({ debug: true });
+                    };
+
+                    m.validate = function () {
+                        var validationResult = true;
+                        validationResult = m.validator.form();
+                        if (!validationResult)
+                            m.validator.showErrors();
+                        return validationResult;
+                    }
+
+                    m.save = function (o) {
+
+                        if (!m.validate()) {
+                            return false;
+                        }
+
+                        $.ajax({
+                            type: 'POST',
+                            url: erp.wsf_path + 'TastingEvent/AddTastingEvent',
+                            data:
+                                {
+                                    str: JSON.stringify(m.toObject())
+                                },
+                            success: function (r) {
+
+                                var v = new TastingEventModel(r );
+
+                                self.events.unshift(v);
+                            },
+                            error: function (request, status, error) {
+
+                                var dlg = pageData.OpenErrorDialog({ error: request.responseText }, null, "error-view-template");
+
+                                dlg.dialog("option", "title", "Server Error").
+                                    dialog("option", "width", 600).
+                                    dialog("option", "height", 300);
+
+                            }
+                        });
+                        return true;
+                    };
+
+                    m.assignmentId = self.id();
+
+                    var dlg = pageData.OpenDialog(m, m, "tasting-event-template");
+
+                    dlg.dialog("option", "title", "Add Tasting Record").
+                        dialog("option", "width", 600).
+                        dialog("option", "height", 350);
+
+                } catch (e) {
+                    alert(e);
+                }
+            }
+        });
+
+    }
+
+
 
     self.deleteTastingEvent = function (item) {
 
@@ -54,7 +134,7 @@ function AssignmentModel(src, docRoot) {
 
         $.ajax({
             type: 'POST',
-            url: docRoot + 'TastingEvent/DeleteTastingEvent',
+            url: erp.wsf_path + 'TastingEvent/DeleteTastingEvent',
             data:
                 {
                     str: JSON.stringify(item.toObject())
@@ -79,7 +159,7 @@ function AssignmentModel(src, docRoot) {
 
     self.editTastingEvent = function (item) {
         try {
-            var m = new TastingEventModel(item.toObject(), docRoot );
+            var m = new TastingEventModel(item.toObject() );
 
             m.init = function () {
                 initTastingEventEditForm(m);
@@ -89,7 +169,7 @@ function AssignmentModel(src, docRoot) {
 
                 $.ajax({
                     type: 'POST',
-                    url: docRoot + 'TastingEvent/EditTastingEvent',
+                    url: erp.wsf_path + 'TastingEvent/EditTastingEvent',
                     data:
                         {
                             str: JSON.stringify(m.toObject())
@@ -144,7 +224,7 @@ function AssignmentModel(src, docRoot) {
 
             $.ajax({
                 type: 'POST',
-                url: docRoot + 'TastingNote/AddTastingNote',
+                url: erp.wsf_path + 'TastingNote/AddTastingNote',
                 data:
                     {
                         str: JSON.stringify(o.toObject())
@@ -195,7 +275,7 @@ function AssignmentModel(src, docRoot) {
 
         $.ajax({
             type: 'POST',
-            url: docRoot + 'Assignment/SetAssignmentApproved',
+            url: erp.wsf_path + 'Assignment/SetAssignmentApproved',
             data:
                 {
                     assignmentId: self.id
@@ -211,20 +291,7 @@ function AssignmentModel(src, docRoot) {
     }
 
 
-    /*
-    self.createNoteFromExisting = function (tastingEvent) {
-
-        //
-        //
-        //
-        VinSearchModel.tastingEvent = tastingEvent;
-
-        //
-        //
-        //
-        pageData.drillDownExt("search-tasting-note-template-window", VinSearchModel, "Search Existing Notes");
-    }
-    */
+  
 
     //
     // it is confusing how we should call this method. I do not undestand myself how this binding works :-(
@@ -235,7 +302,7 @@ function AssignmentModel(src, docRoot) {
 
         try {
 
-            $.get(docRoot + 'Assignment/GetAssignmentsByUser', { publicationid: 0, state: '1' },
+            $.get(erp.wsf_path + 'Assignment/GetAssignmentsByUser', { publicationid: 0, state: '1' },
                     function (result) {
 
                         /**/
@@ -244,7 +311,7 @@ function AssignmentModel(src, docRoot) {
                             {
                                 'children': {
                                     create: function (options) {
-                                        var result = new AssigmentModel(options.data);
+                                        var result = new AssignmentModel(options.data);
                                         return result;
                                     }
                                 }
@@ -279,7 +346,7 @@ function AssignmentModel(src, docRoot) {
 
                             $.ajax({
                                 type: 'POST',
-                                url: docRoot +  'TastingNote/MoveTastingNote',
+                                url: erp.wsf_path +  'TastingNote/MoveTastingNote',
                                 data:
                                     {
                                         tastingEventId: m.moveToEventId(),
@@ -317,7 +384,7 @@ function AssignmentModel(src, docRoot) {
                         m.moveToAssignmentId.subscribe(function (newValue) {
 
                             if (newValue) {
-                                $.get(docRoot + 'TastingEvent/GetTastingEventByAssignment', { assignmentId: newValue },
+                                $.get(erp.wsf_path + 'TastingEvent/GetTastingEventByAssignment', { assignmentId: newValue },
                                 function (result) {
                                     var t = ko.mapping.fromJS(
                                         { 'children': result },
@@ -325,7 +392,7 @@ function AssignmentModel(src, docRoot) {
                                             'children':
                                             {
                                                 create: function (options) {
-                                                    var r = new TastingEventModel(options.data, docRoot);
+                                                    var r = new TastingEventModel(options.data);
                                                     return r;
                                                 }
                                             }
@@ -356,7 +423,7 @@ function AssignmentModel(src, docRoot) {
 
         try {
 
-            $.get(docRoot +  'Assignment/GetAssignmentsByUser', { publicationid: 0, state: '1' },
+            $.get(erp.wsf_path +  'Assignment/GetAssignmentsByUser', { publicationid: 0, state: '1' },
                     function (result) {
 
                         /**/
@@ -365,7 +432,7 @@ function AssignmentModel(src, docRoot) {
                             {
                                 'children': {
                                     create: function (options) {
-                                        var result = new AssigmentModel(options.data);
+                                        var result = new AssignmentModel(options.data);
                                         return result;
                                     }
                                 }
@@ -392,7 +459,7 @@ function AssignmentModel(src, docRoot) {
 
                             $.ajax({
                                 type: 'POST',
-                                url: docRoot +  'TastingEvent/MoveTastingEvent',
+                                url: erp.wsf_path +  'TastingEvent/MoveTastingEvent',
                                 data:
                                     {
                                         assignmentId: m.moveToAssignmentId(),
@@ -430,23 +497,18 @@ function AssignmentModel(src, docRoot) {
 
     self.TastingEventFactory = function (src, urlRoot) {
         var r = new TastingEventModel(src, urlRoot);
-        //r.open = ko.observable(false);
-        //r.loaded = ko.observable(false);
-        //r.sortById = ko.observable(0);
-        //r.sortBy = self.sortBy;
-        //r.showNotes = eventShowItemsCallback;
         return r;
     }
 
     self.load = function () {
-        $.get(docRoot + 'TastingEvent/GetTastingEventByAssignment', { assignmentId: self.id },
+        $.get(erp.wsf_path + 'TastingEvent/GetTastingEventByAssignment', { assignmentId: self.id },
              function (result) {
 
                  var t = ko.mapping.fromJS(
                        { 'children': result },
                        { 'children':  {
                                   create: function (options) {
-                                      return self.TastingEventFactory(options.data, docRoot);
+                                      return self.TastingEventFactory(options.data);
                                   }
                               }
                        }, {});

@@ -809,6 +809,176 @@ namespace EditorsDbLayer
             }
         }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        public TastingNote UpdateInPlace(TastingNote e)
+        {
+
+            using (var con = _connFactory.GetConnection())
+            {
+                using (var transation = con.BeginTransaction())
+                {
+                    var query = new StringBuilder();
+
+                    using (var cmd = new SqlCommand("", con))
+                    {
+                        cmd.Transaction = transation;
+                        cmd.CommandText =
+                        @" 
+                        
+    declare @Wine_N_ID int;
+    declare @UpdatedId int;
+       
+    set nocount on;
+                 
+    exec @Wine_N_ID = Wine_GetID @Producer=@Producer, @WineType=@WineType, @Label=@Label, @Variety=@Variety,
+                    @Dryness=@Dryness, @Color=@Color,@Vintage=@Vintage,
+                    @locCountry= @locCountry, @locRegion=@locRegion,@locLocation=@locLocation, @locLocale=@locLocale, @locSite=@locSite;
+
+
+    exec @UpdatedId = TastingNote_Update @ID=@ID, @UserId = @UserId,@Wine_N_ID=@Wine_N_ID,@TasteDate=@TasteDate,@MaturityID=@MaturityID,
+            @Rating_Lo=@Rating_Lo, @Rating_Hi= @Rating_Hi,@DrinkDate_Lo=@DrinkDate_Lo,@DrinkDate_Hi=@DrinkDate_Hi,
+            @EstimatedCost=@EstimatedCost, @EstimatedCost_Hi= @EstimatedCost_Hi,
+            @IsBarrelTasting=@IsBarrelTasting,@RatingQ=@RatingQ, @Notes=@Notes;
+
+
+
+    exec TastingNote_GetByID @ID =@UpdatedId;
+
+                            ";
+
+
+
+                        cmd.Parameters.AddWithValue("@Producer", String.IsNullOrEmpty(e.producer) ? null : e.producer);
+                        cmd.Parameters.AddWithValue("@WineType", String.IsNullOrEmpty(e.wineType) ? "Table" : e.wineType);
+                        cmd.Parameters.AddWithValue("@Label", String.IsNullOrEmpty(e.wineName) ? "" : e.wineName);
+                        cmd.Parameters.AddWithValue("@Variety", String.IsNullOrEmpty(e.variety) ? "" : e.variety);
+                        cmd.Parameters.AddWithValue("@Dryness", String.IsNullOrEmpty(e.dryness) ? "" : e.dryness);
+                        cmd.Parameters.AddWithValue("@Color", String.IsNullOrEmpty(e.color) ? null : e.color);
+                        cmd.Parameters.AddWithValue("@Vintage", String.IsNullOrEmpty(e.vintage) ? null : e.vintage);
+                        cmd.Parameters.AddWithValue("@locCountry", String.IsNullOrEmpty(e.country) ? "" : e.country);
+                        cmd.Parameters.AddWithValue("@locRegion", String.IsNullOrEmpty(e.region) ? "" : e.region);
+                        cmd.Parameters.AddWithValue("@locLocation", String.IsNullOrEmpty(e.location) ? "" : e.location);
+                        cmd.Parameters.AddWithValue("@locLocale", String.IsNullOrEmpty(e.locale) ? "" : e.locale);
+                        cmd.Parameters.AddWithValue("@locSite", String.IsNullOrEmpty(e.site) ? "" : e.site);
+
+                        cmd.Parameters.AddWithValue("@ID", e.id);
+                        cmd.Parameters.AddWithValue("@UserId", e.userId <= 0 ? 0 : e.userId);
+                        cmd.Parameters.AddWithValue("@TasteDate", e.tastingDate.Ticks == 0 ? DateTime.Today : e.tastingDate);
+                        cmd.Parameters.AddWithValue("@MaturityID", e.maturityId);
+
+                        e.decodeRating();
+                        cmd.Parameters.AddWithValue("@Rating_Lo", e.ratingLo);
+                        cmd.Parameters.AddWithValue("@Rating_Hi", e.ratingHi);
+
+                        if (String.IsNullOrEmpty(e.ratingQ))
+                        {
+                            cmd.Parameters.AddWithValue("@RatingQ", DBNull.Value);
+
+                        }
+                        else
+                        {
+                            cmd.Parameters.AddWithValue("@RatingQ", e.ratingQ);
+                        }
+
+
+                        if (e.drinkDateLo.Ticks > 0)
+                        {
+                            cmd.Parameters.AddWithValue("@DrinkDate_Lo", e.drinkDateLo);
+                        }
+                        else
+                        {
+                            cmd.Parameters.AddWithValue("@DrinkDate_Lo", DBNull.Value);
+                        }
+
+
+                        if (e.drinkDateHi.Ticks > 0)
+                        {
+                            cmd.Parameters.AddWithValue("@DrinkDate_Hi", e.drinkDateHi);
+                        }
+                        else
+                        {
+                            cmd.Parameters.AddWithValue("@DrinkDate_Hi", DBNull.Value);
+                        }
+
+                        cmd.Parameters.AddWithValue("@EstimatedCost", String.IsNullOrEmpty(e.estimatedCost) ? 0 : Decimal.Parse(e.estimatedCost));
+                        cmd.Parameters.AddWithValue("@EstimatedCost_Hi", String.IsNullOrEmpty(e.estimatedCostHi) ? 0 : Decimal.Parse(e.estimatedCostHi));
+
+                        cmd.Parameters.AddWithValue("@IsBarrelTasting", e.isBarrelTasting);
+
+                        cmd.Parameters.AddWithValue("@TastingEventID", e.tastingEventId);
+                        cmd.Parameters.AddWithValue("@Notes", e.note);
+
+
+                        try
+                        {
+
+                            TastingNote note = null;
+
+                            using (var rdr = cmd.ExecuteReader())
+                            {
+                                int wineN = 0;
+
+
+
+                                if ( rdr.Read())
+                                {
+                                    wineN = rdr.GetInt32(0);
+                                }
+
+
+                                if (rdr.NextResult() && rdr.Read())
+                                {
+                                    int resultId = rdr.GetInt32(0);
+                                    if (resultId != e.id)
+                                    {
+                                        e.id = resultId;
+                                        rdr.NextResult();
+                                    }
+                                }
+
+
+                                e.wineN = wineN; // this value could be changed
+
+                                if (rdr.NextResult() && rdr.Read())
+                                {
+                                    note = ReadTastingFromDb(rdr);
+                                    note.tastingEventId = e.tastingEventId;
+
+                                    if (note.id != e.id)
+                                    {
+                                        throw new Exception("error in logic. read note with wrong id");
+                                    }
+                                }
+                                else
+                                {
+                                    throw new Exception("error in logic. could not update tasting note");
+                                }
+                            }
+
+                            transation.Commit();
+                            return note;
+                        }
+                        catch (Exception)
+                        {
+                            transation.Rollback();
+                            throw;
+                        }
+
+                    }
+                }
+            }
+        }
+
+
+
+
+
+
         private static TastingNote ReadTastingFromDb(SqlDataReader rdr)
         {
             var nullDate = new DateTime(0);

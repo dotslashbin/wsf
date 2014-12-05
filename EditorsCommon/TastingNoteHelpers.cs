@@ -199,6 +199,14 @@ namespace EditorsCommon
                 {
                     englishMap.Add(key, englishPairs[i * 2 + 1]);
                 }
+
+                key = key.ToLower();
+                if (!englishMap.ContainsKey(key))
+                {
+                    englishMap.Add(key, englishPairs[i * 2 + 1].ToLower());
+                }
+
+
             }
         }
 
@@ -322,7 +330,7 @@ namespace EditorsCommon
         /// <summary>
         /// check if input match to words or phrases to itilized
         /// </summary>
-        static PartActionDelegate WordProcessorItilic = (part, last) =>
+        static PartActionDelegate WordProcessorItalic = (part, last) =>
         {
             Queue<string> queue = new Queue<string>();
             string[] phraseToMatch = null;
@@ -331,7 +339,6 @@ namespace EditorsCommon
 
             return SplitterMerger(part,
                 (arg) => { return arg.Split(delimiters, StringSplitOptions.None); },
-//                (arg) => { return arg.Split(new string[] { " " }, StringSplitOptions.None); },
                 (arg) => { return String.Join(" ", arg); },
                 (arg, lastLocal) =>
                 {
@@ -554,7 +561,7 @@ namespace EditorsCommon
         /// <returns></returns>
         public static string ReplaceToItilized(string src)
         {
-            return TextProcessorPrivate(src, WordProcessorItilic);
+            return TextProcessorPrivate(src, WordProcessorItalic);
         }
 
 

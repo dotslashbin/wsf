@@ -6,6 +6,7 @@ using System.Web;
 using System.Net;
 using System.Configuration;
 using System.Text;
+using EditorsCommon;
 
 namespace ErpContent.Views.Helpers
 {
@@ -392,12 +393,18 @@ namespace ErpContent.Views.Helpers
 
             string result = ReplaceToAccent(notes);
 
-            // previous method will take care of  this formatting
-            //result = evaluateForDotAndSpaces(result); // Call to check for space after each period
 
-            result = evaluateForItalizedWords(result);
+            //
+            // commented 12.04.2014
+            //
+            //result = evaluateForItalizedWords(result);
 
-            result = evaluateForItalizedPhrases(result);
+            //result = evaluateForItalizedPhrases(result);
+
+            result =  TastingNoteHelpers.ReplaceToItilized(
+                TastingNoteHelpers.ReplaceToAccent(
+                TastingNoteHelpers.ReplaceFromEnglish(result)));
+
 
             result = evaluateForCapitalization(result);
 

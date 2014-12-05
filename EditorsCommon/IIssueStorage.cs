@@ -94,8 +94,8 @@ namespace EditorsCommon.Publication {
         /// </summary>
         /// <param name="issueId"></param>
         /// <returns></returns>
-        IssueComplete LoadIssueComplete(int issueId);
-
+        IssueComplete LoadIssueComplete(int issueId, int status);
+ 
 
         /// <summary>
         /// 

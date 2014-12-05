@@ -46,6 +46,11 @@
 
            <div class="col-sm-2 pull-right">
                 <div class="row">
+
+                    <div class="col-sm-12">
+                        <a href="#" class="btn btn-xs" data-bind="click: assignment.export"><span class='glyphicon glyphicon-list-alt' title="Export to Doc">&nbsp;</span>Export to Doc</a>
+                    </div>
+
                     <div class="col-sm-12">
                         <a href="#" class="btn btn-xs" data-bind="click: assignment.createTastingEvent"><span class='glyphicon glyphicon-plus' title="Add Tasting Record"></span>&nbsp;Add Tasting Record</a>
                     </div>
@@ -1255,7 +1260,11 @@
 
             }
 
+            self.export = function () {
 
+                    erp.utils.ajaxDownload('@Url.Content("~/Issue/ExportAssignment")', { issueId: self.issueId(), assignmentId : self.id() });
+
+            }
 
             self.createTastingEvent = function () {
 

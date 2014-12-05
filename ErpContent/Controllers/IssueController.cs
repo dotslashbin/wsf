@@ -265,7 +265,7 @@ namespace ErpContent.Controllers
             Response.AddHeader("Content-Disposition", "attachment; filename=issue" + issueId + "_" + assignmentId + ".html");
             Response.ContentType = " text/html;";
 
-            return View("Export2Doc", result);
+            return View("ExportAssignment2Doc", result);
         }
 
 

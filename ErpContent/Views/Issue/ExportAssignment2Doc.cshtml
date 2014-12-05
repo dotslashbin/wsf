@@ -1,0 +1,132 @@
+﻿@using ErpContent.Views.Helpers;
+ 
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<style>
+    html * {
+        font-family: "Times New Roman";
+    }
+
+    p.notes-container {
+    }
+    p.notes-container-retired {
+        line-height: 100%;
+        text-indent: 4em;
+        column-count: 2;
+    }
+</style>
+
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" charset="utf-8" />
+    <title>Export2Doc</title>
+</head>
+<body>
+    <div> 
+
+        @foreach (var a in Model.assignments)
+        {
+            //
+            // iterate thru all assignments, tasting records, notes for an issue 
+            // 
+            //
+            <br />
+            <br />
+            <div>Assignment :<b>@a.title</b></div>
+            <br />
+            
+            if( a.tastingEvents != null ){
+
+                
+                foreach (var t in a.tastingEvents)
+                {
+
+            
+                    
+                    if (t.tastingNotes != null && t.tastingNotes.Count > 0)
+                    {
+                        <hr />
+                        <div>Tasting Event :<b>@t.title</b></div>
+                        <br />
+
+                        
+                        int cnt = 0;
+                        if(  !String.IsNullOrEmpty( t.comments )){
+                            string notes = NotesHelper.applyFormatting(t.comments);
+
+                            <div  style="text-indent: 4em;">@Html.Raw(notes)</div>                        
+                        }
+
+
+                        foreach (var n in t.tastingNotes)
+                        {
+                            /// 
+                            /// 
+                            /// 
+                            cnt++;
+                                    
+
+                            
+                            string noteText = n.note;
+                            string drinkDate = n.DrindDateToString();
+                                    
+                            if( !String.IsNullOrEmpty(drinkDate) ) {
+                                noteText += " Anticipated maturity: " + drinkDate + ".";
+                            }
+                                    
+                            //
+                            // if vintage+label can be find within tasting note body, make it bold
+                            // 
+                            if (!String.IsNullOrEmpty(n.wineName))
+                            {
+                                var vintagePlusWineName = n.vintage.ToUpper() + ' ' + n.wineName;
+                                noteText = noteText.Replace(vintagePlusWineName, "<b>" + vintagePlusWineName + "</b>");
+
+                                //
+                                // in case if name has been accented in the note
+                                //
+                                string vintagePlusWineNameAccent = NotesHelper.ReplaceToAccent(vintagePlusWineName);
+                                if (vintagePlusWineNameAccent.CompareTo(vintagePlusWineName) != 0)
+                                {
+                                    noteText = noteText.Replace(vintagePlusWineNameAccent, "<b>" + vintagePlusWineNameAccent + "</b>");
+                                }
+                                
+                            }
+
+
+
+                            string output = NotesHelper.applyFormatting(noteText);
+                            //
+                            // add importers only to last tasting note withing that tasting record.
+                            //
+                            if (!String.IsNullOrEmpty(n.importers) && cnt == t.tastingNotes.Count)
+                            {
+                                output += " Importer(s): " + n.importers + ".";
+                            }
+                            <br />        
+                            <div>
+                                <b>@n.producer
+                                &#09;@n.vintage
+                                &#09;@n.wineName
+                                &#09;@t.NoteAppellation(n)
+                                &#09;(@t.NotePrice(n))      
+                                &#09;@n.color
+                                &#09;@n.encodeRatingForPrinting() 
+
+                                </b>
+                            </div>
+                            <div style="text-indent: 4em;">@Html.Raw(output)</div>
+                        }
+                    }
+                }
+            }
+            
+        }
+    </div>
+</body>
+</html>

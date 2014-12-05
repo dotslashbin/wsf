@@ -538,10 +538,11 @@
                 m.save = function (o) {
 
 
-                    var result = window.confirm("You are about to save note which is already published,\r\nif you do so, the live note will be updated.\r\nDo you want continue?");
-                    if( !result )
-                        return true;
-
+                    if( o.wfState() >= 100 ){
+                        var result = window.confirm("You are about to save note which is already published,\r\nif you do so, the live note will be updated.\r\nDo you want continue?");
+                        if( !result )
+                            return true;
+                    }
                     //
                     // activate main tab first, otherwise validation does not work properly
                     //

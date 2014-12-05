@@ -245,7 +245,10 @@ namespace EditorsCommon
     {
         get
         {
-            return String.IsNullOrEmpty(note) ? "" : TastingNoteHelpers.ReplaceToItilized(TastingNoteHelpers.ReplaceToAccent(note));
+            return String.IsNullOrEmpty(note) ? "" : 
+                TastingNoteHelpers.ReplaceToItilized(
+                TastingNoteHelpers.ReplaceToAccent( 
+                TastingNoteHelpers.ReplaceFromEnglish(note)));
         }
     }
 

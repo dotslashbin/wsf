@@ -474,7 +474,7 @@ namespace EditorsDbLayer.Data.Publication
 
 
 
-        public IssueComplete LoadIssueComplete(int issueId)
+        public IssueComplete LoadIssueComplete(int issueId, int status)
         {
 
             using (SqlConnection conn = _connFactory.GetConnection())
@@ -596,12 +596,13 @@ join vWineDetails as w  on w.Wine_N_ID = tn.Wine_N_ID
 left join Users as u on tn.UserId  = u.UserId
 left join WineMaturity wm (nolock) on tn.MaturityID = wm.ID
                          
-where i.ID = @IssueId and tn.WF_StatusID >= 60 
+where i.ID = @IssueId and tn.WF_StatusID >= @Status 
 order by te.ID
 
 ";
 
                     cmd.Parameters.AddWithValue("@IssueId", issueId);
+                    cmd.Parameters.AddWithValue("@Status", status);
 
                     using (SqlDataReader rdr = cmd.ExecuteReader())
                     {

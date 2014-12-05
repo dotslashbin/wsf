@@ -11,11 +11,12 @@ namespace EditorsCommon
 
    
 
-        static string[] pairs = {
+        static string[] accentsPairs = {
                 "cuvee"         ,"cuvée" ,
                 "Cuvee"         ,"Cuvée" ,
                 "Rhone"         ,"Rhône" ,
                 "Rhones"        ,"Rhônes",
+                "Rhone-like"    ,"Rhône-like",   //   addition 12.03.2014
                 "Cote"          ,"Côte" ,
                 "Cotes"         ,"Côtes" ,
                 "Chateau"       ,"Château" ,
@@ -43,7 +44,44 @@ namespace EditorsCommon
                 "Pean"          ,"Peàn",
                 "creme"         ,"crème",
 
+                 "brulee"       ,"brulée",      //   addition 12.03.2014
+                 "fumé"         ,"fumé",        //   addition 12.03.2014
+                 "metayage"     ,"métayage",    //   addition 12.03.2014
+                 "mineralite"   ,"mineralité",  //   addition 12.03.2014
+                 "raisonee"     ,"raisonée",    //   addition 12.03.2014
+                 "fruite"       ,"fruité",      //   addition 12.03.2014
+                 "matiere"      ,"matière",     //   addition 12.03.2014
+
+                 "Mineralite", "Mineralité"    //   addition 12.03.2014
             };
+
+
+
+        static string[] englishPairs = {
+            "Whilst","While",
+            "Amongst","Among",
+            "Colour","Color",
+            "Vigour","Vigor",
+            "Favourite","Favorite",
+            "Savoury","Savory",
+            "Centre","Center",
+            "Utilise","Utilize",
+            "Materialise","Materialize",
+            "Commercialised","Commercialized",
+            "Minimise","Minimize",
+            "Maximise","Maximize",
+            "Intellectualise","Intellectualize",
+            "Realise","Realize",
+            "Stabilise","Stabilize",
+            "Persistency","Persistence",
+            "n/a","not available",
+            "Ha/hl","Hectoliter per hectare",
+            "Sulphur","Sulfur",
+            "Sulphide","Sulfide",
+            "Litre","liter"
+            };
+
+
 
         static string[] itilizedWords = {
             "auslese",
@@ -74,12 +112,9 @@ namespace EditorsCommon
             "patisserie",
             "pigeage",
             "terroir", 
-          //  "cru",
-          //  "crus",
             "spaetlese",
             "sur-maturité",
             "sur-maturite",
-          //  "clos",
             "tirage",
             "veraison",
             "oidium",
@@ -97,8 +132,8 @@ namespace EditorsCommon
             "vendage",
             "vignoble",
             "vigneron",
-            "vigneron",
 
+            "Terroir-driven"       //   addition 12.03.2014
           };
 
 
@@ -123,10 +158,22 @@ namespace EditorsCommon
             "méthode Champenoise", 
             "premier cru", 
             "village cru", 
-            "grand cru"};
+            "grand cru",
+
+            "petit pois",       //   addition 12.03.2014
+            "lutte raisonée",   //   addition 12.03.2014
+            "sous bois",        //   addition 12.03.2014
+            "je ne sais quoi",  //   addition 12.03.2014
+            "crème brulée",     //   addition 12.03.2014
+            "vin de réserve",   //   addition 12.03.2014
+            "Vin de table",     //   addition 12.03.2014
+            "Bouquet garni"    //   addition 12.03.2014
+             };
+
 
 
         static Dictionary<string, string> accentMap = new Dictionary<string, string>();
+        static Dictionary<string, string> englishMap = new Dictionary<string, string>();
         static Dictionary<string, string> itilizedWordsMap = new Dictionary<string, string>();
         static Dictionary<string, string[]> itilizedPhrasesMap = new Dictionary<string, string[]>();
 
@@ -134,8 +181,25 @@ namespace EditorsCommon
         static TastingNoteHelpers()
         {
             InitAccentMap();
+            InitEnglishMap();
             InitItilizedWordsMap();
             InitItilizedPhrasesMap();
+        }
+
+        private static void InitEnglishMap()
+        {
+            englishMap.Clear();
+
+            int pairCount = englishPairs.Length / 2;
+
+            for (int i = 0; i < pairCount; i++)
+            {
+                var key = englishPairs[i * 2];
+                if (!englishMap.ContainsKey(key))
+                {
+                    englishMap.Add(key, englishPairs[i * 2 + 1]);
+                }
+            }
         }
 
         /// <summary>
@@ -145,15 +209,15 @@ namespace EditorsCommon
         {
             accentMap.Clear();
 
-            int pairCount = pairs.Length / 2;
+            int pairCount = accentsPairs.Length / 2;
 
             for (int i = 0; i < pairCount; i++)
             {
 
-                var key = pairs[i * 2];
+                var key = accentsPairs[i * 2];
                 if (!accentMap.ContainsKey(key))
                 {
-                    accentMap.Add(key, pairs[i * 2 + 1]);
+                    accentMap.Add(key, accentsPairs[i * 2 + 1]);
                 }
             }
         }
@@ -351,6 +415,23 @@ namespace EditorsCommon
 
 
 
+        static PartActionDelegate WordProcessorEnglish = (part, last) =>
+        {
+            return SplitterMerger(part,
+                (arg) => { return arg.Split(new string[] { " " }, StringSplitOptions.None); },
+                (arg) => { return String.Join(" ", arg); },
+                (arg, lastLocal) =>
+                {
+                    var key = arg;
+                    if ( englishMap.ContainsKey(key))
+                    {
+                        return englishMap[key];
+                    }
+                    return arg;
+                });
+        };
+
+
         static PartActionDelegate WordProcessorAccent  = ( part, last) => 
         {
             return SplitterMerger(part,
@@ -451,11 +532,20 @@ namespace EditorsCommon
         /// </summary>
         /// <param name="src"></param>
         /// <returns></returns>
-        public static string ReplaceToAccentPrivate(string src)
+        private static string ReplaceToAccentPrivate(string src)
         {
             return TextProcessorPrivate(src, WordProcessorAccent);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="src"></param>
+        /// <returns></returns>
+        public static string ReplaceFromEnglishPrivate(string src)
+        {
+            return TextProcessorPrivate(src, WordProcessorEnglish);
+        }
 
         /// <summary>
         /// 
@@ -476,6 +566,16 @@ namespace EditorsCommon
         public static string ReplaceToAccent(string src)
         {
             return ReplaceToAccentPrivate(src);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="src"></param>
+        /// <returns></returns>
+        public static string ReplaceFromEnglish(string src)
+        {
+            return ReplaceFromEnglishPrivate(src);
         }
 
 

@@ -213,10 +213,12 @@ namespace ErpContent.Controllers
         public ActionResult Export(int id)
         {
 
-            var result = _issueStorage.LoadIssueComplete(id);
+            var result = _issueStorage.LoadIssueComplete(id,  60 );
 
             Response.AddHeader("Content-Disposition", "attachment; filename=issue" + id + ".html");
             Response.ContentType = " text/html;";
+
+
 
 
             foreach (var a in result.assignments)
@@ -239,13 +241,13 @@ namespace ErpContent.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameChiefEditor + "," + EditorsCommon.Constants.roleNameAdmin)]
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
         [HttpPost]
         [OutputCache(Duration = 5, VaryByParam = "none")]
         public ActionResult ExportAssignment(int issueId,int assignmentId)
         {
 
-            var result = _issueStorage.LoadIssueComplete(issueId);
+            var result = _issueStorage.LoadIssueComplete(issueId,-1);
 
 
             foreach (var a in result.assignments)
@@ -279,7 +281,7 @@ namespace ErpContent.Controllers
         public ActionResult Export2Xml(int id)
         {
 
-            var result = _issueStorage.LoadIssueComplete(id);
+            var result = _issueStorage.LoadIssueComplete(id,60);
 
             XmlDocument xml = new XmlDocument();
             XmlNode issue =  xml.AppendChild(xml.CreateElement("issue"));
@@ -565,7 +567,7 @@ namespace ErpContent.Controllers
         {
 
             // R&D not completed yet
-            var result = _issueStorage.LoadIssueComplete(id);
+            var result = _issueStorage.LoadIssueComplete(id,60);
 
             int notesTotal = 0;
             int notesPublished = 0;

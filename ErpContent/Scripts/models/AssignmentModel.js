@@ -48,6 +48,13 @@ function AssignmentModel(src) {
     }
 
 
+    self.export = function () {
+        erp.utils.ajaxDownload( erp.wsf_path + 'Issue/ExportAssignment', { issueId: self.issueId(), assignmentId: self.id() });
+    }
+
+
+
+
     self.createTastingEvent = function () {
 
         $.ajax({

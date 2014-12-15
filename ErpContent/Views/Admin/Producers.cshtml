@@ -90,7 +90,7 @@
 
 
                 <div class="row">
-                    <div class="col-sm-1"  data-bind="click: editNote" style=" margin-bottom: 5px;cursor:pointer"  >
+                    <div class="col-sm-1"  style=" margin-bottom: 5px;cursor:pointer"  >
                       <span data-bind="click: editNote" class='glyphicon glyphicon-pencil' style="cursor:pointer" title="Start editing"></span>
                     </div>  
                     <div class="col-sm-11  pull-right">
@@ -439,11 +439,11 @@
             }
 
 
-            var m = new TastingNoteModel(data.toObject(), '@Url.Content("~")');
+            var m = new TastingNoteModel(data.toObject());
 
 
                 m.init = function (elements) {
-                    initNoteEditForm(elements, m, '@Url.Content("~")');
+                    initNoteEditForm(elements, m);
 
                     m.validator = $("#tasting-note-form-validation").validate(
                         {

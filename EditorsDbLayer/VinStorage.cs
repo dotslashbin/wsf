@@ -978,7 +978,10 @@ namespace EditorsDbLayer
 
                     using (SqlDataReader rdr = cmd.ExecuteReader())
                     {
-                        if (rdr.Read())
+
+
+
+                        if (rdr.NextResult() && rdr.NextResult() && rdr.Read())
                         {
                             vinN.id = rdr.GetInt32(0);
                         }

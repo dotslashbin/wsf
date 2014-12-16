@@ -70,6 +70,7 @@
                 <div class='col-sm-2'>
                       URL
                 </div>
+                <div class='col-sm-1'>&nbsp;</div>
             </div>
             <!-- ko foreach: items -->
             <div class="row"  style="border-bottom: solid 1px gray;">
@@ -85,6 +86,10 @@
                 <div class='col-sm-2' >
                       <span data-bind="text: url"></span>
                 </div>
+                <div class='col-sm-1'>
+                      <span data-bind="click: $parent.remove, visible: linkImportersCount() == 0 " class='glyphicon glyphicon-trash' style="cursor:pointer" title="Delete Importer's record"></span>
+                </div>  
+
             </div>
             <!-- /ko -->
         </div>
@@ -183,6 +188,7 @@
         //
         if (src)
             self.fromObject(src);
+
 
      
         self.edit = function(item){
@@ -289,6 +295,32 @@
                 });
         }
 
+
+
+        self.remove = function (item) {
+
+
+            var result = window.confirm("You are about to remove importer\r\n'"  + item.name() + "'\r\nDo you wish to continue?");
+            if (!result)
+                return;
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Importer/Remove")',
+                data:
+                    {
+                        str: JSON.stringify(item.toObject())
+                    },
+                success: function (r) {
+                    self.items.remove(item);
+                },
+                error: function (request, status, error) {
+                    alert('error while removing importer record');
+                }
+            });
+        }
+
+
         self.addImporter = function () {
 
             var m = null;
@@ -350,6 +382,50 @@
                 if (!m.validate()) {
                     return false;
                 }
+
+                var similar = null;
+
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Content("~/Importer/SearchByName")',
+                    async: false,
+                    data:
+                        {
+                            term: o.name()
+                        },
+                    success: function (r) {
+
+                        var t = ko.mapping.fromJS(
+                                    { 'children': r },
+                                    {
+                                        'children':
+                                        {
+                                            create: function (options) {
+                                                var result = new ImporterModel(options.data);
+                                                return result;
+                                            }
+                                        }
+                                    }, {});
+
+                        similar = t.children();
+                    },
+                    error: function (request, status, error) {
+                        alert('error while searching similar importer record');
+                    }
+                });
+
+
+                if (similar != null && similar.length > 0) {
+                    for (var i = 0; i < similar.length - 1; i++) {
+                        if (o.name().toLowerCase().trim() == similar[i].name().toLowerCase().trim()) {
+
+                            alert("Importer '" + similar[i].name() + "' already exists in database.");
+                            return;
+                        }
+                    }
+                }
+
+
 
                 $.ajax({
                     type: 'POST',

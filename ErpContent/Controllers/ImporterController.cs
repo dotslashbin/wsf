@@ -126,6 +126,22 @@ namespace ErpContent.Controllers
         /// </summary>
         /// <param name="term"></param>
         /// <returns></returns>
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
+        [OutputCache(Duration = 0, VaryByParam = "none")]
+        public ActionResult Remove(String str)
+        {
+            var o = new JavaScriptSerializer().Deserialize<WineImporterItem>(str);
+
+            var result = _importerStorage.Delete(o);
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="term"></param>
+        /// <returns></returns>
         [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameReviewer + "," + EditorsCommon.Constants.roleNameAdmin)]
         [OutputCache(Duration = 0, VaryByParam = "none")]
         public ActionResult Update(String str)

@@ -20,6 +20,9 @@ namespace EditorsCommon
         public string email;
         public string url;
 
+        public int linkImportersCount;
+
+
     }
 
     /// <summary>
@@ -31,13 +34,13 @@ namespace EditorsCommon
         /// 
         /// </summary>
         /// <param name="producerId"></param>
-        void AddLinkToProducer(int producerId);
+        //void AddLinkToProducer(int producerId);
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="producerId"></param>
-        void RemoveLinkToProducer(int producerId);
+        //void RemoveLinkToProducer(int producerId);
 
         /// <summary>
         /// 
@@ -68,5 +71,15 @@ namespace EditorsCommon
         /// <param name="producerId"></param>
         /// <returns></returns>
         WineImporterItem RemoveFromProducer(int importerId, int producerId);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="importerId"></param>
+        /// <returns></returns>
+        IEnumerable<WineProducer> GetLinksToImporter(int importerId);
+    
+    
+    
     }
 }

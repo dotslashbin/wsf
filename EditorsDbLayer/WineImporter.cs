@@ -27,15 +27,15 @@ namespace EditorsDbLayer
 
 
 
-        public void AddLinkToProducer(int producerId)
-        {
-            throw new NotImplementedException();
-        }
+        //public void AddLinkToProducer(int producerId)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
-        public void RemoveLinkToProducer(int producerId)
-        {
-            throw new NotImplementedException();
-        }
+        //public void RemoveLinkToProducer(int producerId)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         public IEnumerable<WineImporterItem> GetLinksToProducer(int producerId)
         {
@@ -109,7 +109,9 @@ namespace EditorsDbLayer
                 Fax     = wp.Fax,
                 Email   = wp.Email,
                 URL     = wp.URL,
-	            SortOrder = case when wp.Name like right(@SearchString, len(@SearchString)-1) then 0 else 20 end
+	            SortOrder = case when wp.Name like right(@SearchString, len(@SearchString)-1) then 0 else 20 end,
+                linkCount = (select count(*) from WineProducer_WineImporter where ImporterId = wp.ID)
+
             from WineImporter wp (nolock)
             where wp.Name like @SearchString
             order by SortOrder, Name, ID
@@ -132,6 +134,8 @@ namespace EditorsDbLayer
                             item.fax = (dr.IsDBNull(5) ? "" : dr.GetString(5));
                             item.email = (dr.IsDBNull(6) ? "" : dr.GetString(6));
                             item.url = (dr.IsDBNull(7) ? "" : dr.GetString(7));
+
+                            item.linkImportersCount = dr.GetInt32(8); 
 
                             res.Add(item);
                         }
@@ -188,7 +192,22 @@ namespace EditorsDbLayer
         /// <returns></returns>
         public WineImporterItem Delete(WineImporterItem e)
         {
-            throw new NotImplementedException();
+
+            using (SqlConnection conn = _connFactory.GetConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("", conn))
+                {
+                    cmd.CommandText = @" delete from  WineImporter  where ID = @ImporterId";
+                    cmd.Parameters.AddWithValue("@ImporterId", e.id);
+
+                    if (cmd.ExecuteNonQuery() == 1)
+                    {
+                        return e;
+                    }
+                }
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -213,7 +232,9 @@ namespace EditorsDbLayer
                 Phone2  = wp.Phone2,
                 Fax     = wp.Fax,
                 Email   = wp.Email,
-                URL     = wp.URL
+                URL     = wp.URL,
+                linkCount = (select count(*) from WineProducer_WineImporter where ImporterId = wp.ID)
+
             from WineImporter wp (nolock)
             inner join  WineProducer_WineImporter pi on wp.ID =pi.ImporterId
             where pi.ProducerId = @ID
@@ -235,6 +256,8 @@ namespace EditorsDbLayer
                             item.fax = (dr.IsDBNull(5) ? "" : dr.GetString(5));
                             item.email = (dr.IsDBNull(6) ? "" : dr.GetString(6));
                             item.url = (dr.IsDBNull(7) ? "" : dr.GetString(7));
+
+                            item.linkImportersCount = dr.GetInt32(8); 
 
                             res.Add(item);
                         }
@@ -364,6 +387,50 @@ namespace EditorsDbLayer
             }
 
             return null;
+        }
+
+
+        public IEnumerable<WineProducer> GetLinksToImporter(int importerId)
+        {
+            List<WineProducer> res = new List<WineProducer>();
+
+            using (SqlConnection conn = _connFactory.GetConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("", conn))
+                {
+                    cmd.CommandText = @"
+            select 
+	            ID = wp.ID, 
+	            Name = wp.Name, 
+	            NameToShow = wp.NameToShow,
+	            WF_StatusID = wp.WF_StatusID,
+            from WineProducer wp (nolock)
+            join WineProducer_WineImporter as wpwi on wpwi.ProducerId = wp.ID 
+                    ([ProducerId],[ImporterId]) values  (@ProducerId,@ImporterId);
+
+            where wpwi.ImporterId = @ImporterId
+";
+
+                    cmd.Parameters.AddWithValue("@ImporterId", importerId);
+
+
+                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            WineProducer item = new WineProducer();
+                            item.id = dr.GetInt32(0);
+                            item.name = dr.GetString(1);
+                            item.nameToShow = dr.GetString(2);
+                            item.wfState = (dr.IsDBNull(3) ? (short)0 : dr.GetInt16(3));
+
+                            res.Add(item);
+                        }
+                    }
+                }
+            }
+
+            return res;
         }
     }
 }

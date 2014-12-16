@@ -352,6 +352,49 @@
                     return false;
                 }
 
+                var similar = null;
+
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Content("~/Importer/SearchByName")',
+                    async : false,
+                    data:
+                        {
+                            term: o.name()
+                        },
+                    success: function (r) {
+
+                        var t = ko.mapping.fromJS(
+                                    { 'children': r },
+                                    {
+                                        'children':
+                                        {
+                                            create: function (options) {
+                                                var result = new ImporterModel(options.data);
+                                                return result;
+                                            }
+                                        }
+                                    }, {});
+
+                        similar = t.children();
+                    },
+                    error: function (request, status, error) {
+                        alert('error while searching similar importer record');
+                    }
+                });
+
+
+                if (similar != null && similar.length > 0) {
+                    for (var i = 0; i < similar.length - 1; i++) {
+                        if (o.name().toLowerCase().trim() == similar[i].name().toLowerCase().trim()) {
+
+                            alert("Importer '" + similar[i].name() + "' already exists in database.");
+                            return;
+                        }
+                    }
+                }
+
+
                 $.ajax({
                     type: 'POST',
                     url: '@Url.Content("~/Importer/Insert")',

@@ -10,7 +10,30 @@
     <link href="@Url.Content("~/Content/themes/base/jquery.ui.all.css")" rel="stylesheet" media="screen"/>
     <link href='@Url.Content("~/Content/erp.css")' rel="stylesheet" media="screen"/>
 
+<style>
+
+     #spinnerImage {
+          display: none;
+     }
+
+     .popup-content-box{
+      background-color: white;
+      position: fixed;
+      margin: 0px auto;
+      top: 50%;
+      left: 50%;
+      z-index: 11;
+      -webkit-transform: translate(-50%, -50%);
+      -moz-transform: translate(-50%, -50%);
+      -ms-transform: translate(-50%, -50%);
+      -o-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
+}
+</style>
+
+
 </head>
+
 
 
 
@@ -29,6 +52,13 @@
     }
 
     <header>
+
+
+        <div id="SpinnerContainer" class="popup-content-box">
+             <img src="~/Images/spinner.gif" id="spinnerImage" title="working..." />
+        </div>
+
+
         <div class="navbar navbar-inverse navbar-fixed-top " role="navigation">
             <div class="col-lg-3">
                  <h5><span id="pgTtl">@ViewBag.PageTitle</span></h5>  

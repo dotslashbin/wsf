@@ -1066,13 +1066,15 @@
 
      }
 
-     function hideSaveButtons() {
-         $('div.btn-group').hide(); 
-     }
+     //
+     // commented by BB 12.17.2014. should be removed once it is confirmed that nobody is using these functions  
+     //function hideSaveButtons() {
+     //    $('div.btn-group').hide(); 
+     //}
 
-     function showSaveButtons() {
-         $('div.btn-group').show(); 
-     }
+     //function showSaveButtons() {
+     //    $('div.btn-group').show(); 
+     //}
 
      $(document).ready(function () {
          //
@@ -1127,9 +1129,7 @@
          });
 
          pageData.init();
-         //pageData.drillDownExt('issue-details-template', new IssueModel(), "Assignments");
          pageData.drillDownExt('issue-list-template', new IssueListUserModel('@Url.Content("~")'), "Issues");
-
 
 
              

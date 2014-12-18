@@ -21,6 +21,14 @@
 
 <div id="error-dialog-placeholder" data-bind="  template: { name: dmvError().view, data: dmvError().model, afterRender: $root.errorDialogInit }"></div>
 
+<style>
+    .alter-backgound:nth-child(2n+1) {
+       background-color: #dff0d8;
+    }
+
+
+</style>
+
 
 
 @section scripts {
@@ -76,40 +84,34 @@
         </div>
 
         <br />
+        <div class="row" style="border-bottom: solid 1px gray;">
+            <div class='col-sm-11'>Producer,Label,Country,Region,Location,Locale,Site,Type,Variety,Color,Dryness</div>
+            <div class='col-sm-1'>Vin ID</div>
+        </div>
         <div class="row" style="height: 550px; overflow:auto">
 
-            <div class="row" style="border-bottom: solid 1px gray;">
-                <div class='col-sm-1' >&nbsp;</div>
-                <div class='col-sm-3' >Producer</div>
-                <div class='col-sm-3' >Label</div>
-                <div class='col-sm-1' >Appellation</div>
-                <div class='col-sm-1' >Type</div>
-                <div class='col-sm-1' >Variety</div>
-                <div class='col-sm-1' >Color</div>
-                <div class='col-sm-1' >Dryness</div>
-            </div>
             <!-- ko foreach: items -->
-            <div class="row"  style="border-bottom: solid 1px gray;">
-                <div class='col-sm-1' >
-                     <div class="row">
-                        <div class='col-sm-3' >
-                            <span class='glyphicon glyphicon-pencil' data-bind="click: edit"  style="cursor:pointer" title="Edit VIN" ></span>
-                        </div>
-                        <div class='col-sm-3' >
-                            <span class='glyphicon glyphicon-glass' data-bind="style: { color: wineColor($data.colorClass()) }" ></span>
-                        </div>
-                        <div class='col-sm-6' data-bind="text: id"></div>
-                     </div>
+            <div class="row alter-backgound"  style="border-bottom: solid 1px gray;">
+                <div class='col-sm-11' >
+                    <span class='glyphicon glyphicon-pencil' data-bind="click: edit"  style="cursor:pointer" title="Edit VIN" ></span>&nbsp;
+                    <span data-bind="text: producer"/>,
+                    <span data-bind="text: label"/>,
+                    <span data-bind="text: country"/>,
+                    <span data-bind="text: region"/>,
+                    <span data-bind="text: location"/>,
+                    <span data-bind="text: locale"/>,
+                    <span data-bind="text: site"/>,
+                    <span data-bind="text: wineType"/>,
+                    <span data-bind="text: variety"/>,
+                    <span data-bind="text: colorClass"/>,
+                    <span data-bind="text: dryness"/>
                 </div>
-                <div class='col-sm-3' data-bind="text: producer"></div>
-                <div class='col-sm-3' data-bind="text: label"></div>
-                <div class='col-sm-1' data-bind="text: appellation"></div>
-                <div class='col-sm-1' data-bind="text: wineType"></div>
-                <div class='col-sm-1' data-bind="text: variety"></div>
-                <div class='col-sm-1' data-bind="text: colorClass"></div>
-                <div class='col-sm-1' data-bind="text: dryness"></div>
+                <div class='col-sm-1' >
+                    <span data-bind="text: id"/>
+                </div>
 
             </div>
+
             <!-- /ko -->
 
         </div>
@@ -753,6 +755,8 @@
         pageData.drillDown('search-wine-template', new WinesPageModel());
 
         $("#page-left-menu #similar_wines").addClass("active");
+
+  
 
 
     });

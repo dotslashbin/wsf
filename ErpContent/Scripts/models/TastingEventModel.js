@@ -31,22 +31,14 @@
                 function (result) {
                     var t = ko.mapping.fromJS(
                         { 'children': result },
-                        {
-                            'children':
+                        { 'children':
                                {
                                    create: function (options) {
                                        var tnm = new TastingNoteModel(options.data);
-
-                                       //tnm.editNote = editNoteCallback;
-                                       //tnm.approveNote = approveNoteCallback;
-                                       //tnm.sendBackNote = sendBackNoteCallback;
-
                                        return tnm;
-
                                    }
                                }
                         }, {});
-
 
                     item.loaded(true);
                     item.notes(t.children());

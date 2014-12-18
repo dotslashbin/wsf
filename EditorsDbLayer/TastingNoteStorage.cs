@@ -1297,6 +1297,7 @@ select  top 200
 
                 using (var cmd = new SqlCommand("", con))
                 {
+                    cmd.CommandTimeout = 300;
                     cmd.CommandText = @"exec [srv].[Wine_Reload]  @IsFullReload = 0";
                     cmd.ExecuteNonQuery();
                 }

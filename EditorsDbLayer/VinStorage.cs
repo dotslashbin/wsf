@@ -1,6 +1,7 @@
 ﻿using EditorsCommon;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -325,7 +326,7 @@ namespace EditorsDbLayer
                         , v.Wine_VinN_WF_StatusID
 
                           FROM vWineVinNDetails as v  WITH (NOEXPAND) 
-                          INNER JOIN CONTAINSTABLE(vWineVinNDetails,name,@filter,500) AS KEY_TBL  ON v.Wine_VinN_ID =  KEY_TBL.[KEY]
+                          INNER JOIN CONTAINSTABLE(vWineVinNDetails,keywords,@filter,500) AS KEY_TBL  ON v.Wine_VinN_ID =  KEY_TBL.[KEY]
                           order by v.Wine_VinN_ID;
 
 
@@ -336,7 +337,7 @@ namespace EditorsDbLayer
                         , w.WF_StatusID
 
                           FROM vWineVinNDetails as v  WITH (NOEXPAND) 
-                          INNER JOIN CONTAINSTABLE(vWineVinNDetails,name,@filter,1000) AS KEY_TBL  ON v.Wine_VinN_ID =  KEY_TBL.[KEY]
+                          INNER JOIN CONTAINSTABLE(vWineVinNDetails,keywords,@filter,1000) AS KEY_TBL  ON v.Wine_VinN_ID =  KEY_TBL.[KEY]
                           INNER JOIN Wine_N as w on w.Wine_VinN_ID = v.Wine_VinN_ID
                           INNER JOIN WineVintage as wv on wv.ID = w.VintageID
                           order by v.Wine_VinN_ID ,wv.name desc
@@ -805,6 +806,7 @@ namespace EditorsDbLayer
             sb.Append((flag & VinN.SIMILAR_LOCALE) == 0 ? "" : " and v1.locLocaleID   = v2.locLocaleID ");
             sb.Append((flag & VinN.SIMILAR_SITE) == 0 ? "" : " and v1.locSiteID     = v2.locSiteID ");
 
+            sb.Append(flag == VinN.SIMILAR_ALL ? "" : " and v1.colorid = v2.colorid ");
 
 
  sb.Append(@" 
@@ -976,19 +978,37 @@ namespace EditorsDbLayer
                     cmd.Parameters.AddWithValue("@locLocale", String.IsNullOrEmpty(vinN.locale) == true ? "" : vinN.locale);
                     cmd.Parameters.AddWithValue("@locSite", String.IsNullOrEmpty(vinN.site) == true ? "" : vinN.site);
 
+
+                    //var returnParameter = cmd.Parameters.Add("@ReturnVal", SqlDbType.Int);
+                    //returnParameter.Direction = ParameterDirection.ReturnValue;
+
+                    //cmd.ExecuteNonQuery();
+
+                    //vinN.id = (int)returnParameter.Value;
+
                     using (SqlDataReader rdr = cmd.ExecuteReader())
                     {
+                        vinN.id = 0;
 
-
-
-                        if (rdr.NextResult() && rdr.NextResult() && rdr.Read())
+                        if (rdr.NextResult() && rdr.Read())
                         {
                             vinN.id = rdr.GetInt32(0);
                         }
-                        else
+
+                        if (rdr.NextResult() && rdr.Read())
                         {
-                            vinN.id = 0;
+                            vinN.id = rdr.GetInt32(0);
                         }
+                        
+                        
+                        //if (rdr.NextResult() && rdr.NextResult() && rdr.Read())
+                        //{
+                        //    vinN.id = rdr.GetInt32(0);
+                        //}
+                        //else
+                        //{
+                        //    vinN.id = 0;
+                        //}
                     }
 
                     return vinN;

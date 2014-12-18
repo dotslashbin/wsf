@@ -28,6 +28,7 @@ namespace EditorsCommon
         public const int SIMILAR_LOCATION = 0X0080;
         public const int SIMILAR_LOCALE = 0X0100;
         public const int SIMILAR_SITE = 0X0200;
+        public const int SIMILAR_ALL = 0X03FF;
 
 
         public Int32 id;

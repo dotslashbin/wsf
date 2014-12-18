@@ -143,4 +143,17 @@ function PageData() {
         return true;
     }
 
+
+
+    //http://stackoverflow.com/questions/68485/how-to-show-loading-spinner-in-jquery
+    $(document)
+     .ajaxStart(function () {
+         $("#spinnerImage").show();
+     })
+     .ajaxStop(function () {
+         $("#spinnerImage").hide();
+     });
+
+
+
 }

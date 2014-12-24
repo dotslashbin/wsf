@@ -21,14 +21,6 @@
 
 <div id="error-dialog-placeholder" data-bind="  template: { name: dmvError().view, data: dmvError().model, afterRender: $root.errorDialogInit }"></div>
 
-<style>
-    .alter-backgound:nth-child(2n+1) {
-       background-color: #dff0d8;
-    }
-
-
-</style>
-
 
 
 @section scripts {
@@ -91,7 +83,7 @@
         <div class="row" style="height: 550px; overflow:auto">
 
             <!-- ko foreach: items -->
-            <div class="row alter-backgound"  style="border-bottom: solid 1px gray;">
+            <div class="well row alter-backgound" >
                 <div class='col-sm-11' >
                     <span class='glyphicon glyphicon-pencil' data-bind="click: edit"  style="cursor:pointer" title="Edit VIN" ></span>&nbsp;
                     <span data-bind="text: producer"/>,
@@ -151,6 +143,7 @@
             </div>
             <div class="col-sm-5 input-group-md">
                <select  name="vin-edit-color"
+                    class="form-control"
                     data-bind="options: wineTypeLookup,
                     optionsText: 'name',
                     optionsValue: 'name',
@@ -177,6 +170,7 @@
             </div>
             <div class="col-sm-5 input-group-md">
             <select  name="vin-edit-color"
+                class="form-control"
                 data-bind="options: wineColorLookup,
                 optionsText: 'name',
                 optionsValue: 'name',
@@ -192,6 +186,7 @@
             <div class="col-sm-5 input-group-md">
 
             <select  name="vin-edit-dryness"
+                class="form-control"
                 data-bind="options: wineDrynessLookup,
                 optionsText: 'name',
                 optionsValue: 'name',

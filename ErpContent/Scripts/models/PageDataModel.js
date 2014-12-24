@@ -144,14 +144,19 @@ function PageData() {
     }
 
 
-
+    //
     //http://stackoverflow.com/questions/68485/how-to-show-loading-spinner-in-jquery
+    //
     $(document)
      .ajaxStart(function () {
-         $("#spinnerImage").show();
+         if (erp.settings.isWaitCursorOn()) {
+             $("#spinnerImage").show();
+         }
      })
      .ajaxStop(function () {
-         $("#spinnerImage").hide();
+         if (erp.settings.isWaitCursorOn()) {
+             $("#spinnerImage").hide();
+         }
      });
 
 

@@ -492,18 +492,18 @@ namespace EditorsDbLayer
 
 
 
-                        cmd.Parameters.AddWithValue("@Producer", String.IsNullOrEmpty(e.producer) ? null : e.producer);
-                        cmd.Parameters.AddWithValue("@WineType", String.IsNullOrEmpty(e.wineType) ? "Table" : e.wineType);
-                        cmd.Parameters.AddWithValue("@Label", String.IsNullOrEmpty(e.wineName) ? "" : e.wineName);
-                        cmd.Parameters.AddWithValue("@Variety", String.IsNullOrEmpty(e.variety) ? "" : e.variety);
-                        cmd.Parameters.AddWithValue("@Dryness", String.IsNullOrEmpty(e.dryness) ? "" : e.dryness);
-                        cmd.Parameters.AddWithValue("@Color", String.IsNullOrEmpty(e.color) ? null : e.color);
-                        cmd.Parameters.AddWithValue("@Vintage", String.IsNullOrEmpty(e.vintage) ? null : e.vintage);
-                        cmd.Parameters.AddWithValue("@locCountry", String.IsNullOrEmpty(e.country) ? "" : e.country);
-                        cmd.Parameters.AddWithValue("@locRegion", String.IsNullOrEmpty(e.region) ? "" : e.region);
-                        cmd.Parameters.AddWithValue("@locLocation", String.IsNullOrEmpty(e.location) ? "" : e.location);
-                        cmd.Parameters.AddWithValue("@locLocale", String.IsNullOrEmpty(e.locale) ? "" : e.locale);
-                        cmd.Parameters.AddWithValue("@locSite", String.IsNullOrEmpty(e.site) ? "" : e.site);
+                        cmd.Parameters.AddWithValue("@Producer", String.IsNullOrEmpty(e.producer) ? null : e.producer.Trim());
+                        cmd.Parameters.AddWithValue("@WineType", String.IsNullOrEmpty(e.wineType) ? "Table" : e.wineType.Trim());
+                        cmd.Parameters.AddWithValue("@Label", String.IsNullOrEmpty(e.wineName) ? "" : e.wineName.Trim());
+                        cmd.Parameters.AddWithValue("@Variety", String.IsNullOrEmpty(e.variety) ? "" : e.variety.Trim());
+                        cmd.Parameters.AddWithValue("@Dryness", String.IsNullOrEmpty(e.dryness) ? "" : e.dryness.Trim());
+                        cmd.Parameters.AddWithValue("@Color", String.IsNullOrEmpty(e.color) ? null : e.color.Trim());
+                        cmd.Parameters.AddWithValue("@Vintage", String.IsNullOrEmpty(e.vintage) ? null : e.vintage.Trim());
+                        cmd.Parameters.AddWithValue("@locCountry", String.IsNullOrEmpty(e.country) ? "" : e.country.Trim());
+                        cmd.Parameters.AddWithValue("@locRegion", String.IsNullOrEmpty(e.region) ? "" : e.region.Trim());
+                        cmd.Parameters.AddWithValue("@locLocation", String.IsNullOrEmpty(e.location) ? "" : e.location.Trim());
+                        cmd.Parameters.AddWithValue("@locLocale", String.IsNullOrEmpty(e.locale) ? "" : e.locale.Trim());
+                        cmd.Parameters.AddWithValue("@locSite", String.IsNullOrEmpty(e.site) ? "" : e.site.Trim());
 
                         cmd.Parameters.AddWithValue("@UserId", e.userId <= 0 ? 0 : e.userId);
                         cmd.Parameters.AddWithValue("@TasteDate", e.tastingDate.Ticks == 0 ? DateTime.Today : e.tastingDate);
@@ -683,18 +683,18 @@ namespace EditorsDbLayer
 
 
 
-                        cmd.Parameters.AddWithValue("@Producer", String.IsNullOrEmpty(e.producer) ? null : e.producer);
-                        cmd.Parameters.AddWithValue("@WineType", String.IsNullOrEmpty(e.wineType) ? "Table" : e.wineType);
-                        cmd.Parameters.AddWithValue("@Label", String.IsNullOrEmpty(e.wineName) ? "" : e.wineName);
-                        cmd.Parameters.AddWithValue("@Variety", String.IsNullOrEmpty(e.variety) ? "" : e.variety);
-                        cmd.Parameters.AddWithValue("@Dryness", String.IsNullOrEmpty(e.dryness) ? "" : e.dryness);
-                        cmd.Parameters.AddWithValue("@Color", String.IsNullOrEmpty(e.color) ? null : e.color);
-                        cmd.Parameters.AddWithValue("@Vintage", String.IsNullOrEmpty(e.vintage) ? null : e.vintage);
-                        cmd.Parameters.AddWithValue("@locCountry", String.IsNullOrEmpty(e.country) ? "" : e.country);
-                        cmd.Parameters.AddWithValue("@locRegion", String.IsNullOrEmpty(e.region) ? "" : e.region);
-                        cmd.Parameters.AddWithValue("@locLocation", String.IsNullOrEmpty(e.location) ? "" : e.location);
-                        cmd.Parameters.AddWithValue("@locLocale", String.IsNullOrEmpty(e.locale) ? "" : e.locale);
-                        cmd.Parameters.AddWithValue("@locSite", String.IsNullOrEmpty(e.site) ? "" : e.site);
+                        cmd.Parameters.AddWithValue("@Producer", String.IsNullOrEmpty(e.producer) ? null : e.producer.Trim());
+                        cmd.Parameters.AddWithValue("@WineType", String.IsNullOrEmpty(e.wineType) ? "Table" : e.wineType.Trim());
+                        cmd.Parameters.AddWithValue("@Label", String.IsNullOrEmpty(e.wineName) ? "" : e.wineName.Trim());
+                        cmd.Parameters.AddWithValue("@Variety", String.IsNullOrEmpty(e.variety) ? "" : e.variety.Trim());
+                        cmd.Parameters.AddWithValue("@Dryness", String.IsNullOrEmpty(e.dryness) ? "" : e.dryness.Trim());
+                        cmd.Parameters.AddWithValue("@Color", String.IsNullOrEmpty(e.color) ? null : e.color.Trim());
+                        cmd.Parameters.AddWithValue("@Vintage", String.IsNullOrEmpty(e.vintage) ? null : e.vintage.Trim());
+                        cmd.Parameters.AddWithValue("@locCountry", String.IsNullOrEmpty(e.country) ? "" : e.country.Trim());
+                        cmd.Parameters.AddWithValue("@locRegion", String.IsNullOrEmpty(e.region) ? "" : e.region.Trim());
+                        cmd.Parameters.AddWithValue("@locLocation", String.IsNullOrEmpty(e.location) ? "" : e.location.Trim());
+                        cmd.Parameters.AddWithValue("@locLocale", String.IsNullOrEmpty(e.locale) ? "" : e.locale.Trim());
+                        cmd.Parameters.AddWithValue("@locSite", String.IsNullOrEmpty(e.site) ? "" : e.site.Trim());
 
                         cmd.Parameters.AddWithValue("@ID", e.id);
                         cmd.Parameters.AddWithValue("@UserId", e.userId <= 0 ? 0 : e.userId);
@@ -853,18 +853,18 @@ namespace EditorsDbLayer
 
 
 
-                        cmd.Parameters.AddWithValue("@Producer", String.IsNullOrEmpty(e.producer) ? null : e.producer);
-                        cmd.Parameters.AddWithValue("@WineType", String.IsNullOrEmpty(e.wineType) ? "Table" : e.wineType);
-                        cmd.Parameters.AddWithValue("@Label", String.IsNullOrEmpty(e.wineName) ? "" : e.wineName);
-                        cmd.Parameters.AddWithValue("@Variety", String.IsNullOrEmpty(e.variety) ? "" : e.variety);
-                        cmd.Parameters.AddWithValue("@Dryness", String.IsNullOrEmpty(e.dryness) ? "" : e.dryness);
-                        cmd.Parameters.AddWithValue("@Color", String.IsNullOrEmpty(e.color) ? null : e.color);
-                        cmd.Parameters.AddWithValue("@Vintage", String.IsNullOrEmpty(e.vintage) ? null : e.vintage);
-                        cmd.Parameters.AddWithValue("@locCountry", String.IsNullOrEmpty(e.country) ? "" : e.country);
-                        cmd.Parameters.AddWithValue("@locRegion", String.IsNullOrEmpty(e.region) ? "" : e.region);
-                        cmd.Parameters.AddWithValue("@locLocation", String.IsNullOrEmpty(e.location) ? "" : e.location);
-                        cmd.Parameters.AddWithValue("@locLocale", String.IsNullOrEmpty(e.locale) ? "" : e.locale);
-                        cmd.Parameters.AddWithValue("@locSite", String.IsNullOrEmpty(e.site) ? "" : e.site);
+                        cmd.Parameters.AddWithValue("@Producer", String.IsNullOrEmpty(e.producer) ? null : e.producer.Trim());
+                        cmd.Parameters.AddWithValue("@WineType", String.IsNullOrEmpty(e.wineType) ? "Table" : e.wineType.Trim());
+                        cmd.Parameters.AddWithValue("@Label", String.IsNullOrEmpty(e.wineName) ? "" : e.wineName.Trim());
+                        cmd.Parameters.AddWithValue("@Variety", String.IsNullOrEmpty(e.variety) ? "" : e.variety.Trim());
+                        cmd.Parameters.AddWithValue("@Dryness", String.IsNullOrEmpty(e.dryness) ? "" : e.dryness.Trim());
+                        cmd.Parameters.AddWithValue("@Color", String.IsNullOrEmpty(e.color) ? null : e.color.Trim());
+                        cmd.Parameters.AddWithValue("@Vintage", String.IsNullOrEmpty(e.vintage) ? null : e.vintage.Trim());
+                        cmd.Parameters.AddWithValue("@locCountry", String.IsNullOrEmpty(e.country) ? "" : e.country.Trim());
+                        cmd.Parameters.AddWithValue("@locRegion", String.IsNullOrEmpty(e.region) ? "" : e.region.Trim());
+                        cmd.Parameters.AddWithValue("@locLocation", String.IsNullOrEmpty(e.location) ? "" : e.location.Trim());
+                        cmd.Parameters.AddWithValue("@locLocale", String.IsNullOrEmpty(e.locale) ? "" : e.locale.Trim());
+                        cmd.Parameters.AddWithValue("@locSite", String.IsNullOrEmpty(e.site) ? "" : e.site.Trim());
 
                         cmd.Parameters.AddWithValue("@ID", e.id);
                         cmd.Parameters.AddWithValue("@UserId", e.userId <= 0 ? 0 : e.userId);

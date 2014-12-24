@@ -13,7 +13,7 @@
 
         <div data-bind="visible: ($data.vinEditable !== undefined ? !vinEditable() : false)">
             <div class="row">
-                <div class="col-sm-12 input-group-md"><b>
+                <div class="col-sm-12 input-sm"><b>
                     <span data-bind="text: vintage"></span>
                     <span data-bind="text: producer"></span>,
                     <span data-bind="text: wineName"></span>,
@@ -28,89 +28,95 @@
 
         <div data-bind="visible :($data.vinEditable !== undefined ?  vinEditable() : true)">
         <div class="row">
-            <div class="col-sm-2 input-group-md">
-                <label for="note-edit-producer" class="control-label">Producer:</label>
+            <div class="col-sm-2">
+                <label for="note-edit-producer" class="control-label  input-sm">Producer:</label>
             </div>
-            <div class="col-sm-5  input-group-md">
+            <div class="col-sm-5">
                 <input type="text" 
                     data-bind="value: producer, valueUpdate: 'blur'" 
-                    class="form-control" 
+                    class="form-control input-sm" 
                     name="note-edit-producer" 
                     id="note-edit-producer" 
                     placeholder="Producer" required/>
             </div>
         </div>
         <div class="row">
-            <div class="col-sm-2 input-group-md">
-                <label for="note-edit-label" class="control-label">Label:</label>
+            <div class="col-sm-2">
+                <label for="note-edit-label" class="control-label input-sm">Label:</label>
             </div>
-            <div class="col-sm-5 input-group-md">
+            <div class="col-sm-5">
                 <input type="text" 
                     data-bind="value: wineName, valueUpdate: 'blur'" 
-                    class="form-control" 
+                    class="form-control input-sm" 
                     id="note-edit-label" 
                     placeholder="Label"  />
             </div>
         </div>
+
         <div class="row">
-            <div class="col-sm-2 input-group-md">
-                <label for="note-edit-location" class="control-label">Appellation:</label>
+            <div class="col-sm-2">
+                <label for="note-edit-location" class="control-label  input-sm">Appellation:</label>
             </div>
-            <div class="col-sm-5 input-group-md">
+            <div class="col-sm-5">
                 <input type="text" 
                     data-bind="value: coAppellation, valueUpdate: 'blur'" 
-                    class="form-control" 
+                    class="form-control input-sm" 
                     id="note-edit-location" 
                     name="note-edit-location" 
                     placeholder="Location" readonly required />
             </div>
-            <div class="col-sm-3 input-group-md">
-                <label class="control-label">Type:</label>
-                       <select 
-                            data-bind="options: wineTypeLookup,
-                            optionsText: 'name',
-                            optionsValue: 'name',
-                            value: wineType,
-                            valueUpdate: 'blur'"></select>
-
-            </div>
-
-
-        </div>
-        <div class="row">
-                <div class="col-sm-2 input-group-md">
-                    <label for="note-edit-vintage" class="control-label">Vintage:</label>
+            <div class="col-sm-3">
+               <div class="row">
+                   <div class="col-sm-3"><label class="control-label input-sm">Type:</label></div>
+                   <div class="col-sm-9">
+                           <select 
+                                class="form-control input-sm" 
+                                data-bind="options: wineTypeLookup,
+                                optionsText: 'name',
+                                optionsValue: 'name',
+                                value: wineType,
+                                valueUpdate: 'blur'"></select>
+                    </div>
                 </div>
-                <div class="col-sm-3 input-group-md">
+            </div>
+        </div>
+
+        <div class="row">
+                <div class="col-sm-2">
+                    <label for="note-edit-vintage" class="control-label input-sm">Vintage:</label>
+                </div>
+                <div class="col-sm-3">
                     <input type="text"
                         data-bind="value: vintage" 
-                        class="form-control" 
+                        class="form-control input-sm" 
                         id="note-edit-vintage" 
                         name="note-edit-vintage" 
                         placeholder="Vintage"
                             required />
                 </div>
 
-                <div class="col-sm-2 input-group-md">
-                    <label for="note-edit-variety" class="control-label">Variety:</label>
+                <div class="col-sm-2">
+                    <label for="note-edit-variety" class="control-label input-sm">Variety:</label>
                 </div>
-                <div class="col-sm-3 input-group-md">
+                <div class="col-sm-3">
                     <input type="text"
                         data-bind="value: variety, valueUpdate: 'blur'"
-                        class="form-control" 
+                        class="form-control input-sm" 
                         id="note-edit-variety" 
                         name="note-edit-variety" 
                         placeholder="Variety" 
                         required />
                 </div>
         </div>
+
         <div class="row">
 
-                <div class="col-sm-2 input-group-md">
-                    <label for="note-edit-color" class="control-label">Color:</label>
+                <div class="col-sm-2">
+                    <label for="note-edit-color" class="control-label input-sm">Color:</label>
                 </div>
-                <div class="col-sm-3 input-group-md">
+                <div class="col-sm-3">
                         <select  name="note-edit-color"
+                            class="form-control input-sm" 
                             data-bind="options: wineColorLookup,
                             optionsText: 'name',
                             optionsValue: 'name',
@@ -118,11 +124,12 @@
                             valueUpdate: 'blur'" required></select>
                 </div>
 
-                <div class="col-sm-2 input-group-md">
-                    <label for="note-edit-dryness" class="control-label">Dryness:</label>
+                <div class="col-sm-2">
+                    <label for="note-edit-dryness" class="control-label input-sm">Dryness:</label>
                 </div>
-                <div class="col-sm-3 input-group-md">
+                <div class="col-sm-3">
                     <select name="note-edit-dryness"
+                            class="form-control input-sm" 
                         data-bind="options: wineDrynessLookup,
                             optionsText: 'name',
                             optionsValue: 'name',
@@ -133,13 +140,13 @@
         </div>
 
         <div class="row" data-bind="visible: ($data.vintageEditable !== undefined ? vintageEditable() : false)">
-                <div class="col-sm-2 input-group-md">
-                    <label for="note-edit-vintage" class="control-label">Vintage:</label>
+                <div class="col-sm-2">
+                    <label for="note-edit-vintage" class="control-label input-sm">Vintage:</label>
                 </div>
-                <div class="col-sm-3 input-group-md">
+                <div class="col-sm-3">
                     <input type="text"
                         data-bind="value: vintage"
-                        class="form-control" 
+                        class="form-control input-sm" 
                         id="note-edit-vintage" 
                         name="note-edit-vintage" 
                         placeholder="Vintage"
@@ -150,35 +157,40 @@
 
 
         <div class="row">
-                <div class="col-sm-2 input-group-md">
-                    <label for="note-edit-rating" class="control-label">Rating:</label>
+                <div class="col-sm-2">
+                    <label for="note-edit-rating" class="control-label input-sm">Rating:</label>
                 </div>
-                <div class="col-sm-2 input-group-md">
+                <div class="col-sm-1">
                     <input type="text"
                         data-bind="value: rating"
-                        class="form-control" 
+                        class="form-control input-sm" 
                         id="note-edit-rating" 
                         name="note-edit-rating" 
                         placeholder="Rating"  />
                 </div>
-                <div class="col-sm-1 input-group-md">
-                    <label for="note-edit-drink-from" class="control-label">Q :</label>
-                        <select 
+                <div class="col-sm-2">
+                    <div class="row">
+                    <div class="col-sm-4"><label for="note-edit-drink-from" class="control-label input-sm">Q :</label></div>
+                    <div class="col-sm-8">
+                    <select 
+                            class="form-control input-sm" 
                             data-bind="options: ratingQLookup,
                             optionsText: 'name',
                             optionsValue: 'name',
                             value: ratingQ,
                             valueUpdate: 'blur'"></select>
+                    </div>
+                    </div>
                 </div>
 
 
-                <div class="col-sm-2 input-group-md">
-                    <label for="note-edit-tastingDate" class="control-label">Tasting Date:</label>
+                <div class="col-sm-2">
+                    <label for="note-edit-tastingDate" class="control-label input-sm">Tasting Date:</label>
                 </div>
-                <div class="col-sm-3 input-group-md">
+                <div class="col-sm-3">
                     <input type="text" 
                         data-bind="value: tastingDate, valueUpdate: 'blur'" 
-                        class="form-control" 
+                        class="form-control input-sm" 
                         id="note-edit-tastingDate" 
                         name="note-edit-tastingDate" 
                         placeholder="Tasting Date" required />
@@ -186,50 +198,50 @@
         </div>
 
         <div class="row">
-                <div class="col-sm-2 input-group-md">
-                    <label for="note-edit-drink-from" class="control-label">Drink From:</label>
+                <div class="col-sm-2">
+                    <label for="note-edit-drink-from" class="control-label input-sm">Drink From:</label>
                 </div>
-                <div class="col-sm-1 input-group-md">
+                <div class="col-sm-1">
                     <input type="text"
                            data-bind="value: drinkDateLo, valueUpdate: 'blur', isValidDateRange(a,'JOSHUA')"
-                           class="form-control"
+                           class="form-control input-sm"
                            name="note-edit-drink-from"
                            id="note-edit-drink-from"
                            placeholder="Drink Date" />
                 </div>
 
-                <div class="col-sm-1 input-group-md" >
-                    <label for="note-edit-drink-to" class="control-label">To:</label>
+                <div class="col-sm-1" >
+                    <label for="note-edit-drink-to" class="control-label input-sm">To:</label>
                 </div>
-                <div class="col-sm-1 input-group-md" id="date-to-field-container">
+                <div class="col-sm-1" id="date-to-field-container">
                     <input type="text"
                            data-bind="value: drinkDateHi, valueUpdate: 'blur'"
-                           class="form-control"
+                           class="form-control input-sm"
                            name="note-edit-drink-to"
                            id="note-edit-drink-to"
                            placeholder="Drink Date" />
                 </div>
 
 
-                <div class="col-sm-2 input-group-md">
-                    <label for="note-edit-drink-from" class="control-label">Estimated Cost Low $:</label>
+                <div class="col-sm-2">
+                    <label for="note-edit-drink-from" class="control-label input-sm">Estimated Cost Low $:</label>
                 </div>
-                <div class="col-sm-1 input-group-md">
+                <div class="col-sm-1">
                     <input type="text" 
                         data-bind="value: estimatedCost, valueUpdate: 'blur'" 
-                        class="form-control" 
+                        class="form-control input-sm" 
                         name="note-edit-estimated-cost-low" 
                         id="note-edit-estimated-cost-low" 
                         placeholder="Low" />
                 </div>
 
-            <div class="col-sm-1 input-group-md">
-                <label for="note-edit-drink-to" class="control-label">High $:</label>
+            <div class="col-sm-1">
+                <label for="note-edit-drink-to" class="control-label input-sm">High $:</label>
             </div>
-                <div class="col-sm-1 input-group-md">
+                <div class="col-sm-1">
                     <input type="text" 
                         data-bind="value: estimatedCostHi, valueUpdate: 'blur'" 
-                        class="form-control" 
+                        class="form-control input-sm" 
                         name="note-edit-estimated-cost-high" 
                         id="note-edit-estimated-cost-high" 
                         placeholder="High"/>
@@ -238,15 +250,15 @@
 
 
         <div class="row">
-                <div class="col-sm-2 input-group-md">&nbsp;</div>
-                <div class="col-sm-1 input-group-md">
+                <div class="col-sm-2 input-sm">&nbsp;</div>
+                <div class="col-sm-1 input-sm">
                     <input type="checkbox" data-bind="checked: isBarrelTasting, valueUpdate: 'blur'"  /> Barrel 
                 </div>
-
-                <div class="col-sm-1 input-group-md">
+<!--
+                <div class="col-sm-1 input-sm">
                     <label for="note-edit-drink-from" class="control-label">Maturity :</label>
                 </div>
-                <div class="col-sm-1 input-group-md">
+                <div class="col-sm-1 input-sm">
                         <select 
                             data-bind="options: maturityLookup,
                             optionsText: 'name',
@@ -254,7 +266,7 @@
                             value: maturityId,
                             valueUpdate: 'blur'"></select>
                 </div>
-
+-->
         </div>
 
 
@@ -272,37 +284,37 @@
     <div class="tab-pane" id="new-note-tabs-location" style="min-height: 300px">
         <br />
         <div class="row">
-            <label class="col-sm-2 control-label">Country:</label>
-            <div class="col-sm-5">
-                <input type="text" id="note-edit-location-country" data-bind="value: country, valueUpdate: 'blur'" class="form-control" placeholder="Country" required/>
+            <label class="col-sm-2 input-sm control-label">Country:</label>
+            <div class="col-sm-5   input-sm">
+                <input type="text" id="note-edit-location-country" data-bind="value: country, valueUpdate: 'blur'" class="form-control input-sm" placeholder="Country" required/>
             </div>
         </div>
 
         <div class="row">
-            <label class="col-sm-2 control-label">Region:</label>
-            <div class="col-sm-5">
-                <input type="text" id="note-edit-location-region" data-bind="value: region, valueUpdate: 'blur'" class="form-control" placeholder="Region" required/>
+            <label class="col-sm-2  input-sm control-label">Region:</label>
+            <div class="col-sm-5  input-sm">
+                <input type="text" id="note-edit-location-region" data-bind="value: region, valueUpdate: 'blur'" class="form-control input-sm" placeholder="Region" required/>
             </div>
         </div>
 
         <div class="row">
-            <label class="col-sm-2 control-label">Location:</label>
-            <div class="col-sm-5">
-                <input type="text" id="note-edit-location-location" data-bind="value: location, valueUpdate: 'blur'" class="form-control" placeholder="Location" required/>
+            <label class="col-sm-2  input-sm control-label">Location:</label>
+            <div class="col-sm-5  input-sm">
+                <input type="text" id="note-edit-location-location" data-bind="value: location, valueUpdate: 'blur'" class="form-control input-sm" placeholder="Location" required/>
             </div>
         </div>
 
         <div class="row">
-            <label class="col-sm-2 control-label">Locale:</label>
-            <div class="col-sm-5">
-                <input type="text" id="note-edit-location-locale" data-bind="value: locale, valueUpdate: 'blur'" class="form-control" placeholder="Locale" />
+            <label class="col-sm-2  input-sm control-label">Locale:</label>
+            <div class="col-sm-5  input-sm">
+                <input type="text" id="note-edit-location-locale" data-bind="value: locale, valueUpdate: 'blur'" class="form-control input-sm" placeholder="Locale" />
             </div>
         </div>
 
         <div class="row">
-            <label class="col-sm-2 control-label">Site:</label>
-            <div class="col-sm-5">
-                <input type="text" id="note-edit-location-site" data-bind="value: site, valueUpdate: 'blur'" class="form-control" placeholder="Site" />
+            <label class="col-sm-2  input-sm control-label">Site:</label>
+            <div class="col-sm-5  input-sm">
+                <input type="text" id="note-edit-location-site" data-bind="value: site, valueUpdate: 'blur'" class="form-control input-sm" placeholder="Site" />
             </div>
         </div>
     </div>
@@ -313,7 +325,7 @@
 
         <div data-bind="visible: ($data.vinEditable !== undefined ? !vinEditable() : false)">
             <div class="row">
-                <div class="col-sm-12 input-group-md"><b>
+                <div class="col-sm-12 input-sm"><b>
                     <span data-bind="text: vintage"></span>
                     <span data-bind="text: producer"></span>,
                     <span data-bind="text: wineName"></span>,

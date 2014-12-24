@@ -58,11 +58,16 @@
         <br />
         <div class="row" style="height: 550px; overflow:auto">
 
+            <div class="row""  style="border-bottom: solid 1px gray;">
+                <div class='col-sm-8' >Wine definition</div>
+               <div class='col-sm-3' >Vintages</div>
+            </div>
+
+
             <!-- ko foreach: items -->
-            <div class="row"  style="border-bottom: solid 1px gray;">
+            <div class="well row alter-backgound">
                 <div class='col-sm-8' >
                         <span class='glyphicon glyphicon-pencil' data-bind="click: edit"  style="cursor:pointer" title="Edit VIN" ></span>
-                        <span class='glyphicon glyphicon-glass' data-bind="style: { color: wineColor($data.colorClass()) }" ></span>
                         (<span data-bind="text: id"></span>) 
                         <span  data-bind="style : {color:erp.utils.statusColor($data.workflow())}">
                         <b> 
@@ -70,7 +75,11 @@
                            <span data-bind="text: label"></span>
                         </b>
                         </span>, 
-                        <span data-bind="text: coAppellation"></span>, 
+                        <span data-bind="text: country"/>,
+                        <span data-bind="text: region"/>,
+                        <span data-bind="text: location"/>,
+                        <span data-bind="text: locale"/>,
+                        <span data-bind="text: site"/>,
                         <span data-bind="text: variety"></span>, 
                         <span data-bind="text: colorClass"></span>, 
                         <span data-bind="text: dryness"></span>
@@ -124,11 +133,12 @@
             </div>
             <div class="col-sm-5 input-group-md">
                <select  name="vin-edit-color"
+                    class="form-control"
                     data-bind="options: wineTypeLookup,
-    optionsText: 'name',
-    optionsValue: 'name',
-    value: wineType,
-    valueUpdate: 'blur'" required></select>
+                    optionsText: 'name',
+                    optionsValue: 'name',
+                    value: wineType,
+                    valueUpdate: 'blur'" required></select>
             </div>
         </div>
         <div class="row">
@@ -150,11 +160,12 @@
             </div>
             <div class="col-sm-5 input-group-md">
             <select  name="vin-edit-color"
-                data-bind="options: wineColorLookup,
-    optionsText: 'name',
-    optionsValue: 'name',
-    value: colorClass,
-    valueUpdate: 'blur'" required></select>
+                    class="form-control"
+                    data-bind="options: wineColorLookup,
+                    optionsText: 'name',
+                    optionsValue: 'name',
+                    value: colorClass,
+                    valueUpdate: 'blur'" required></select>
 
             </div>
         </div>
@@ -165,11 +176,12 @@
             <div class="col-sm-5 input-group-md">
 
             <select  name="vin-edit-dryness"
-                data-bind="options: wineDrynessLookup,
-    optionsText: 'name',
-    optionsValue: 'name',
-    value: dryness,
-    valueUpdate: 'blur'" required></select>
+                    class="form-control"
+                    data-bind="options: wineDrynessLookup,
+                    optionsText: 'name',
+                    optionsValue: 'name',
+                    value: dryness,
+                    valueUpdate: 'blur'" required></select>
 
 
             </div>

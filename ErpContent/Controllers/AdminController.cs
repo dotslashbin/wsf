@@ -39,6 +39,13 @@ namespace ErpContent.Controllers
 
 
         [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAdmin)]
+        public ActionResult SimilarWines()
+        {
+            return View("SimilarWines");
+        }
+
+
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAdmin)]
         public ActionResult Producers()
         {
             return View("Producers");

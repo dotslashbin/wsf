@@ -17,6 +17,13 @@
 </div>
 
 
+
+ @section LeftMenu{
+   @Html.Partial("_ChiefEditorLeftMenu")        
+ }
+
+
+
 <div data-bind="template: { name: mv().view, data: mv().model, afterRender: $root.modelInit } "></div>
 
 <div id="dialog-placeholder" data-bind="template: { name: dmv().view, data: dmv().model, afterRender: $root.dialogInit }"></div>
@@ -27,6 +34,7 @@
 
 @section scripts {
 
+<script src="~/Scripts/models/IssueListModel.js"></script>
 <script src="~/Scripts/models/PageDataModel.js"></script>
 
     <script id="issue-edit-template" type="text/html">
@@ -84,13 +92,15 @@
         </form>
     </script>
 
+    <script id="issue-list-template"  type="text/html">
+        @Html.Partial("_IssueListTemplate")
+    </script>
 
 
-    <script id="issue-list-template" type="text/html">
+    <script id="issue-list-template-old" type="text/html">
         <div>
             <div class="well">
-                <form class="form-horizontal" role="form">
-                    <div class="form-group">
+                    <div class="row">
                         <div class="col-sm-8">
                             <label for="publications" class="col-sm-2 control-label">Publications:</label>
                             <div class="col-sm-4">
@@ -126,9 +136,7 @@
                                 </div>
                             </div>
                         </div>
-
                     </div>
-                </form>
             </div>
         </div>
 
@@ -163,8 +171,6 @@
             </table>
 
         </div>
-
-
     </script>
 
 
@@ -224,10 +230,7 @@
                     </div>
 
                 </div>
-                <!-- commented by Sergey 05.07.2014
-                <a style="display: none;" id="add-new-article-link" data-toggle="modal" href="#" class="btn btn-xs" data-bind="click: addArticle"><span class='glyphicon glyphicon-pencil' title="Add new article"></span>&nbsp;Add Article</a>
-                <a style="display: none;" id="view-article-link" data-toggle="modal" href="#" class="btn btn-xs" data-bind="click: viewArticle"><span class='glyphicon glyphicon-pencil' title="View article in detail"></span>&nbsp;View Article</a>
-                -->
+
             </div>
         </div>
 
@@ -268,9 +271,16 @@
                             </h5>
                         </div>
 
-                        <div class="row" style="border-bottom: solid 1px gray;">
-                            <span data-bind="html: erp.utils.Str2Html($data.note)"></span>
-                        </div>
+
+                           <div class="row" style="border-bottom: solid 1px gray;">
+                                <div class="col-sm-11  pull-right" >
+                                    <span data-bind="html: erp.utils.Str2Html($data.noteFormated)"></span>
+                                </div>
+                                <div class="col-sm-11  pull-right">
+                                    <span data-bind="html: erp.utils.Str2Html($data.importers)"></span>
+                                </div>
+                            </div>
+
                         <!-- /ko -->
                     </div>
                     <!-- /ko  -->
@@ -323,7 +333,7 @@
                         <a href="#" class="btn btn-xs" data-bind="click: Publish"><span class='glyphicon glyphicon-refresh' title="Publish">&nbsp;</span>Publish</a>
                     </div>
                     <div class="col-sm-12">
-                        <a href="#" class="btn btn-xs" data-bind="click: PublishRollack"><span class='glyphicon glyphicon-refresh' title="Rollback">&nbsp;</span>Rollback Publish</a>
+                        <a href="#" class="btn btn-xs" data-bind="click: PublishRollback"><span class='glyphicon glyphicon-refresh' title="Rollback">&nbsp;</span>Rollback Publish</a>
                     </div>
                     <div class="col-sm-12" id="export-link-container">
                         <a href="#" class="btn btn-xs" data-bind="click: Export"><span class='glyphicon glyphicon-list-alt' title="Export to Doc">&nbsp;</span>Export to Doc</a>
@@ -569,7 +579,7 @@
             };
 
 
-            self.PublishRollack = function(){
+            self.PublishRollback = function(){
 
 
                 $.ajax({
@@ -865,98 +875,7 @@
             self.issue = issue;
             self.assignment = assignment;
 
-            self.viewArticle = function() {
 
-                $.ajax({
-                    type:'POST',
-                    url:'@Url.Content("~/Article/ViewArticle")',
-                    data: { ID:self.assignment.id, fieldNameToMatch: "assignmentID" },
-                    success: function(result) {
-
-                        delete result.Date;
-
-                        var notesContainer = unescape(result.Notes);
-                        result.Notes = notesContainer;
-
-                        var articleModelObject = ArticleModel(result);
-
-                        pageData.drillDown("article-preview-template", articleModelObject);
-                    }
-                });
-            }
-
-            self.addArticle = function() {
-
-                $.ajax({
-                    type: 'POST',
-                    url: '@Url.Content("~/Article/GetNewArticle")',
-                    data: {},
-                    success: function (result) {
-                        //
-                        // use return value as template
-                        var articleModel = new ArticleModel(result);
-
-                        //
-                        // will be called after dialog initialization
-                        //
-                        articleModel.init = function () {
-                            articleModel.validator =   $("#article-form").validate({debug : true});
-                        };
-
-                        //
-                        // R&D
-                        //
-                        articleModel.validate = function(){
-                            var validationResult = true;
-                            validationResult =  articleModel.validator.form();
-                            if( ! validationResult )
-                                articleModel.validator.showErrors();
-                            return validationResult;
-                        }
-
-                        articleModel.save = function(objectToSave) {
-
-                            objectToSave.Notes          = escape(CKEDITOR.instances.Notes.getData());
-                            objectToSave.assignmentId   = self.assignment.id;
-                            objectToSave.PublicationID  = self.assignment.publicationId();
-
-                            delete objectToSave.Date;
-
-                            $.ajax({
-                                type: 'POST',
-                                url: '@Url.Content("~/Article/AddArticle")',
-                                data: { article: JSON.stringify(objectToSave.toObject()), assignmentID: self.assignment.id },
-                                success: function (result) {
-                                    if (result != null) {
-                                        $('#add-new-article-link').hide();
-                                        $('#view-article-link').show();
-                                    }
-                                },
-                                error: function (request, status, error) {
-
-                                    PAGE_CONTEXT.error(request, status, error)
-
-                                }
-                            });
-
-                            return true;
-                        }
-
-                        var d = pageData.OpenDialog(articleModel, articleModel, "article-form-template");
-
-                        d.dialog("option", "title", "Add Article").
-                        dialog("option", "width", 860).
-                        dialog("option", "height", 600);
-
-                        CKEDITOR.replace("Notes");
-                    },
-                    error: function (request, status, error) {
-
-                        PAGE_CONTEXT.error(request, status, error)
-
-                    }
-                });
-            }
 
 
             self.exportAssignment = function () {
@@ -967,7 +886,6 @@
 
 
             self.edit = function () {
-
 
 
                 var m = new AssignmentModel(self.assignment.toObject());
@@ -1041,8 +959,6 @@
 
                         return true;
                     }
-
-
                 };
 
 
@@ -1115,33 +1031,7 @@
 
 
 
-
-
             self.goToAssignmentDetails = function (issue) {
-
-                // TODO: Figure out where it is best to implemement this <-- joshua
-
-                $('#add-new-article-link').hide();
-                $('#view-article-link').hide();
-
-                /**
-                 * This routine fetches and article based on the assignment ID. If there is
-                 * then the "view article" link is shown, otherwise, it will be the "Add article" link that will be displayed
-                 * author: Joshua Fuentes
-                 */
-                $.get('@Url.Content("~/Article/SearchArticlesByAssignment")', { ID: self.id }, function(result) {
-
-
-                    if(result == "" || result == null) {
-                        // This means that there is no article, therefore an "Add Article" link is to be displayed
-                        $('#add-new-article-link').show();
-                        $('#view-article-link').hide();
-                    } else {
-                        // This means that there is an article, therefore a "View Article" link is to be displayed
-                        $('#add-new-article-link').hide();
-                        $('#view-article-link').show();
-                    }
-                });
 
                 if (!self.loaded) {
                     self.loaded = !self.loaded;
@@ -1308,15 +1198,10 @@
 
             var self = this;
 
-            self.currSelection = ko.observable(null);
-            self.prevSelection = ko.observable(null);
-
-
             self.issueList = ko.observableArray();
 
             self.publications = ko.observableArray();
             self.publicationId = ko.observable(0);
-
 
             self.stateGroupId = ko.observable(0);
             self.stateGroups = ko.observableArray();
@@ -1757,7 +1642,13 @@
             });
 
             pageData.init();
-            pageData.drillDownExt('issue-list-template', new IssueTable(),"Issues");
+            //pageData.drillDownExt('issue-list-template', new IssueTable(),"Issues");
+            pageData.drillDownExt('issue-list-template', new IssueListModel('@Url.Content("~")'), "Issues");
+
+
+
+            $("#page-left-menu #dashboard").addClass("active");
+
 
         });
 

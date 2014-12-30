@@ -10,7 +10,36 @@
     <link href="@Url.Content("~/Content/themes/base/jquery.ui.all.css")" rel="stylesheet" media="screen"/>
     <link href='@Url.Content("~/Content/erp.css")' rel="stylesheet" media="screen"/>
 
+<style>
+
+
+  .alter-backgound:nth-child(2n+1) {
+       background-color: #dff0d8;
+    }
+
+
+     #spinnerImage {
+          display: none;
+     }
+
+     .popup-content-box{
+      background-color: white;
+      position: fixed;
+      margin: 0px auto;
+      top: 50%;
+      left: 50%;
+      z-index: 11;
+      -webkit-transform: translate(-50%, -50%);
+      -moz-transform: translate(-50%, -50%);
+      -ms-transform: translate(-50%, -50%);
+      -o-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
+}
+</style>
+
+
 </head>
+
 
 
 
@@ -29,6 +58,13 @@
     }
 
     <header>
+
+
+        <div id="SpinnerContainer" class="popup-content-box">
+             <img src="~/Images/spinner.gif" id="spinnerImage" title="working..." />
+        </div>
+
+
         <div class="navbar navbar-inverse navbar-fixed-top " role="navigation">
             <div class="col-lg-3">
                  <h5><span id="pgTtl">@ViewBag.PageTitle</span></h5>  
@@ -127,46 +163,22 @@
     </footer>
 
     @Scripts.Render("~/bundles/jquery")
-    <script src="@Url.Content("~/Scripts/bootstrap.min.js")"></script>
-    <script src="@Url.Content("~/Scripts/ckeditor/ckeditor.js")"></script>
-
-    <!-- MINI UPLOAD : JQuery ajax upload plugin    START -->
-    <script src="@Url.Content("~/Scripts/miniupload/js/jquery.ui.widget.js")"></script>
-    <script src="@Url.Content("~/Scripts/miniupload/js/jquery.iframe-transport.js")"></script>
-    <script src="@Url.Content("~/Scripts/miniupload/js/jquery.fileupload.js")"></script>
-    <!-- MINI UPLOAD : JQuery ajax upload plugin    END   -->
-
+    @Scripts.Render("~/bundles/bootstrap")
     @Scripts.Render("~/bundles/jqueryval")
     @Scripts.Render("~/bundles/jqueryui")
     @Scripts.Render("~/bundles/knockout")
     @Scripts.Render("~/bundles/erp")
 
+
+<script type="text/javascript">
+    //
+    // this is global setting. could be used in js file while calling ajax get/post
+    //
+    erp.wsf_path = '@Url.Content("~/")';
+</script>
+
     @RenderSection("scripts", required: false)
 
-    <script>
-
-        // WORKING, BUT MESSAGE CANNOT BE CUSTOMIZED OR AVOIDED
-        //$(window).on('beforeunload', function (event) {
-        //    return " "; 
-        //});
-
-        //$(window).on('popstate', function () {
-        //    alert('back or forward button was clicked'); 
-        //})
-
-        // Test: testing jquery-ba.bbq.js 
-        // Finding: WORKS but not in our scenario 
-        //
-        //console.log("START BINDING..."); 
-        //$(window).bind("hashchange", function (e) {
-        //    console.log('hashchange: ' + location.hash);
-        //});
-        //console.log("FINISH BINDING...");
-
-        //console.log("EVENT IS ABOUT TO TRIGGER"); 
-        //$(window).trigger('hashchange');
-
-    </script>
 
 </body>
 </html>

@@ -251,6 +251,26 @@ namespace ErpContent.Controllers
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
+        [OutputCache(Duration = 0, VaryByParam = "none")]
+        [HttpPost]
+        public ActionResult UpdateInPlaceTastingNote(String str)
+        {
+            var o = new JavaScriptSerializer().Deserialize<TastingNote>(str);
+
+            var result = _storage.UpdateInPlace(o);
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+
+
         public ActionResult ImportTastingNotes(FormCollection formCollection)
         {
 

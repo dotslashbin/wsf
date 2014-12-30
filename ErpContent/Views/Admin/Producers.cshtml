@@ -11,7 +11,14 @@
 
 
 
-<h2>Producers</h2>
+
+<div class="row panel-heading">
+        <!-- ko foreach: treeItemArray -->
+        <b>
+            <button type="button" class="btn " data-bind="text: name, click: $root.drillDownTo, attr: { 'class': $index() == ($parent.treeItemArray().length - 1) ? 'btn-info' : 'btn-primary' } "></button>
+        </b>
+        <!-- /ko -->
+</div>
 
 
 <div data-bind="template: { name: mv().view, data: mv().model, afterRender: $root.modelInit } ">
@@ -34,6 +41,79 @@
     <script  src="~/Scripts/models/PageDataModel.js"></script>
 
 
+    <script id="producer-notes-template" type="text/html">
+            <div class="row">
+                <div class='col-sm-1'>
+                      <span data-bind="click: edit" class='glyphicon glyphicon-pencil' style="cursor:pointer" title="Start editing"></span>
+                </div>  
+            </div>
+
+            <div class="row">
+                <div class='col-sm-2' data-bind="style: { color: erp.utils.statusColor($data.wfState()) }">
+                      Name
+                </div>
+                <div class='col-sm-10' data-bind="style: { color: erp.utils.statusColor($data.wfState()) }">
+                      <span data-bind="text: name"></span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class='col-sm-2' data-bind="style: { color: erp.utils.statusColor($data.wfState()) }">
+                      Name To Show
+                </div>
+                <div class='col-sm-10' data-bind="style: { color: erp.utils.statusColor($data.wfState()) }">
+                      <span data-bind="text: nameToShow"></span>
+                </div>
+            </div>
+            <div class="row">
+                <div class='col-sm-2' data-bind="style: { color: erp.utils.statusColor($data.wfState()) }">
+                      Number of notes
+                </div>
+                <div class='col-sm-10' data-bind="style: { color: erp.utils.statusColor($data.wfState()) }">
+                      <span data-bind="text: notes().length"></span>
+                </div>
+            </div>
+
+            <br />
+            <div style="max-height:650px; overflow:auto; border-bottom: solid 1px gray;"">
+            <!-- ko foreach: notes -->
+            <div class="well  panel panel-success  alter-backgound" >
+                <div class="row">
+                    <div class="col-sm-12">
+                            <h5>
+                                <span data-bind="click: editNote" class='glyphicon glyphicon-pencil' style="cursor:pointer" title="Start editing"></span>&nbsp;
+                                <b>
+                                    <span data-bind="text: vintage"></span>&nbsp;
+                                    <span data-bind="text: producer"></span>,
+                                    <span data-bind="text: wineName().length == 0 ? '' : wineName() + ',' "></span>
+                                    <span data-bind="text: country"/>,
+                                    <span data-bind="text: region"/>,
+                                    <span data-bind="text: location"/>,
+                                    <span data-bind="text: locale"/>,
+                                    <span data-bind="text: site"/>,
+                                    <span data-bind="text: variety"></span>,
+                                    <span data-bind="text: color"></span>,
+                                    <span data-bind="text: dryness"></span> (<span data-bind="    text: rating"></span>)
+                                    &nbsp;by <span data-bind="text: reviewer"></span>
+                                </b>
+                            </h5>
+                    </div>
+                </div>
+                <div class="row" >
+                    <div class="col-sm-12" >
+                        <span data-bind="html: erp.utils.Str2Html($data.note()) "></span>
+                    </div>
+                    <div class="col-sm-12" >
+                        <span data-bind="html: erp.utils.Str2Html($data.importers()) "></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- /ko -->
+            </div>
+    </script>
+
+
     <script id="search-wine-template" type="text/html">
 
          <div class="row">
@@ -51,25 +131,20 @@
 
             <div class="col-sm-2">
                 <select class="form-control input-sm col-sm-4" data-bind="options: stateGroups,
-    optionsText: 'name',
-    optionsValue: 'id',
-    value: stateGroupId,
-    valueUpdate: 'blur'">
-
+                    optionsText: 'name',
+                    optionsValue: 'id',
+                    value: stateGroupId,
+                    valueUpdate: 'blur'">
                 </select>
             </div>
 
         </div>
         <br />
-        <div class="row" style="height: 550px; overflow:auto">
+        <div class="row" style="height: 650px; overflow:auto">
             <div class="row"  style="border-bottom: solid 1px gray;">
                 <div class='col-sm-1'>&nbsp;</div>
-                <div class='col-sm-4'>
-                      Name
-                </div>
-                <div class='col-sm-4'>
-                      Name To Show
-                </div>
+                <div class='col-sm-4'>Name</div>
+                <div class='col-sm-4'>Name To Show</div>
             </div>
             <!-- ko foreach: items -->
             <div class="row"  style="border-bottom: solid 1px gray;">
@@ -83,41 +158,10 @@
                       <span data-bind="text: nameToShow"></span>
                 </div>
                <div class='col-sm-2' >
-                  <button class="btn btn-primary btn-xs" style="cursor:pointer" data-bind="click: loadNotes, visible: notesLoaded() == false">Show Notes</button>
-                  <button class="btn btn-primary btn-xs" style="cursor:pointer" data-bind="click: clearNotes, visible: notesLoaded() == true">Hide Notes</button>
+                  <button class="btn btn-primary btn-xs" style="cursor:pointer" data-bind="click: loadNotes">Show Notes</button>
                   <button class="btn btn-primary btn-xs" style="cursor:pointer" data-bind="click: approve, visible: needApprove() == true">Approve</button>
                </div>
             </div>
-            <!-- ko foreach: notes -->
-            <div class="row  panel-heading" data-bind="visible: $parent.notesLoaded() == true">
-
-                <div class="col-sm-11  pull-right" style=" margin-bottom: 5px;cursor:pointer">
-                    <div>
-                        <h5>
-                            <b>
-                                <span data-bind="text: vintage"></span>&nbsp;
-                                <span data-bind="text: producer"></span>,
-                                <span data-bind="text: wineName().length == 0 ? '' : wineName() + ',' "></span>
-                                <span data-bind="text: variety"></span>,
-                                <span data-bind="text: color"></span>,
-                                <span data-bind="text: dryness"></span> (<span data-bind="text: rating"></span>)
-                                &nbsp;by <span data-bind="text: reviewer"></span>
-                            </b>
-                        </h5>
-                    </div>
-                </div>
-
-                <div class="row" style="border-bottom: solid 1px gray">
-                    <div class="col-sm-11  pull-right" style="background-color: white;" >
-                        <span data-bind="html: erp.utils.Str2Html($data.note()) "></span>
-                    </div>
-                    <div class="col-sm-11  pull-right" style="background-color: white;" >
-                        <span data-bind="html: erp.utils.Str2Html($data.importers()) "></span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- /ko -->
         <!-- /ko -->
         </div>
     </script>
@@ -159,6 +203,17 @@
         </form>
     </script>
 
+
+<script id="tasting-note-template" type="text/html">
+       <form id="tasting-note-form-validation"  name="tasting-note-form-validation">
+            <div class="row" style="min-height: 550px">
+                @Html.Partial("_TastingNoteForm")
+            </div>
+        </form>
+</script>
+
+
+
 <script type="text/javascript">
 
 
@@ -195,28 +250,33 @@
         self.notes = ko.observableArray();
 
         self.loadNotes = function(item){
-            self.notesLoaded(true);
 
-            $.get('@Url.Content("~/TastingNote/GetNotesByProducerN")', {producerN : item.id() },
-                function (result) {
-                    var t = ko.mapping.fromJS(
-                        {'children' : result}, 
-                        {'children': 
-                            {
-                                create: function(options) {
-                                    var tnm = new TastingNoteModel(options.data);
-                                    return tnm;
+            if( !self.notesLoaded() ){
 
-                                }
-                            }},{});
+                self.notesLoaded(true);
 
-                    if(t.children().length == 0){
-                        alert('No tasting found for that Producer ');
-                        self.notesLoaded(false);
-                    }else{
-                        self.notes(t.children());
-                    }
-                });
+                $.get('@Url.Content("~/TastingNote/GetNotesByProducerN")', {producerN : item.id() },
+                    function (result) {
+                        var t = ko.mapping.fromJS(
+                            {'children' : result}, 
+                            {'children': 
+                                {
+                                    create: function(options) {
+                                        var tnm = new TastingNoteModel(options.data);
+                                        return tnm;
+
+                                    }
+                                }},{});
+
+                        if(t.children().length == 0){
+                            alert('No tasting found for that Producer ');
+                        }else{
+                            self.notes(t.children());
+                        }
+                    });
+            }
+
+            pageData.drillDownExt('producer-notes-template', self, self.nameToShow());
 
         }
 
@@ -407,6 +467,166 @@
     }
 
 
+    
+    //
+    //
+    //
+    var editNoteCallback = function (data) {
+
+        try {
+
+
+            if (data.wfState() >= 100) {
+                // ask before allow editing
+                var result = window.confirm("You are about to edit note which is already published,\r\nif you make changes and save it, the live note will be updated.\r\nDo you wish to continue?");
+                if (!result)
+                    return;
+            }
+
+
+            var m = new TastingNoteModel(data.toObject());
+
+
+                m.init = function (elements) {
+                    initNoteEditForm(elements, m);
+
+                    m.validator = $("#tasting-note-form-validation").validate(
+                        {
+                            debug: true,
+                            rules:
+                                {
+                                    'note-edit-rating': {
+                                        required: false,
+                                        rating: true
+                                    },
+                                    'note-edit-drink-from': {
+                                        required: false,
+                                        range: [2000, 2400]
+                                    },
+                                    'note-edit-drink-to': {
+                                        required: false,
+                                        range: [2000, 2400]
+                                    },
+                                    'note-edit-estimated-cost-low': {
+                                        required: false,
+                                        number: true
+                                    },
+                                    'note-edit-estimated-cost-high': {
+                                        required: false,
+                                        number: true
+                                    }
+                                }
+                        }
+                        );
+                };
+
+
+                m.validate = function () {
+                    var validationResult = true;
+                    validationResult = m.validator.form();
+                    if (!validationResult)
+                        m.validator.showErrors();
+                    return validationResult;
+                }
+
+                //
+                // load history
+                //
+                $.get('@Url.Content("~/TastingNote/GetNotesByWineN")', { wineN: m.wineN() },
+                               function (result) {
+
+                                   var t = ko.mapping.fromJS(
+                                       { 'children': result },
+                                       {
+                                           'children':
+                                              {
+                                                  create: function (options) {
+                                                      var result = new TastingNoteModel(options.data);
+                                                      return result;
+                                                  }
+                                              }
+                                       }, {});
+
+                                   m.history(t.children());
+                               });
+
+                m.save = function (o) {
+
+
+                    var result = window.confirm("You are about to save note which is already published,\r\nif you do so, the live note will be updated.\r\nDo you want continue?");
+                    if (!result)
+                        return true;
+
+                    //
+                    // activate main tab first, otherwise validation does not work properly
+                    //
+                    $('#tasting-note-form-validation #note-props-tab').tab('show');
+
+                    if (!m.validate())
+                        return false;
+
+                    /**
+                    * This function call checks whether the "Date To" field is greater than the "Date From". An 
+                    * error message will be displayed if this fails validation
+                    */
+                    /*
+                    if( m.areDateRangesValid(o) == false ) {
+                        $('#date-to-field-container').append('<label class="error" for="note-edit-drink-to">This is not a valid date range</label>'); 
+                        return false; 
+                    }
+                    */
+
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Content("~/TastingNote/UpdateInPlaceTastingNote")',
+                        data:
+                            {
+                                str: JSON.stringify(o.toObject())
+                            },
+                        success: function (r) {
+
+                            data.fromObject(r);
+
+                        },
+                        error: function (request, status, error) {
+
+                            alert("There is an error on the server while executing this operation.\nPlease report to admin.");
+
+                        }
+                    });
+
+                    return true;
+                };
+
+                m.areDateRangesValid = function (objectToSave) {
+
+                    var dateFrom = parseInt(objectToSave.drinkDateLo);
+                    var dateTo = parseInt(objectToSave.drinkDateHi);
+
+                    if (dateTo >= dateFrom) {
+                        return true;
+                    }
+
+                    return false;
+                }
+
+                var dlg = pageData.OpenDialog(m, m, "tasting-note-template");
+
+                dlg.dialog("option", "title", "Edit Tasting Note").
+                    dialog("option", "width", 900).
+                    dialog("option", "height", 700);
+
+            } catch (e) {
+                alert(e);
+            }
+
+        }
+
+
+
+        TastingNoteModel.prototype.editNote = editNoteCallback;
+
+    // 
 
 
     var PAGE_CONTEXT = {};
@@ -489,7 +709,9 @@
 
 
         pageData.init();
-        pageData.drillDown('search-wine-template', new PageModel());
+        pageData.drillDownExt('search-wine-template', new PageModel(), "Producers");
+
+
 
         $("#page-left-menu #producers").addClass("active");
 

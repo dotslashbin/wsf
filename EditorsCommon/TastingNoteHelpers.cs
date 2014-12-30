@@ -312,6 +312,27 @@ namespace EditorsCommon
             return String.IsNullOrEmpty(str) ? false : Char.IsDigit(str[0]);
         }
 
+        static bool startsWithSpecialCaseSymbol(string str)
+        {
+            if (String.IsNullOrEmpty(str))
+                return false;
+
+            switch (str[0])
+            {
+                case '"':
+                case '”':
+                case '\'':
+                case ')':
+                case ']':
+                    return true;
+            }
+
+
+            return false;
+        }
+
+
+
 
         private static string SplitterMerger(string src, SplitterDelegate splitter, MergerDelegate merger, PartActionDelegate action)
         {
@@ -462,44 +483,50 @@ namespace EditorsCommon
             {
                 if (startsWithDigit(arg[i - 1]) && endsWithDigit(arg[i]))
                 {
-                    sb.Append(",");
-                    sb.Append(arg[i]);
+                }
+                else if (startsWithSpecialCaseSymbol(arg[i]))
+                {
                 }
                 else
                 {
                     sb.Append(", ");
                     sb.Append(arg[i]);
+                    continue;
                 }
+
+                sb.Append(",");
+                sb.Append(arg[i]);
             }
             return sb.ToString();
         };
 
         /// <summary>
         /// special cases 
-        ///  number 1,000,000.00
-        ///  multiple dots ...
-        /// 
+        ///  1.number 1,000,000.00
+        ///  2.multiple dots ...
+        ///  3.quotes with dot withing as last symbol
+        ///  4. urls ( assume that in this case sentence will have one word, i.e no spcaes
         /// </summary>
         static MergerDelegate SentenceMerger = (arg) =>
         {
             StringBuilder sb = new StringBuilder(arg[0]);
             for (int i = 1; i < arg.Length; i++)
             {
-                if (startsWithDigit(arg[i - 1]) && endsWithDigit(arg[i]))
-                {
-                    sb.Append(".");
-                    sb.Append(arg[i]);
+                if (startsWithDigit(arg[i - 1]) && endsWithDigit(arg[i])) {
                 }
-                else if (String.IsNullOrEmpty(arg[i - 1]) && String.IsNullOrEmpty(arg[i]))
-                {
-                    sb.Append(".");
-                    sb.Append(arg[i]);
+                else if (String.IsNullOrEmpty(arg[i - 1]) && String.IsNullOrEmpty(arg[i])){
                 }
-                else
+                else if (startsWithSpecialCaseSymbol(arg[i])){
+                }
+                else if (arg[i - 1].IndexOf(" ") < 0 || arg[i].IndexOf(" ") < 0){
+                } else
                 {
                     sb.Append(". ");
                     sb.Append(arg[i]);
+                    continue;
                 }
+                sb.Append(".");
+                sb.Append(arg[i]);
             }
             return sb.ToString();
         };

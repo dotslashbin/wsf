@@ -1,22 +1,87 @@
 ﻿
 
-    function TastingEventModel(src, docRoot) {
+    function TastingEventModel(src) {
         var self = this;
 
         var dt2js = function (options) { return erp.utils.Json2Date(options.data) };
         //
         // 
         //
-        self.docRoot = docRoot;
 
         self.title = ko.observable('');
         self.location = ko.observable('');
         self.comments = ko.observable('');
         self.notes = ko.observableArray();
 
+        self.open = ko.observable(false);
+        self.loaded = ko.observable(false);
+        self.sortById = ko.observable(0);
+        self.sortBy = self.sortBy;
+
+
+
+
         self.toObject = function () {
             return ko.mapping.toJS(self);
         }
+
+        self.refreshCounts = function () {
+
+            if (self.notes().length == 0)
+                return;
+
+            self.notesCount(self.notes().length);
+            var draftCount = 0;
+            var proofreadCount = 0;
+            var editorCount = 0;
+
+
+            for (var i = 0; i < self.notes().length; i++) {
+
+                if( self.notes()[i].wfState() == 0 )
+                    draftCount++;
+
+                if (self.notes()[i].wfState() == 10)
+                    proofreadCount++;
+
+                if (self.notes()[i].wfState() == 50)
+                    editorCount++;
+            }
+
+            self.draftCount(draftCount);
+            self.proofreadCount(proofreadCount);
+            self.editorCount(editorCount);
+
+        }
+
+
+        self.showNotes = function (item) {
+            if (!item.loaded()) {
+                $.get(erp.wsf_path +  'TastingNote/GetNotesByTastingEvent', { eventId: item.id },
+                function (result) {
+                    var t = ko.mapping.fromJS(
+                        { 'children': result },
+                        { 'children':
+                               {
+                                   create: function (options) {
+                                       var tnm = new TastingNoteModel(options.data);
+                                       return tnm;
+                                   }
+                               }
+                        }, {});
+
+                    item.loaded(true);
+                    item.notes(t.children());
+                    item.open(!item.open());
+                    item.refreshCounts();
+                });
+            } else {
+                item.open(!item.open());
+            }
+        }
+
+
+
 
         self.showUploadForm = function (tastingEvent) {
             var dlg = pageData.OpenErrorDialog(this, this, "tasting-note-upload-form");
@@ -53,9 +118,9 @@
                                 var tastingNote = tastingNotes[iterator];
 
                                 var result = new TastingNoteModel(tastingNote);
-                                result.editNote = editNoteCallback;
-                                result.setReadyNote = setReadyNoteCallback;
-                                result.setDraftNote = setDraftNoteCallback;
+                                //result.editNote = editNoteCallback;
+                                //result.setReadyNote = setReadyNoteCallback;
+                                //result.setDraftNote = setDraftNoteCallback;
 
                                 tastingEvent.notes.unshift(result);
                             }
@@ -85,7 +150,7 @@
 
             $.ajax({
                 type: 'POST',
-                url: docRoot +  'TastingNote/GetNewNoteForEvent',
+                url: erp.wsf_path +  'TastingNote/GetNewNoteForEvent',
                 data:
                     {
                         eventId: tastingEvent.id
@@ -103,7 +168,7 @@
                         m.vinEditable(false);
                         m.vintageEditable(true);
 
-                        $.get(docRoot +  'TastingNote/GetNotesByVinN', { vinN: vin.id() },
+                        $.get(erp.wsf_path +  'TastingNote/GetNotesByVinN', { vinN: vin.id() },
                                      function (result) {
 
                                          var t = ko.mapping.fromJS(
@@ -128,7 +193,7 @@
                     }
 
                     m.init = function (elements) {
-                        initNoteEditForm(elements, m, self.docRoot);
+                        initNoteEditForm(elements, m);
 
 
 
@@ -218,7 +283,7 @@
 
                         $.ajax({
                             type: 'POST',
-                            url: docRoot + 'TastingNote/AddTastingNote',
+                            url: erp.wsf_path + 'TastingNote/AddTastingNote',
                             data:
                                 {
                                     str: JSON.stringify(o.toObject())
@@ -227,9 +292,9 @@
 
 
                                 var result = new TastingNoteModel(r);
-                                result.editNote = editNoteCallback;
-                                result.setReadyNote = setReadyNoteCallback;
-                                result.setDraftNote = setDraftNoteCallback;
+                                //result.editNote = editNoteCallback;
+                                //result.setReadyNote = setReadyNoteCallback;
+                                //result.setDraftNote = setDraftNoteCallback;
 
 
                                 tastingEvent.notes.unshift(result);
@@ -283,7 +348,7 @@
 
             $.ajax({
                 type: 'POST',
-                url: docRoot + 'TastingNote/DeleteTastingNote',
+                url: erp.wsf_path + 'TastingNote/DeleteTastingNote',
                             data:
                                 {
                                     str: JSON.stringify( item.toObject())

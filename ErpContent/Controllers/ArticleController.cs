@@ -118,14 +118,7 @@ namespace ErpContent.Controllers
                 article = this._articleStorage.SearchArticleByID(ID); 
             }
 
-            if (article.id == null)
-            {
-                return null;
-            }
-            else
-            {
-                return Json(article, JsonRequestBehavior.AllowGet);
-            }
+            return Json(article, JsonRequestBehavior.AllowGet);
         }
 
 

@@ -8,10 +8,25 @@
     window['erp'] = {};
 
     erp.version = '1.0.0.0';
+    erp.wsf_path = '/';
+
+    erp.settings = {};
 
     erp.utils = {};
 
 
+    //
+    // 
+    //
+    erp.settings.waitCursor = true;
+
+    erp.settings.isWaitCursorOn = function () {
+        return erp.settings.waitCursor == true;
+    };
+
+    erp.settings.setWaitCursor = function (state) {
+         erp.settings.waitCursor = state;
+    };
 
     //
     //

@@ -30,10 +30,19 @@
 @section scripts {
 
 
+
+    <script  src="~/Scripts/models/IssueItemModel.js"></script>
+    <script  src="~/Scripts/models/IssueListUserModel.js"></script>
+    <script  src="~/Scripts/models/AssignmentModel.js"></script>
+
     <script src="~/Scripts/models/TastingNoteModel.js"></script>
     <script src="~/Scripts/models/TastingEventModel.js"></script>
     <script src="~/Scripts/models/PageDataModel.js"></script>
 
+
+  <script id="issue-list-template"  type="text/html">
+        @Html.Partial("_IssueListUserTemplate")
+    </script>
 
 
     <script id="assignment-details-template" type="text/html">
@@ -179,43 +188,6 @@
 
 
     <script id="issue-details-template" type="text/html">
-        <div>
-            <div class="well">
-                <form class="form-horizontal" role="form">
-                    <div class="form-group">
-                        <div class="col-sm-8">
-                            <label for="publications" class="col-sm-2 control-label">Publications:</label>
-                            <div class="col-sm-4">
-                                <select class="form-control input-sm"
-                                    data-bind="options: PAGE_CONTEXT.publications,
-                                            optionsText: 'name',
-                                            optionsValue: 'id',
-                                            value: publicationId,
-                                            valueUpdate: 'blur',
-                                            optionsCaption: 'ALL'">
-                                 </select>
-                            </div>
-                            <div class="col-sm-2">
-                                <select class="form-control input-sm col-sm-4" data-bind="options: PAGE_CONTEXT.stateGroups,
-                                optionsText: 'name',
-                                optionsValue: 'id',
-                                value: stateGroupId,
-                                valueUpdate: 'blur'">
-                                </select>
-                            </div>
-
-                            <div class="col-sm-2 input-group-md">
-                                <button class="btn  btn-primary btn-sm" data-bind="click: loadAssignements">Load</button>
-                            </div>
-
-                        </div>
-
-                    </div>
-                </form>
-            </div>
-
-        </div>
-
 
 
         <div class="row" style="height: 850px; overflow: scroll;" data-bind="visible:  assignmentList().length > 0">
@@ -229,7 +201,6 @@
                         <th># Notes</th>
                     </tr>
                 </thead>
-
 
 
                 <tbody data-bind="foreach: assignmentList">
@@ -296,20 +267,25 @@
         <div class="row" style="height: 550px; overflow:auto">
 
             <!-- ko foreach: items -->
-            <div class="row"  style="border-bottom: solid 1px gray;cursor:pointer">
-                <div class='col-sm-7' data-bind="click : $parent.createNote.bind($data)">
-                        <span class='glyphicon glyphicon-glass' data-bind="style: { color:wineColor($data.colorClass()) }" ></span>
+            <div class="row alter-backgound"  style="border-bottom: solid 1px gray">
+                <div class='col-sm-9'>
+                        <span class='glyphicon glyphicon-pencil' data-bind="click: $parent.editVin.bind($data), visible : false" ></span>&nbsp;
                         <b><span data-bind="text: producer"></span>
                         <span data-bind="text: label"></span></b>, 
-                        <span data-bind="text: appellation"></span>, 
+                        <!--<span data-bind="text: appellation"></span>,--> 
+                        <span data-bind="text: country"></span>, 
+                        <span data-bind="text: region"></span>, 
+                        <span data-bind="text: location"></span>, 
+                        <span data-bind="text: locale"></span>, 
+                        <span data-bind="text: site"></span>, 
                         <span data-bind="text: variety"></span>, 
                         <span data-bind="text: colorClass"></span>, 
                         <span data-bind="text: dryness"></span>
                 </div>
-                <div class='col-sm-5' >
-                 <button class="btn  btn-success btn-xs" data-bind="click : $parent.createNote.bind($data)">Add New</button>
+                <div class='col-sm-3' >
+                 <button class="btn  btn-success btn-xs" style="cursor:pointer" data-bind="click : $parent.createNote.bind($data)">Add New</button>
             <!-- ko foreach: wines -->
-                 <button class="btn  btn-primary btn-xs" data-bind="text: vintage, click : $parents[1].createNoteVintage.bind($data,$parent,$data)"></button>
+                 <button class="btn  btn-primary btn-xs" style="cursor:pointer" data-bind="text: vintage, click : $parents[1].createNoteVintage.bind($data,$parent,$data)"></button>
             <!-- /ko -->
                  </div>
             </div>
@@ -393,6 +369,134 @@
 
 
 
+    <script id="vin-edit-template" type="text/html">
+        <div class="row">
+            <div class="col-sm-2  input-group-md">
+                Producer
+            </div>
+            <div class="col-sm-5 input-group-md">
+              <input type="text" 
+                    data-bind="value: producer, valueUpdate: 'blur'" 
+                    class="form-control" 
+                    name="vin-edit-producer" 
+                    id="vin-edit-producer" 
+                    placeholder="Producer" required/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-2  input-group-md">
+                Label
+            </div>
+            <div class="col-sm-5 input-group-md">
+              <input type="text" 
+                    data-bind="value: label, valueUpdate: 'blur'" 
+                    class="form-control" 
+                    name="vin-edit-label" 
+                    id="vin-edit-label" 
+                    placeholder="Label" required/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-2  input-group-md">
+                Wine Type
+            </div>
+            <div class="col-sm-5 input-group-md">
+               <select  name="vin-edit-color"
+                    class="form-control"
+                    data-bind="options: wineTypeLookup,
+    optionsText: 'name',
+    optionsValue: 'name',
+    value: wineType,
+    valueUpdate: 'blur'" required></select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-2  input-group-md">
+                Variety
+            </div>
+            <div class="col-sm-5 input-group-md">
+              <input type="text" 
+                    data-bind="value: variety, valueUpdate: 'blur'" 
+                    class="form-control" 
+                    name="vin-edit-variety" 
+                    id="vin-edit-variety" 
+                    placeholder="Variety" required/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-2  input-group-md">
+                Color
+            </div>
+            <div class="col-sm-5 input-group-md">
+            <select  name="vin-edit-color"
+                    class="form-control"
+                    data-bind="options: wineColorLookup,
+    optionsText: 'name',
+    optionsValue: 'name',
+    value: colorClass,
+    valueUpdate: 'blur'" required></select>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-2  input-group-md">
+                Dryness
+            </div>
+            <div class="col-sm-5 input-group-md">
+
+            <select  name="vin-edit-dryness"
+                    class="form-control"
+                    data-bind="options: wineDrynessLookup,
+    optionsText: 'name',
+    optionsValue: 'name',
+    value: dryness,
+    valueUpdate: 'blur'" required></select>
+
+
+            </div>
+        </div>
+
+
+      <div class="row">
+            <label class="col-sm-2 control-label">Country:</label>
+            <div class="col-sm-5">
+                <input type="text" 
+                    id="vin-edit-location-country" data-bind="value: country, valueUpdate: 'blur'" class="form-control" placeholder="Country" />
+            </div>
+        </div>
+
+        <div class="row">
+            <label class="col-sm-2 control-label">Region:</label>
+            <div class="col-sm-5">
+                <input type="text" id="vin-edit-location-region" data-bind="value: region, valueUpdate: 'blur'" class="form-control" placeholder="Region" />
+            </div>
+        </div>
+
+        <div class="row">
+            <label class="col-sm-2 control-label">Location:</label>
+            <div class="col-sm-5">
+                <input type="text" id="vin-edit-location-location" data-bind="value: location, valueUpdate: 'blur'" class="form-control" placeholder="Location"/>
+            </div>
+        </div>
+
+        <div class="row">
+            <label class="col-sm-2 control-label">Locale:</label>
+            <div class="col-sm-5">
+                <input type="text" id="vin-edit-location-locale" data-bind="value: locale, valueUpdate: 'blur'" class="form-control" placeholder="Locale" />
+            </div>
+        </div>
+
+        <div class="row">
+            <label class="col-sm-2 control-label">Site:</label>
+            <div class="col-sm-5">
+                <input type="text" id="note-edit-location-site" data-bind="value: site, valueUpdate: 'blur'" class="form-control" placeholder="Site" />
+            </div>
+        </div>
+
+
+    </script>
+
+
 
     <script id="error-view-template" type="text/html">
 
@@ -412,6 +516,10 @@
        @Html.Partial("_ArticleEntityJScripts"); 
     }
     
+
+
+
+
     <script type="text/javascript">
 
         function IssueModel() {
@@ -589,75 +697,6 @@
 
 
 
-        var setDraftNoteCallback = function (data) {
-
-            if (!data.validate()) {
-                window.alert(data.validateResult);
-                return;
-            }
-
-
-            var state = '@EditorsCommon.WorkFlowState.DRAFT';
-
-            $.ajax({
-                type: 'POST',
-                url: '@Url.Content("~/TastingNote/SetTastingNoteState")',
-                data:
-                    { noteId: data.id, stateId: state },
-                success: function (result) {
-
-                    if (result == state) {
-                        data.wfState(result);
-                    }
-                },
-                error: function (request, status, error) {
-                    var dlg = pageData.OpenErrorDialog({ error: request.responseText }, null, "error-view-template");
-                    dlg.dialog("option", "title", "Server Error").
-                        dialog("option", "width", 600).
-                        dialog("option", "height", 300);
-
-                }
-            });
-
-        }
-
-//************************************ ***************************************
-        var setReadyNoteCallback = function (data) {
-
-            if (!data.validate()) {
-                window.alert(data.validateResult);
-                return;
-            }
-           
-
-
-            var state = '@EditorsCommon.WorkFlowState.READY_FOR_REVIEW';
-
-            $.ajax({
-                type: 'POST',
-                url: '@Url.Content("~/TastingNote/SetTastingNoteState")',
-                data:
-                    {   noteId: data.id, stateId : state},
-                success: function (result) {
-
-                    if(result == state ){
-                        data.wfState(result); 
-                    }
-                },
-                error: function (request, status, error) {
-
-                    var dlg = pageData.OpenErrorDialog({ error: request.responseText }, null, "error-view-template");
-
-                    dlg.dialog("option", "title", "Server Error").
-                        dialog("option", "width", 600).
-                        dialog("option", "height", 300);
-
-                }
-            });
-
-        }
-
-
 
 //************************************ ***************************************
         var editNoteCallback = function (data) {
@@ -807,40 +846,100 @@
 
         }
 
-//************************************ ***************************************
-        var eventShowItemsCallback = function(item)
-        {
-            if (!item.loaded()) {
-                $.get('@Url.Content("~/TastingNote/GetNotesByTastingEvent")', { eventId: item.id },
-                function (result) {
-                    var t = ko.mapping.fromJS(
-                        {'children' : result}, 
-                        {'children': 
-                            {
-                                create: function(options) {
-                                    var tnm = new TastingNoteModel(options.data);
-                                    tnm.editNote = editNoteCallback;
-                                    tnm.setReadyNote = setReadyNoteCallback;
-                                    tnm.setDraftNote = setDraftNoteCallback;
-
-                                    return tnm;
-
-                                }
-                            }},{});
 
 
-                    item.loaded(true);
-                    item.notes(t.children());
-                    item.open(!item.open());
-                    
-                });
-            } else {
-                item.open(!item.open());
+
+        function VinModel(src) {
+            var self = this;
+
+
+
+            self.wineColorLookup = [
+                      { id: 0, name: '' },
+                      { id: 1, name: 'Red' },
+                      { id: 2, name: 'Rose' },
+                      { id: 3, name: 'White' },
+            ];
+
+
+            self.wineDrynessLookup = [
+                { id: 0, name: '' },
+                { id: 1, name: 'Dry' },
+                { id: 2, name: 'Medium Dry' },
+                { id: 3, name: 'Sweet' },
+                { id: 4, name: 'Very Dry' },
+            ];
+
+
+
+            self.wineTypeLookup = [
+                { id: 0, name: '' },
+                { id: 9, name: 'Table' },
+                { id: 1, name: 'Dessert' },
+                { id: 2, name: 'Fortified' },
+                { id: 3, name: 'Madeira' },
+                { id: 4, name: 'Port' },
+                { id: 5, name: 'Sake' },
+                { id: 6, name: 'Sherry' },
+                { id: 7, name: 'Sparkling' },
+                { id: 8, name: 'Sweet' }
+            ];
+
+
+
+
+            self.toObject = function () {
+                var o = ko.mapping.toJS(self);
+                return o;
             }
-        }
+
+            self.fromObject = function (o) {
+                ko.mapping.fromJS(o,
+                    {
+
+                    }, self);
+            }
+
+            //
+            //
+            //
+            if (src)
+                self.fromObject(src);
 
 
-// ******************************
+
+            self.coAppellation = ko.computed(function () {
+                if (self.site && self.site() && self.site().length > 0) return self.site();
+                if (self.locale && self.locale() && self.locale().length > 0) return self.locale();
+                if (self.location && self.location() && self.location().length > 0) return self.location();
+                if (self.region && self.region() && self.region().length > 0) return self.region();
+                if (self.country && self.country() && self.country().length > 0) return self.country();
+                return '';
+            }, self);
+
+
+
+            self.needApprove = function () {
+                if (self.workflow() < 100)
+                    return true;
+
+                for (var i = 0; i < self.wines().length; i++) {
+                    if (self.wines()[i].workflow() < 100) {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+
+
+
+    }
+
+
+
+
         var VinSearchModel = {
   
         };
@@ -848,31 +947,90 @@
         VinSearchModel.tastingEvent = null;
 
 
-        VinSearchModel.sortBy = function (item,event) {
+
+
+
+        VinSearchModel.editVin = function (item) {
+
+            var m = new VinModel( item.toObject());
+ 
+            m.init = function (elements) {
+            };
+
+            m.validate = function () {
+                return true;
+            }
+
+
+            m.save = function (o) {
+
+                if (!window.confirm("Do you want save changes?")) {
+                    return false;
+                }
+
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Content("~/vin/Update")',
+                    data:
+                        {
+                            str: JSON.stringify(o.toObject())
+                        },
+                    success: function (r) {
+                        if (r) {
+                            VinSearchModel.search();
+                        }
+                    },
+                    error: function (request, status, error) {
+                        alert("There is an error on the server while executing this operation.\nPlease report to admin.");
+                    }
+                });
+
+
+                return true;
+            };
+
+
+            var d = pageData.OpenDialog(m, m, "vin-edit-template");
+            d.dialog("option", "title", "Edit Vin").
+                dialog("option", "width", 860).
+                dialog("option", "height", 600);
+            ;
+        }
+
+
+
+        VinSearchModel.sortOrder = 0;
+
+
+        VinSearchModel.sort = function () {
+            if (VinSearchModel.items().length > 0) {
+                //
+                // producer
+                if (VinSearchModel.sortOrder == 0) {
+
+
+                    VinSearchModel.items(VinSearchModel.items().sort(function (l, r) {
+                        return (l.producer() == r.producer()) ? (l.producer() > r.producer() ? 1 : -1) : (l.producer() > r.producer() ? 1 : -1)
+                    }));
+                }
+                // 
+                // label
+                if (VinSearchModel.sortOrder == 1) {
+
+                    VinSearchModel.items(VinSearchModel.items().sort(function (l, r) {
+                        return (l.label() == r.label()) ? (l.label() > r.label() ? 1 : -1) : (l.label() > r.label() ? 1 : -1)
+                    }));
+                }
+            }
+        }
+
+         VinSearchModel.sortBy = function (item,event) {
 
             if(event.originalEvent) { //user changed
 
                 var t = $( event.currentTarget ).val();
-
-                if( item.items().length > 0 ){
-                    //
-                    // producer
-                    if( t == 0 ){
-                        item.items(item.items().sort(function (l, r) 
-                        { 
-                            return (l.producer() == r.producer()) ? (l.producer() > r.producer() ? 1 : -1) : (l.producer() > r.producer() ? 1 : -1) 
-                        }));
-                    }
-                    // 
-                    // label
-                    if( t == 1 ){
-
-                        item.items(item.items().sort(function (l, r) 
-                        { 
-                            return (l.label() == r.label()) ? (l.label() > r.label() ? 1 : -1) : (l.label() > r.label() ? 1 : -1) 
-                        }));
-                    }
-                }
+                VinSearchModel.sortOrder = t;
+                VinSearchModel.sort();
 
             } else { // program changed
 
@@ -881,13 +1039,13 @@
 
 
         VinSearchModel.createNote = function(vin){
-            var m = new TastingEventModel(null, '@Url.Content("~/")');
+            var m = new TastingEventModel(null);
             m.createNote(VinSearchModel.tastingEvent,null,vin,null);
         };
 
         VinSearchModel.createNoteVintage = function(vin, vintage){
 
-            var m = new TastingEventModel(null, '@Url.Content("~/")');
+            var m = new TastingEventModel(null);
             m.createNote(VinSearchModel.tastingEvent,null,vin, vintage);
 
         };
@@ -927,14 +1085,22 @@
                                          {'children': 
                                              {
                                                  create: function(options) {
-                                     
-                                                     var result = new AssigmentModel(options.data);
+
+                                                     return new VinModel(options.data);
+                                                     /*
+                                                     var result = {};
+                                                     ko.mapping.fromJS(options.data  // source
+                                                        , {}
+                                                        , result    // target
+                                                        );
                                                      return result;
+                                                     */
 
                                                  }
                                              }},{} );
 
                                      VinSearchModel.items(t.children());
+                                     VinSearchModel.sort();
                                  });
         };
 
@@ -942,555 +1108,78 @@
         VinSearchModel.items = ko.observableArray([]);
 
 
-        // *************************************
-        function AssigmentModel(src) {
-            var self = this;
 
-            self.loaded = false;
-            self.events = ko.observableArray([]);
+        // *****************************************************************************************************
 
-            var dt2js = function (options) { return erp.utils.Json2Date(options.data) };
+        var readyForReviewNoteCallback = function (data) {
 
-            ko.mapping.fromJS(src  // source
-                ,{
-                    'copy' :["notesCount","editor","author","proofread"]
-                ,"submitDate" : {create: dt2js}
-                ,"proofreadDate" : {create: dt2js}
-                ,"proofreadDate" : {create: dt2js}
-                ,"publishDate" : {create: dt2js}
-                ,"approveDate" : {create: dt2js}
-                ,"CreatedDate" : {create: dt2js}
-                }
-                , self    // target
-                );
-
-
-            self.copy = function (o) {
-                self.title(o.title());
-                self.author(o.author());
-                self.editor(o.editor());
-            }
-
-
-
-            self.goToDetails = function () {
-
-                pageData.drillDownExt('assignment-details-template', self,self.title());
-            }
-
-
-            //
-            // it is confusing how we should call this method. I do not undestand myself how this binding works :-(
-            // click : $parents[1].assignment.moveTastingNote.bind($data,$parent)
-            //
-            self.moveTastingNote = function (tastingRecord,note) {
-
-
-                try {
-
-                    $.get('@Url.Content("~/Assignment/GetAssignmentsByUser")', { publicationid: 0, state: '@EditorsCommon.WorkFlowState.STATE_GROUP_IN_PROCESS' },
-                            function (result) {
-
-                                /**/
-                                var t = ko.mapping.fromJS(
-                                    { 'children': result },
-                                    { 'children': {
-                                               create: function (options) {
-                                                   var result = new AssigmentModel(options.data);
-                                                   return result;
-                                               }
-                                           }
-                                    }, {});
-
-                                var m = {};
-
-                                m.init = function () {
-                                };
-
-
- 
-
-                                m.save = function (o) {
-
-
-                                    if (! m.moveToAssignmentId()) { // no selection
-                                        alert("Please select assginment where you want move this tastging record");
-                                        return false;
-                                    }
-
-                                    if (! m.moveToEventId()) { // no selection
-                                        alert("Please select Tasting Record where you want move this tastging record");
-                                        return false;
-                                    }
-
-                                    if (m.moveToAssignmentId() == self.id() && m.moveToEventId() == tastingRecord.id ) { // select move to itself
-                                        alert("Tastging record already in the assignment you selected ");
-                                        return false;
-                                    }
-
-
-                                    $.ajax({
-                                        type: 'POST',
-                                        url: '@Url.Content("~/TastingNote/MoveTastingNote")',
-                                        data:
-                                            {
-                                                tastingEventId: m.moveToEventId(),
-                                                tastingNoteId : note.id
-                                            },
-                                        success: function (r) {
-                                            tastingRecord.notes.remove(note);
-                                            if (m.moveToAssignmentId() == self.id()) {
-                                                for (var i = 0; i < self.events().length; i++) {
-                                                    if (self.events()[i].id == m.moveToEventId()) {
-                                                        self.events()[i].notes.unshift(note);
-                                                        break;
-                                                    }
-                                                }
-                                            }
-
-                                        },
-                                        error: function (request, status, error) {
-                                            var dlg = pageData.OpenErrorDialog({ error: request.responseText }, null, "error-view-template");
-                                            dlg.dialog("option", "title", "Server Error").
-                                                dialog("option", "width", 600).
-                                                dialog("option", "height", 300);
-                                        }
-                                    });
-
-                                    return true;
-                                };
-
-                                m.assignments = t.children;
-                                m.events = ko.observableArray();
-                                m.moveToAssignmentId = ko.observable(null);
-                                m.moveToEventId = ko.observable(null);
-
-
-                                m.moveToAssignmentId.subscribe(function(newValue) {
-
-                                    if( newValue ){
-                                        $.get('@Url.Content("~/TastingEvent/GetTastingEventByAssignment")', { assignmentId: newValue },
-                                        function (result) {
-                                            var t = ko.mapping.fromJS(
-                                                { 'children': result },
-                                                {
-                                                    'children':
-                                                    {
-                                                        create: function (options) {
-                                                            var r = new TastingEventModel(options.data, '@Url.Content("~/")');
-                                                                return r;
-                                                            }
-                                                        }
-                                                    }, {});
-
-                                                m.events(t.children());
-                                            });
-                                        }
-                                    });
-
-                                var dlg = pageData.OpenDialog(m, m, "tasting-note-move-template");
-                                dlg.dialog("option", "title", "Move Tasting Note").
-                                    dialog("option", "width", 600).
-                                    dialog("option", "height", 350);
-                            });
-
-
-                        } catch (e) {
-                            alert(e);
-                        }
-
-
-            }
-
-
-
-            self.moveTastingEvent = function (item) {
-
-                try {
-
-                    $.get('@Url.Content("~/Assignment/GetAssignmentsByUser")', { publicationid: 0, state: '@EditorsCommon.WorkFlowState.STATE_GROUP_IN_PROCESS' },
-                            function (result) {
-
-                                /**/
-                                var t = ko.mapping.fromJS(
-                                    { 'children': result },
-                                    { 'children': {
-                                               create: function (options) {
-                                                   var result = new AssigmentModel(options.data);
-                                                   return result;
-                                               }
-                                           }
-                                    }, {});
-
-                                var m = {};
-
-                                m.init = function () {
-                                };
-
-                                m.save = function (o) {
-
-
-                                    if (! m.moveToAssignmentId()) { // no selection
-                                        alert("Please select assginment where you want move this tastging record");
-                                        return false;
-                                    }
-
-                                    if (m.moveToAssignmentId() == self.id()) { // select move to itself
-                                        alert("Tastging record already in the assignment you selected ");
-                                        return false;
-                                    }
-
-
-                                    $.ajax({
-                                        type: 'POST',
-                                        url: '@Url.Content("~/TastingEvent/MoveTastingEvent")',
-                                        data:
-                                            {
-                                                assignmentId: m.moveToAssignmentId(),
-                                                tastingEventId : item.id
-                                            },
-                                        success: function (r) {
-                                            self.events.remove(item);
-                                        },
-                                        error: function (request, status, error) {
-                                            var dlg = pageData.OpenErrorDialog({ error: request.responseText }, null, "error-view-template");
-                                            dlg.dialog("option", "title", "Server Error").
-                                                dialog("option", "width", 600).
-                                                dialog("option", "height", 300);
-                                        }
-                                    });
-
-                                    return true;
-                                };
-
-                                m.assignments = t.children;
-                                m.moveToAssignmentId = ko.observable(null);
-
-                                var dlg = pageData.OpenDialog(m, m, "tasting-event-move-template");
-                                dlg.dialog("option", "title", "Move Tasting Record").
-                                    dialog("option", "width", 600).
-                                    dialog("option", "height", 350);
-                            });
-
-
-                        } catch (e) {
-                            alert(e);
-                        }
-            }
-
-
-            self.deleteTastingEvent = function (item) {
-
-                if (!window.confirm("Do you really want delete '" + item.title() + "' tasting record?")) {
-                    return;
-                }
-
-                $.ajax({
-                    type: 'POST',
-                    url: '@Url.Content("~/TastingEvent/DeleteTastingEvent")',
-                    data:
-                        {
-                            str: JSON.stringify(item.toObject())
-                        },
-                    success: function (r) {
-                        if (r)
-                            self.events.remove(item);
-                    },
-                    error: function (request, status, error) {
-
-                        var dlg = pageData.OpenErrorDialog({ error: request.responseText }, null, "error-view-template");
-
-                        dlg.dialog("option", "title", "Server Error").
-                            dialog("option", "width", 600).
-                            dialog("option", "height", 300);
-
-                    }
-                });
-
-            };
-
-            self.editTastingEvent = function(item){
-
-
-                try {
-                    var m = new TastingEventModel(item.toObject(), '@Url.Content("~/")');
-
-                    m.init = function () {
-                        initTastingEventEditForm(m);
-                    };
-
-                    m.save = function (o) {
-
-                        $.ajax({
-                            type: 'POST',
-                            url: '@Url.Content("~/TastingEvent/EditTastingEvent")',
-                                    data:
-                                        {
-                                            str: JSON.stringify( m.toObject())
-                                        },
-                                    success: function (r) {
-
-                                        item.fromObject(r);
-                                    },
-                                    error: function (request, status, error) {
-
-                                        var dlg = pageData.OpenErrorDialog({ error: request.responseText }, null, "error-view-template");
-
-                                        dlg.dialog("option", "title", "Server Error").
-                                            dialog("option", "width", 600).
-                                            dialog("option", "height", 300);
-
-                                    }
-                                });
-
-                        return true;
-                            };
-
-                            m.assignmentId = self.id();
-
-                            var dlg = pageData.OpenDialog(m, m, "tasting-event-template");
-
-                            dlg.dialog("option", "title", "Edit Tasting Record").
-                                dialog("option", "width", 600).
-                                dialog("option", "height", 350);
-
-                        } catch (e) {
-                            alert(e);
-                        }
-
-            }
-
-            self.export = function () {
-
-                    erp.utils.ajaxDownload('@Url.Content("~/Issue/ExportAssignment")', { issueId: self.issueId(), assignmentId : self.id() });
-
-            }
-
-            self.createTastingEvent = function () {
-
-                $.ajax({
-                    type: 'POST',
-                    url: '@Url.Content("~/TastingEvent/GetNewTastingEventToAssignment")',
-                    data:
-                        {
-                            assignmentId: self.id()
-                        },
-                    success: function (r) {
-
-                        try {
-
-                            var m = new TastingEventModel(r, '@Url.Content("~/")');
-
-                            m.init = function () {
-                                initTastingEventEditForm(m);
-                                m.validator = $("#tasting-event-form").validate({ debug: true });
-                            };
-
-                            m.validate = function () {
-                                var validationResult = true;
-                                validationResult = m.validator.form();
-                                if (!validationResult)
-                                    m.validator.showErrors(); 
-                                return validationResult; 
-                            }
-
-                            m.save = function (o) {
-
-                                if (!m.validate()) {
-                                    return false; 
-                                }
-
-                                $.ajax({
-                                    type: 'POST',
-                                    url: '@Url.Content("~/TastingEvent/AddTastingEvent")',
-                                    data:
-                                        {
-                                            str: JSON.stringify( m.toObject())
-                                        },
-                                    success: function (r) {
-
-                                        var v = new TastingEventModel(r, '@Url.Content("~/")');
-
-                                        //v.notes = ko.observableArray();
-                                        v.open = ko.observable(false);
-                                        v.loaded = ko.observable(false);
-
-                                        v.sortById = ko.observable(0);
-                                        //v.createNote = self.createNote;
-                                        v.createNoteFromExisting = self.createNoteFromExisting;
-                                        v.sortBy = self.sortBy;
-                                        v.showNotes = eventShowItemsCallback;
-
-
-                                        self.events.unshift(v);
-                                    },
-                                    error: function (request, status, error) {
-
-                                        var dlg = pageData.OpenErrorDialog({ error: request.responseText }, null, "error-view-template");
-
-                                        dlg.dialog("option", "title", "Server Error").
-                                            dialog("option", "width", 600).
-                                            dialog("option", "height", 300);
-
-                                    }
-                                });
-                                return true;
-                            };
-
-                            m.assignmentId = self.id();
-
-                            var dlg = pageData.OpenDialog(m, m, "tasting-event-template");
-
-                            dlg.dialog("option", "title", "Add Tasting Record").
-                                dialog("option", "width", 600).
-                                dialog("option", "height", 350);
-
-                        } catch (e) {
-                            alert(e);
-                        }
-                    }
-                });
-
-        }
-
-        self.sortBy = function (item,event) {
-
-            if(event.originalEvent) { //user changed
-
-
-                //var t = item.sortById();
-                //var t = event.currentTarget.selectedOptions[0].value;
-
-                var t = $( event.currentTarget ).val();
-
-
-
-                if( item.notes().length > 0 ){
-                    //
-                    // producer
-                    if( t == 0 ){
-
-                        item.notes(item.notes().sort(function (l, r) 
-                        { 
-                            return (l.producer() == r.producer()) ? (l.producer() > r.producer() ? 1 : -1) : (l.producer() > r.producer() ? 1 : -1) 
-                        }));
-                    }
-                    // 
-                    // label
-                    if( t == 1 ){
-
-                        item.notes(item.notes().sort(function (l, r) 
-                        { 
-                            return (l.wineName() == r.wineName()) ? (l.wineName() > r.wineName() ? 1 : -1) : (l.wineName() > r.wineName() ? 1 : -1) 
-                        }));
-                    }
-                    //
-                    // vintage. changed order to descending
-                    if( t == 2 ){
-                        
-                        item.notes(item.notes().sort(function (l,r) 
-                        { 
-                            return (l.vintage() == r.vintage()) ? (l.vintage() < r.vintage() ? 1 : -1) : (l.vintage() < r.vintage() ? 1 : -1) 
-                        }));
-                    }
-                }
-
-            } else { // program changed
-
-            }
-        }
-
-       
-
-        self.createNoteFromExisting = function(tastingEvent){
-
-            //
-            //
-            //
-            VinSearchModel.tastingEvent = tastingEvent;
-
-            //
-            //
-            //
-            pageData.drillDownExt("search-tasting-note-template-window",VinSearchModel,"Search Existing Notes");
-        }
-
-
-
-        self.setReadyForApproval = function () {
-
-            var result = window.confirm("You are about to set all notes in this\r\nassignment as 'sent for approval'.\r\n\r\nDo you wish to continue?");
-            if (!result)
+            if (!data.validate()) {
+                window.alert(data.validateResult);
                 return;
+            }
 
+
+            var state = '@EditorsCommon.WorkFlowState.READY_FOR_REVIEW';
+
+            setNoteStateCallback(data, state);
+        };
+
+
+        var setDraftNoteCallback = function (data) {
+
+
+            var state = '@EditorsCommon.WorkFlowState.DRAFT';
+
+            setNoteStateCallback(data, state);
+
+        }
+
+
+
+
+
+        var approveNoteCallback = function (data) {
+
+            var state = '@EditorsCommon.WorkFlowState.READY_FOR_PROOF_READ';
+
+            setNoteStateCallback(data, state);
+        };
+
+        var sendBackNoteCallback = function (data) {
+            var state = '@EditorsCommon.WorkFlowState.DRAFT';
+
+            setNoteStateCallback(data, state);
+        };
+
+        var setNoteStateCallback = function (data, state) {
 
             $.ajax({
                 type: 'POST',
-                url: '@Url.Content("~/Assignment/SetAssignmentReady")',
-                    data:
-                        {
-                            assignmentId: self.id
-                        },
-                    success: function (r) {
-                        //
-                        // reload
-                        //
-                        self.load();
+                url: '@Url.Content("~/TastingNote/SetTastingNoteState")',
+                data:
+                    { noteId: data.id, stateId: state },
+                success: function (result) {
+
+                    if (result == state) {
+                        data.wfState(result);
                     }
-                });
+                },
+                error: function (request, status, error) {
+
+                    var dlg = pageData.OpenErrorDialog({ error: request.responseText }, null, "error-view-template");
+
+                    dlg.dialog("option", "title", "Server Error").
+                        dialog("option", "width", 600).
+                        dialog("option", "height", 300);
+
+                }
+            });
+
         }
 
 
 
-        self.load = function () {
 
-            $.get('@Url.Content("~/TastingEvent/GetTastingEventByAssignment")', { assignmentId: self.id },
-                 function (result) {
-
-                     var t = ko.mapping.fromJS(
-                         { 'children': result },
-                         {
-                             'children':
-                                {
-                                    create: function (options) {
-                                        var r = new TastingEventModel(options.data, '@Url.Content("~/")');
-                                         r.open = ko.observable(false);
-                                         r.loaded = ko.observable(false);
-                                         r.sortById = ko.observable(0);
-                                         r.createNoteFromExisting = self.createNoteFromExisting;
-                                         r.sortBy = self.sortBy;
-                                         r.showNotes = eventShowItemsCallback;
-
-                                         return r;
-                                     }
-                                 }
-                             }, {});
-
-                         self.events(t.children());
-                     });
-        }
-
-
-
-        self.goToAssignmentDetails = function (issue) {    
-            
-/*
-            08.17.2014 new functionality ( ability move Tasting records across assignmentd
-            Because of it. we disable chache and load tasting records all the time when assignment is selected
-            if (!self.loaded) {
-                    self.loaded = !self.loaded;
-                    self.load()
-            }
-*/
-            self.loaded = true;
-            self.load();
-            pageData.drillDownExt('assignment-details-template', new NotesModel(issue, self), self.title());
-        }
-
-         self.edit = function () {
-             }
-
-         }
 
 
         var PAGE_CONTEXT = {};
@@ -1524,6 +1213,65 @@
                 ];
             }
         }
+
+
+        //
+        // R&D
+        //
+
+        TastingEventModel.prototype.createNoteFromExisting = function (tastingEvent) {
+
+            VinSearchModel.tastingEvent = tastingEvent;
+            pageData.drillDownExt("search-tasting-note-template-window", VinSearchModel, "Search Existing Notes");
+        }
+
+
+
+        TastingNoteModel.prototype.editNote = editNoteCallback;
+        TastingNoteModel.prototype.approveNote = approveNoteCallback;
+        TastingNoteModel.prototype.sendBackNote = sendBackNoteCallback;
+
+        TastingNoteModel.prototype.setReadyNote = readyForReviewNoteCallback;
+        TastingNoteModel.prototype.setDraftNote = setDraftNoteCallback;
+
+
+
+        var issueDrillDownCallback = function () {
+            if (!this.loaded) {
+                this.loaded = !this.loaded;
+
+                var s = this;
+                $.get('@Url.Content("~/Assignment/GetAssignmentsByIssueByReviewer")', { issueId: this.id() },
+                     function (result) {
+
+                         var t = ko.mapping.fromJS(
+                                 { 'children': result },
+                                 { 'children':
+                                        {
+                                            create: function (options) {
+                                                return new AssignmentModel(options.data);
+                                            }
+                                        }
+                                 }, {});
+
+                         if (t.children().length == 0) {
+                             alert("there are no assignments for that issue assigned to your account.");
+                         }
+
+                         s.assignmentList(t.children());
+                     });
+
+            }
+            pageData.drillDownExt('issue-details-template', this, this.title());
+        }
+
+        IssueItemModel.prototype.drillDown = issueDrillDownCallback;
+
+
+        //
+        //
+        //
+
 
 
 
@@ -1611,13 +1359,15 @@
 
      }
 
-     function hideSaveButtons() {
-         $('div.btn-group').hide(); 
-     }
+     //
+     // commented by BB 12.17.2014. should be removed once it is confirmed that nobody is using these functions  
+     //function hideSaveButtons() {
+     //    $('div.btn-group').hide(); 
+     //}
 
-     function showSaveButtons() {
-         $('div.btn-group').show(); 
-     }
+     //function showSaveButtons() {
+     //    $('div.btn-group').show(); 
+     //}
 
      $(document).ready(function () {
          //
@@ -1672,7 +1422,9 @@
          });
 
          pageData.init();
-         pageData.drillDownExt ('issue-details-template', new IssueModel(),"Assignments");
+         pageData.drillDownExt('issue-list-template', new IssueListUserModel('@Url.Content("~")'), "Issues");
+
+
              
          $("#page-left-menu #dashboard").addClass("active");
 

@@ -23,6 +23,10 @@ namespace EditorsCommon
         public DateTime created;
 
         public int notesCount;
+        public int draftCount;
+        public int proofreadCount;
+        public int editorCount;
+        public int publishedCount;
 
     }
 

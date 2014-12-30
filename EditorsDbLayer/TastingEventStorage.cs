@@ -35,13 +35,32 @@ namespace EditorsDbLayer
                 using (var cmd = new SqlCommand("", con))
                 {
 
-                    cmd.CommandText = @"
-                        select ID, Title, Location,COALESCE(Notes, '') as notes,  t.created as created, COUNT( tn.TasteNoteID) 
-                        from TastingEvent as t 
-                        left join Assignment_TastingEvent as a  on a.TastingEventID = t.ID
-                        left join TastingEvent_TasteNote  as tn on tn.TastingEventID = t.ID
-                        where a.AssignmentID = @assignmentId
-                        group by ID, Title, Location,notes, t.created";
+//                    cmd.CommandText = @"
+//                        select ID, Title, Location,COALESCE(Notes, '') as notes,  t.created as created, COUNT( tn.TasteNoteID) 
+//                        from TastingEvent as t 
+//                        left join Assignment_TastingEvent as a  on a.TastingEventID = t.ID
+//                        left join TastingEvent_TasteNote  as tn on tn.TastingEventID = t.ID
+//                        where a.AssignmentID = @assignmentId
+//                        group by ID, Title, Location,notes, t.created";
+
+
+
+                    cmd.CommandText = @"select t.ID, t.Title, t.Location,COALESCE(t.Notes, '') as notes,  t.created as created
+ ,COUNT( tn.TasteNoteID) as totalCount 
+ ,COUNT( tnn0.ID)   as draftCount 
+ ,COUNT( tnn10.ID)  as proofreadCount 
+ ,COUNT( tnn50.ID)  as editorCount
+ ,COUNT( tnn100.ID) as publishedCount
+from TastingEvent as t 
+left join Assignment_TastingEvent as a  on a.TastingEventID = t.ID
+left join TastingEvent_TasteNote  as tn  on tn.TastingEventID = t.ID
+left outer join (select ID, WF_StatusID from  TasteNote where WF_StatusID = 0) as tnn0 on tnn0.ID =  tn.TasteNoteID
+left outer join (select ID, WF_StatusID from  TasteNote where WF_StatusID = 10) as tnn10 on tnn10.ID =  tn.TasteNoteID
+left outer join (select ID, WF_StatusID from  TasteNote where WF_StatusID = 50) as tnn50 on tnn50.ID =  tn.TasteNoteID
+left outer join (select ID, WF_StatusID from  TasteNote where WF_StatusID = 100) as tnn100 on tnn100.ID =  tn.TasteNoteID
+where a.AssignmentID = @assignmentId
+
+group by t.ID, t.Title, t.Location,t.notes, t.created";
 
 
                     cmd.Parameters.AddWithValue("@assignmentId", assignmentId);
@@ -60,6 +79,10 @@ namespace EditorsDbLayer
                             evt.comments = rdr.IsDBNull(3) ? "" : rdr.GetString(3);
                             evt.created = rdr.GetDateTime(4);
                             evt.notesCount = rdr.GetInt32(5);
+                            evt.draftCount = rdr.GetInt32(6);
+                            evt.proofreadCount = rdr.GetInt32(7);
+                            evt.editorCount = rdr.GetInt32(8);
+                            evt.publishedCount = rdr.GetInt32(9);
 
                             result.Add(evt);
                         }

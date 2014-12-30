@@ -66,6 +66,47 @@ namespace ErpContent.Controllers
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="publicationId"></param>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
+        [OutputCache(Duration = 0, VaryByParam = "none")]
+        public ActionResult IssuesForUser(int publicationId = 0, int state = EditorsCommon.WorkFlowState.STATE_GROUP_ALL)
+        {
+            // for now, this method will do that same as Issues, but in future we might filter out the issue
+            // which do not have references to an user
+            //
+            //int userId = (int)Membership.GetUser(User.Identity.Name).ProviderUserKey;
+            //
+            //
+            
+            Issue filter = publicationId == 0 ? null : new Issue() { publicationID = publicationId };
+
+            var result = _issueStorage.Search(filter);
+
+            //
+            // apply filter by status
+            //
+            if (state != EditorsCommon.WorkFlowState.STATE_GROUP_ALL)
+            {
+                result = from r in result where EditorsCommon.WorkFlowState.IsInState(r.wfState, state) select r;
+            }
+
+
+            //
+            // sort by create date
+            //
+            result = from r in result orderby r.createdDate descending select r;
+
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="str"></param>
         /// <returns></returns>
         [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameChiefEditor + "," + EditorsCommon.Constants.roleNameAdmin)]

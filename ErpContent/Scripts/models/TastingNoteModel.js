@@ -5,10 +5,9 @@
     //
     //
 
-    function TastingNoteModel(src, appRoot) {
+    function TastingNoteModel(src) {
         var self = this;
 
-        self.appRoot = appRoot;
         //
         // dummy observale. will change value for each instance. useful to trac changes for computes which use nonobservales
         //
@@ -244,12 +243,11 @@
     }
 
 
-    function initNoteEditForm(elements, model, appRoot) {
+    function initNoteEditForm(elements, model) {
 
 
         var self = this;
         self.model = model;
-        self.appRoot = appRoot;
 
         self.null2str = function (s) {
 
@@ -262,7 +260,7 @@
 
         $(elements).find("#note-edit-location").autocomplete(
         {
-            source: self.appRoot + 'Reviewer/Appellation',
+            source: erp.wsf_path + 'Reviewer/Appellation',
             focus: function (event, ui) {
                 $("#note-edit-location").val(ui.item.appellation);
                 return false;
@@ -296,7 +294,7 @@
         $(elements).find("#note-edit-location-country").autocomplete(
        {
            source: function (request, response) {
-               $.get(self.appRoot + 'vin/SearchLocation',
+               $.get(erp.wsf_path + 'vin/SearchLocation',
                       {
                           c: request.term,
                           r: self.null2str(self.model.region()),
@@ -325,7 +323,7 @@
          $(elements).find("#note-edit-location-region").autocomplete(
          {
               source: function (request, response) {
-                  $.get(self.appRoot + 'vin/SearchLocation',
+                  $.get(erp.wsf_path + 'vin/SearchLocation',
                       {
                           c: self.null2str(self.model.country()),
                           r: request.term,
@@ -352,7 +350,7 @@
           $(elements).find("#note-edit-location-location").autocomplete(
           {
                  source: function (request, response) {
-                     $.get(self.appRoot + 'vin/SearchLocation',
+                     $.get(erp.wsf_path + 'vin/SearchLocation',
                       {
                           c: self.null2str(self.model.country()),
                           r: self.null2str(self.model.region()),
@@ -377,7 +375,7 @@
           $(elements).find("#note-edit-location-locale").autocomplete(
           {
                  source: function (request, response) {
-                     $.get(self.appRoot + 'vin/SearchLocation',
+                     $.get(erp.wsf_path + 'vin/SearchLocation',
                       {
                           c: self.null2str(self.model.country()),
                           r: self.null2str(self.model.region()),
@@ -402,7 +400,7 @@
          $(elements).find("#note-edit-location-site").autocomplete(
          {
                  source: function (request, response) {
-                     $.get(self.appRoot + 'vin/SearchLocation',
+                     $.get(erp.wsf_path + 'vin/SearchLocation',
                       {
                           c: self.null2str(self.model.country()),
                           r: self.null2str(self.model.region()),
@@ -430,7 +428,7 @@
          {
 
              source: function (request, response) {
-                 $.get(self.appRoot + 'vin/SearchProducer', { term: request.term },
+                 $.get(erp.wsf_path + 'vin/SearchProducer', { term: request.term },
                     function (result) {
                         response(result);
                     });
@@ -465,7 +463,7 @@
      {
 
          source: function (request, response) {
-             $.get(self.appRoot + 'vin/SearchWineLabel', { term: request.term, p: self.model.producer },
+             $.get(erp.wsf_path + 'vin/SearchWineLabel', { term: request.term, p: self.model.producer },
                     function (result) {
                         response(result);
                     });
@@ -503,7 +501,7 @@
 
         $(elements).find("#note-edit-variety").autocomplete(
         {
-            source: self.appRoot + 'review/Variety',
+            source: erp.wsf_path + 'review/Variety',
             minLength: 3
         });
 

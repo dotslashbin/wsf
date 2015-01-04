@@ -33,6 +33,12 @@ function PageData() {
 
 
     self.drillUp = function () {
+
+        if (self.treeItem != null && self.treeItem.model != null && self.treeItem.model.exit != null) {
+            self.treeItem.model.exit(self.treeItem.model);
+        }
+
+
         if (self.treeItem.previous != null) {
             self.treeItem = self.treeItem.previous;
             self.updateViewModel();
@@ -41,6 +47,11 @@ function PageData() {
 
 
     self.drillDownTo = function(item){
+
+        if (self.treeItem != null && self.treeItem.model != null && self.treeItem.model.exit != null) {
+            self.treeItem.model.exit(self.treeItem.model);
+        }
+
         self.treeItem = item;
         self.updateViewModel();
     }

@@ -56,18 +56,22 @@
 
         </div>
         <br />
-        <div class="row" style="height: 550px; overflow:auto">
 
-            <div class="row""  style="border-bottom: solid 1px gray;">
-                <div class='col-sm-8' >Wine definition</div>
-               <div class='col-sm-3' >Vintages</div>
-            </div>
+        <div class="row""  style="border-bottom: solid 1px gray;">
+            <div class='col-sm-8' >Wine definition</div>
+            <div class='col-sm-3' >Vintages</div>
+        </div>
+
+        <div class="row" style="height: 650px; overflow:auto">
+
 
 
             <!-- ko foreach: items -->
-            <div class="well row alter-backgound">
+            <div class="well well-sm row alter-backgound">
                 <div class='col-sm-8' >
+<!--
                         <span class='glyphicon glyphicon-pencil' data-bind="click: edit"  style="cursor:pointer" title="Edit VIN" ></span>
+
                         (<span data-bind="text: id"></span>) 
                         <span  data-bind="style : {color:erp.utils.statusColor($data.workflow())}">
                         <b> 
@@ -83,6 +87,44 @@
                         <span data-bind="text: variety"></span>, 
                         <span data-bind="text: colorClass"></span>, 
                         <span data-bind="text: dryness"></span>
+-->
+                    <div class="row">
+                        <div class='col-sm-2'><span class='glyphicon glyphicon-pencil' data-bind="click: edit"  style="cursor:pointer" title="Edit VIN" ></span>
+                           (<span data-bind="text: id"></span>) 
+
+                         </div>
+                        <div class='col-sm-10'>
+                           <span  data-bind="style : {color:erp.utils.statusColor($data.workflow())}">
+                           <b> 
+                           <span data-bind="text: producer, style : {color:erp.utils.statusColor($data.workflow())}"></span>
+                           <span data-bind="text: label().length == 0 ? '' : ', ' + label()"/>
+                           </b>
+                           </span> 
+                         </div>
+                    </div> 
+                    <div class="row">
+                        <div class='col-sm-2'>&nbsp;
+                         </div>
+                        <div class='col-sm-10'>
+                            <span data-bind="text: country"/>
+                            <span data-bind="text: region().length == 0 ? '' : ', ' + region()"/>
+                            <span data-bind="text: location().length == 0 ? '' : ', ' + location()"/>
+                            <span data-bind="text: locale().length == 0 ? '' : ', ' + locale()"/>
+                            <span data-bind="text: site().length == 0 ? '' : ', ' + site()"/>
+                        </div>
+                    </div> 
+                    <div class="row">
+                        <div class='col-sm-2'>&nbsp;
+                         </div>
+                        <div class='col-sm-10'>
+                            <span data-bind="text: variety"></span>, 
+                            <span data-bind="text: colorClass"></span>, 
+                            <span data-bind="text: dryness"></span>
+                         </div>
+                    </div> 
+
+
+
                 </div>
                <div class='col-sm-3' >
             <!-- ko foreach: wines -->

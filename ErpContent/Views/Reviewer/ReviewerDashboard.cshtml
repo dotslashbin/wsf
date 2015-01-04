@@ -45,12 +45,97 @@
     </script>
 
 
+
+    <script id="tasting-event-details-template" type="text/html">
+
+
+        <div class="row">
+            <div class="col-sm-2">
+                <h4><span>Tasting Notes</span></h4>
+            </div>
+
+            <div class="col-sm-1 pull-right">
+                <span data-bind="click: assignment.editTastingEvent"
+                    class="glyphicon glyphicon-list-alt"
+                    style="cursor: pointer"
+                    title="view/edit comments"></span>
+            </div>
+
+        </div>
+
+        <div class="well  panel panel-success" data-bind="visible: open">
+            <div class="row" style="border-bottom: solid 1px gray;">
+                <span class="col-sm-11  pull-right" data-bind="html: erp.utils.Str2Html(comments())"></span>
+            </div>
+            <div class="row">
+                <div class="col-sm-6" data-bind="visible: notesCount() > 1">
+                    &nbsp;Sort Notes By
+                                    <select data-bind="event: { change: sortBy },
+                                    options: PAGE_CONTEXT.sortByOptions,
+                                    optionsText: 'name',
+                                    optionsValue: 'id',
+                                    value: sortById,
+                                    valueUpdate: 'blur'">
+                                    </select>
+                </div>
+                <div class="col-sm-5 pull-right">
+                    <button class="btn  btn-primary btn-xs inner-window-button" data-bind="click: createNoteFromExisting">Add New Note From Existing</button>
+                    <button class="btn  btn-primary btn-xs inner-window-button" data-bind="click: createNote">Add New Note</button>
+                </div>
+            </div>
+            <br />
+            <!-- ko foreach: notes -->
+            <div class="row panel-heading">
+                <div class='col-sm-1'>
+                    <div class='glyphicon glyphicon-flag col-sm-1' data-bind="value: note, style: { color: statusColor($data.wfState()) }, attr: { title: statusName($data.wfState()) }" title="Status"></div>
+                </div>
+                <div class='col-sm-9'>
+                    <h5>
+                        <b>
+                            <span data-bind="text: vintage"></span>
+                            <span data-bind="text: producer"></span>,
+                                            <span data-bind="text: wineName().length == 0 ? '' : wineName() + ',' "></span>
+                            <span data-bind="text: variety"></span>,
+                                            <span data-bind="text: color"></span>,
+                                            <span data-bind="text: wineType"></span>, 
+                                            (<span data-bind="text: rating"></span><span data-bind="    text: ratingQ"></span>)
+                        </b>
+                        <span data-bind="text: coDrink()"></span>
+                        <span data-bind="text: coPrice()"></span>
+                    </h5>
+
+                </div>
+                <div class='col-sm-2'>
+                    <button class="btn  btn-primary btn-xs" data-bind="visible: wfState() == 0, click: editNote">Edit</button>
+                    <button class="btn  btn-primary btn-xs" data-bind="visible: wfState() == 0, click: setReadyNote" title="Set 'sent for approval' status">Ready</button>
+                    <button class="btn  btn-primary btn-xs" data-bind="visible: wfState() > 0 && wfState() < 60, click: setDraftNote" title="Set 'draft' status">Draft</button>
+                    <span data-bind="visible: wfState() == 0, click: $parent.assignment.moveTastingNote.bind($data, $parent)"
+                        class="glyphicon glyphicon-move"
+                        style="cursor: pointer"
+                        title="move tasting note to other assignment/tasting record"></span>
+                    <span data-bind="visible: $data.wfState() == 0, click: $parent.deleteTastingNote"
+                        class="glyphicon glyphicon-trash"
+                        style="cursor: pointer"
+                        title="delete tasting note (if empty)"></span>
+                </div>
+            </div>
+            <div class="row" style="border-bottom: solid 1px gray;">
+                <div class="col-sm-11  pull-right">
+                    <span data-bind="html: erp.utils.Str2Html($data.noteFormated())"></span>
+                </div>
+                <div class="col-sm-11  pull-right">
+                    <span data-bind="html: erp.utils.Str2Html($data.importers())"></span>
+                </div>
+            </div>
+            <!-- /ko -->
+        </div>
+    </script>
+
     <script id="assignment-details-template" type="text/html">
 
         <div class="row">
             <div class="col-sm-10">
-                <h4><span data-bind="html: FullTitle"></span></h4>
-                <span data-bind="html: FullDeadline"></span>
+                <h4><span>Tasting Events</span></h4>
             </div>
 
            <div class="col-sm-2 pull-right">
@@ -71,116 +156,50 @@
          </div>
 
 
-        <div class="row" data-bind="visible: assignment.events().length > 0">
 
+        <div class="row" data-bind="visible: assignment.events().length > 0" >
             <div class="panel panel-success">
-                <div class="panel-heading">Tasting Records:</div>
-                <div class="panel-body">
-                    <div data-bind="visible: assignment.events().length" class=" table-condensed table-responsive table-sel" style="width: 100%">
-
-                        <!-- ko foreach: assignment.events -->
-
-                            <div >
-                                    <div class="row">
-                                        <!-- 
-                                          we load notes  on demand, so before notes are loaded we use notesCount, after that length of notes array
-                                          in this case this number dynamically reflects number of notes for a tasting record
-                                         -->
-                                        <div data-bind="click: showNotes" class="col-sm-10" style="cursor:pointer" >
-                                            <span data-bind="attr: { class: open() ? 'glyphicon glyphicon-arrow-up' : 'glyphicon glyphicon-arrow-down' }" title="Expand/Collapse Tasting Record"></span>
-                                            <strong><span data-bind="text: title"></span></strong>
-                                            (Location :<span data-bind="text: location"></span>),
-                                            <span data-bind="text:  $data.loaded() ? $data.notes().length :  $data.notesCount"></span> notes
-                                        </div>
+                    <div class="row">
+                         <div class="col-sm-6">Title</div>
+                         <div class="col-sm-3">Location</div>
+                         <div class="col-sm-1">Notes</div>
+                         <div class="col-sm-1">Waiting</div>
+                         <div class="col-sm-1">&nbsp;</div>
+                    </div>
+                <div style="max-height:650px; overflow:auto">
+            <!-- ko foreach: assignment.events -->
 
 
-                                         <div class="col-sm-1 pull-right">
-                                           <span data-bind="click: $parent.assignment.editTastingEvent" 
-                                               class="glyphicon glyphicon-list-alt" 
-                                               style="cursor:pointer" 
-                                               title="view/edit producer note"></span>
-                                           <span data-bind="visible: $parent.assignment.wfState() == 0, click: $parent.assignment.moveTastingEvent" 
+                    <div class="row alter-backgound" data-bind="style: { color: draftCount() > 0 ? 'red' : 'black' }" >
+                        <div class="col-sm-6" data-bind="click : showNotesExt.bind($data, $parent.assignment)" style="cursor: pointer">
+                            <strong><span data-bind="text: title"></span></strong>
+                        </div>
+                        <div class="col-sm-3"><span data-bind="text: location"></span></div>
+                        <div class="col-sm-1"><span data-bind="text: notesCount"></span></div>
+                        <div class="col-sm-1"><span data-bind="text: draftCount"></span></div>
 
-                                               class="glyphicon glyphicon-move" 
-                                               style="cursor:pointer" 
-                                               title="move tasting record to other assignment"></span>
-                                           <span data-bind="visible : notesCount() == 0, click: $parent.assignment.deleteTastingEvent"
-                                               class="glyphicon glyphicon-trash" 
-                                               style="cursor:pointer" 
-                                               title="delete tasting record (if empty)"></span>
-                                         </div>
+                        <div class="col-sm-1 pull-right">
+                            <span data-bind="click: $parent.assignment.editTastingEvent"
+                                class="glyphicon glyphicon-list-alt"
+                                style="cursor: pointer"
+                                title="view/edit comments"></span>
 
-                                    </div>
-                            </div>
-                        <div class="well  panel panel-success" data-bind="visible: open">
-                            <div class="row" style="border-bottom: solid 1px gray;">
-                                <span class="col-sm-11  pull-right" data-bind="html: erp.utils.Str2Html(comments())"></span>
-                            </div>
-                            <div class="row">
-                                <div class="col-sm-6" data-bind="visible : notesCount() > 1">
-                                    &nbsp;Sort Notes By
-                                    <select data-bind="event:{ change: sortBy },
-                                                    options: PAGE_CONTEXT.sortByOptions,
-                                                    optionsText: 'name',
-                                                    optionsValue: 'id',
-                                                    value: sortById,
-                                                    valueUpdate: 'blur'"></select>
-                                </div>
-                                <div class="col-sm-5 pull-right">
-                                    <button class="btn  btn-primary btn-xs inner-window-button" data-bind="click: createNoteFromExisting">Add New Note From Existing</button>
-                                    <button class="btn  btn-primary btn-xs inner-window-button" data-bind="click: createNote">Add New Note</button>
-                                </div>
-                            </div>
-                            <br />
-                            <!-- ko foreach: notes -->
-                            <div class="row panel-heading">
-                                <div class='col-sm-1'>
-                                    <div class='glyphicon glyphicon-flag col-sm-1' data-bind="value:note,style: { color:statusColor($data.wfState()) }, attr : {title : statusName($data.wfState()) }" title="Status"></div>
-                                </div>
-                                <div class='col-sm-9'>
-                                    <h5>
-                                        <b>
-                                            <span data-bind="text: vintage"></span>
-                                            <span data-bind="text: producer"></span>,
-                                            <span data-bind="text: wineName().length == 0 ? '' : wineName() + ',' "></span>
-                                            <span data-bind="text: variety"></span>,
-                                            <span data-bind="text: color"></span>,
-                                            <span data-bind="text: wineType"></span>, 
-                                            (<span data-bind="text: rating"></span><span data-bind="text: ratingQ"></span>)
-                                        </b>
-                                            <span data-bind="text: coDrink()"></span>
-                                            <span data-bind="text: coPrice()"></span>
-                                    </h5>
-                                    
-                                </div>
-                                <div class='col-sm-2'>
-                                    <button class="btn  btn-primary btn-xs" data-bind="visible: wfState() == 0 ,click: editNote">Edit</button>
-                                    <button class="btn  btn-primary btn-xs" data-bind="visible: wfState() == 0, click: setReadyNote" title="Set 'sent for approval' status">Ready</button>
-                                    <button class="btn  btn-primary btn-xs" data-bind="visible: wfState() > 0 && wfState() < 60  ,click: setDraftNote" title="Set 'draft' status">Draft</button>
-                                    <span data-bind="visible: wfState() == 0, click : $parents[1].assignment.moveTastingNote.bind($data,$parent)" 
-                                               class="glyphicon glyphicon-move" 
-                                               style="cursor:pointer" 
-                                               title="move tasting note to other assignment/tasting record"></span>
-                                    <span data-bind="visible : $data.wfState() == 0 , click : $parent.deleteTastingNote"
-                                          class="glyphicon glyphicon-trash"
-                                          style="cursor:pointer"
-                                          title="delete tasting note (if empty)"></span>
-                                </div>
-                            </div>
-                            <div class="row" style="border-bottom: solid 1px gray;">
-                                <div class="col-sm-11  pull-right" >
-                                    <span data-bind="html: erp.utils.Str2Html($data.noteFormated())"></span>
-                                </div>
-                                <div class="col-sm-11  pull-right">
-                                    <span data-bind="html: erp.utils.Str2Html($data.importers())"></span>
-                                </div>
-                            </div>
-                            <!-- /ko -->
+
+                            <span data-bind="visible: $parent.assignment.wfState() == 0, click: $parent.assignment.moveTastingEvent"
+                                class="glyphicon glyphicon-move"
+                                style="cursor: pointer"
+                                title="move tasting record to other assignment"></span>
+
+
+                            <span data-bind="visible: notesCount == 0, click: $parent.assignment.deleteTastingEvent"
+                                class="glyphicon glyphicon-trash"
+                                style="cursor: pointer"
+                                title="delete tasting record (if empty)"></span>
                         </div>
 
-                        <!-- /ko  -->
-
                     </div>
+
+                    <!-- /ko -->
                 </div>
             </div>
         </div>
@@ -190,31 +209,48 @@
     <script id="issue-details-template" type="text/html">
 
 
-        <div class="row" style="height: 850px; overflow: scroll;" data-bind="visible:  assignmentList().length > 0">
-            <table id="list-of-assignments" data-bind="visible : assignmentList().length > 0" class="table table-condensed table-responsive table-sel">
-                <thead>
-                    <tr>
-                        <th>Publication(Issue#)</th>
-                        <th>Title</th>
-                        <th>Created</th>
-                        <th>Submit</th>                        
-                        <th># Notes</th>
-                    </tr>
-                </thead>
+        <div class="row">
+            <div class="col-sm-2">
+                <span>Publication</span>
+            </div>
+            <div class="col-sm-2">
+                <span data-bind="text: publicationName"></span>
+            </div>
+         </div>
+        <div class="row">
+            <div class="col-sm-2">
+                <h4><span>Assignments</span></h4>
+            </div>
+         </div>
 
 
-                <tbody data-bind="foreach: assignmentList">
-                    <tr  style="cursor: pointer" data-bind="click: goToAssignmentDetails.bind($data, $parent), style: { color: wfState() != 100  ? 'red' : 'black', href: name }">
-                        <td><span data-bind="text: publication"></span>(<span data-bind="text: issue"></span>)</td>
-                        <td data-bind="text: title"></td>
-                        <td data-bind="text: CreatedDate"></td>
-                        <td data-bind="text: submitDate">?</td>
-                        <td><span class="label label-info " data-bind="text: notesCount"></span></td>
+        <div class="row" data-bind="visible: assignmentList().length > 0" >
+            <div class="panel panel-success">
+                    <div class="row">
+                         <div class="col-sm-8">Title</div>
+                         <div class="col-sm-1">Created</div>
+                         <div class="col-sm-1">Submit</div>
+                         <div class="col-sm-1"># Notes</div>
+                    </div>
+                <div style="max-height:650px; overflow:auto">
+            <!-- ko foreach: assignmentList -->
 
-                    </tr>
-                </tbody>
-            </table>
+
+                    <div class="row alter-backgound" style="cursor: pointer" data-bind="click: goToAssignmentDetails.bind($data, $parent), style: { color: wfState() != 100 ? 'red' : 'black', href: name }" >
+                        <div class="col-sm-8"><span data-bind="text: title"></span></div>
+                        <div class="col-sm-1"><span data-bind="text: CreatedDate"></span></div>
+                        <div class="col-sm-1"><span data-bind="text: submitDate"></span></div>
+                        <div class="col-sm-1"><span class="label label-info " data-bind="text: notesCount"></span></div>
+
+                    </div>
+
+                    <!-- /ko -->
+                </div>
+            </div>
         </div>
+
+
+
     </script>
 
 
@@ -264,7 +300,7 @@
 
         </div>
 
-        <div class="row" style="height: 550px; overflow:auto">
+        <div class="row" style="height: 650px; overflow:auto">
 
             <!-- ko foreach: items -->
             <div class="row alter-backgound"  style="border-bottom: solid 1px gray">
@@ -1233,6 +1269,31 @@
 
         TastingNoteModel.prototype.setReadyNote = readyForReviewNoteCallback;
         TastingNoteModel.prototype.setDraftNote = setDraftNoteCallback;
+
+        TastingEventModel.prototype.showNotesExt = function ( assignment, item) {
+            if (!item.loaded()) {
+                item.showNotes(item);
+            }
+
+            item.assignment = assignment;
+
+
+
+            if (!item.exit) {
+                item.exit = function (model) {
+                    model.refreshCounts();
+                }
+            }
+            pageData.drillDownExt('tasting-event-details-template', item, item.title());
+        };
+
+
+
+        AssignmentModel.prototype.setReadyForApproval = function ()
+        {
+            alert('Approve whole assignments. Not yet implemented. Comming soon.');
+        };
+
 
 
 

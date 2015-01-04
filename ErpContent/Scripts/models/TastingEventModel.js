@@ -8,9 +8,10 @@
         // 
         //
 
-        self.title = ko.observable('');
-        self.location = ko.observable('');
-        self.comments = ko.observable('');
+        //self.title = ko.observable('');
+        //self.location = ko.observable('');
+        //self.comments = ko.observable('');
+
         self.notes = ko.observableArray();
 
         self.open = ko.observable(false);

@@ -77,28 +77,54 @@
             <br />
             <div style="max-height:650px; overflow:auto; border-bottom: solid 1px gray;"">
             <!-- ko foreach: notes -->
-            <div class="well  panel panel-success  alter-backgound" >
+            <div class="well well-sm row alter-backgound" >
+
                 <div class="row">
-                    <div class="col-sm-12">
-                            <h5>
-                                <span data-bind="click: editNote" class='glyphicon glyphicon-pencil' style="cursor:pointer" title="Start editing"></span>&nbsp;
+                    <div class="col-sm-1">
+                        <span data-bind="click: editNote" class='glyphicon glyphicon-pencil' style="cursor:pointer" title="Start editing"></span>&nbsp;
+                    </div>
+                    <div class="col-sm-11">
                                 <b>
                                     <span data-bind="text: vintage"></span>&nbsp;
-                                    <span data-bind="text: producer"></span>,
-                                    <span data-bind="text: wineName().length == 0 ? '' : wineName() + ',' "></span>
-                                    <span data-bind="text: country"/>,
-                                    <span data-bind="text: region"/>,
-                                    <span data-bind="text: location"/>,
-                                    <span data-bind="text: locale"/>,
-                                    <span data-bind="text: site"/>,
-                                    <span data-bind="text: variety"></span>,
-                                    <span data-bind="text: color"></span>,
-                                    <span data-bind="text: dryness"></span> (<span data-bind="    text: rating"></span>)
-                                    &nbsp;by <span data-bind="text: reviewer"></span>
+                                    <span data-bind="text: producer"></span>
+                                    <span data-bind="text: wineName().length == 0 ? '' : ', ' + wineName()"/>
                                 </b>
-                            </h5>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-sm-1">&nbsp;
+                    </div>
+                    <div class="col-sm-11">
+                                <b>
+                                    <span data-bind="text: country"/>
+                                    <span data-bind="text: region().length == 0 ? '' : ', ' + region()"/>
+                                    <span data-bind="text: location().length == 0 ? '' : ', ' + location()"/>
+                                    <span data-bind="text: locale().length == 0 ? '' : ', ' + locale()"/>
+                                    <span data-bind="text: site().length == 0 ? '' : ', ' + site()"/>
+                                </b>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-1">&nbsp;
+                    </div>
+                    <div class="col-sm-11">
+                                <b>
+                                    <span data-bind="text: variety"></span>,
+                                    <span data-bind="text: color"></span>,
+                                    <span data-bind="text: dryness"></span> 
+                                </b>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-1">&nbsp;
+                    </div>
+                    <div class="col-sm-11">
+                            Reviewer :<b>&nbsp;<span data-bind="text: reviewer"></span>&nbsp;(<span data-bind="text: rating"></span>)</b>
+                    </div>
+                </div>
+
+
+
                 <div class="row" >
                     <div class="col-sm-12" >
                         <span data-bind="html: erp.utils.Str2Html($data.note()) "></span>
@@ -108,7 +134,6 @@
                     </div>
                 </div>
             </div>
-
             <!-- /ko -->
             </div>
     </script>

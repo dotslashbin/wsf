@@ -114,19 +114,21 @@
         <div class="row" data-bind="visible: assignment.events().length > 0" >
             <div class="panel panel-success">
                     <div class="row">
-                         <div class="col-sm-7">Title</div>
+                         <div class="col-sm-6">Title</div>
                          <div class="col-sm-3">Location</div>
                          <div class="col-sm-1">Notes</div>
+                         <div class="col-sm-1">Waiting</div>
                          <div class="col-sm-1">&nbsp;</div>
                     </div>
                 <div style="max-height:700px; overflow:auto">
             <!-- ko foreach: assignment.events -->
-                    <div class="well row alter-backgound">
-                        <div class="col-sm-7" data-bind="click: showNotesExt" style="cursor: pointer">
+                    <div class="well row alter-backgound" data-bind="style : { color : proofreadCount() > 0 ? 'red' : 'black' }" >
+                        <div class="col-sm-6" data-bind="click: showNotesExt" style="cursor: pointer">
                             <strong><span data-bind="text: title"></span></strong>
                         </div>
                         <div class="col-sm-3"><span data-bind="text: location"></span></div>
-                        <div class="col-sm-1" data-bind="style : { color : proofreadCount() > 0 ? 'red' : 'black' }" ><span data-bind="text: proofreadCount"></span> of <span data-bind="text: notesCount"></span></div>
+                        <div class="col-sm-1"><span data-bind="text: notesCount"></span></div>
+                        <div class="col-sm-1"><span data-bind="text: proofreadCount"></span></div>
 
                         <div class="col-sm-1 pull-right">
                             <span data-bind="click: $parent.assignment.editTastingEvent"
@@ -653,6 +655,15 @@
             if( !item.loaded()){
                 item.showNotes(item);
             }
+
+
+            if( !item.exit ){
+                item.exit = function(model){
+                    model.refreshCounts();
+                }
+            }
+
+
             pageData.drillDownExt('tasting-event-details-template', item, item.title());
         };
 

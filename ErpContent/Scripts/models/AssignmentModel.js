@@ -70,6 +70,7 @@ function AssignmentModel(src) {
 
                     var m = new TastingEventModel(r );
 
+                    m.location = "Home Office";
                     m.init = function () {
                         initTastingEventEditForm(m);
                         m.validator = $("#tasting-event-form").validate({ debug: true });

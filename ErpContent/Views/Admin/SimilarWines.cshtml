@@ -80,32 +80,42 @@
             <div class='col-sm-11'>Producer,Label,Country,Region,Location,Locale,Site,Type,Variety,Color,Dryness</div>
             <div class='col-sm-1'>Vin ID</div>
         </div>
-        <div class="row" style="height: 550px; overflow:auto">
-
+        <div class="row" style="height: 650px; overflow:auto">
             <!-- ko foreach: items -->
-            <div class="well row alter-backgound" >
-                <div class='col-sm-11' >
-                    <span class='glyphicon glyphicon-pencil' data-bind="click: edit"  style="cursor:pointer" title="Edit VIN" ></span>&nbsp;
-                    <span data-bind="text: producer"/>,
-                    <span data-bind="text: label"/>,
-                    <span data-bind="text: country"/>,
-                    <span data-bind="text: region"/>,
-                    <span data-bind="text: location"/>,
-                    <span data-bind="text: locale"/>,
-                    <span data-bind="text: site"/>,
-                    <span data-bind="text: wineType"/>,
-                    <span data-bind="text: variety"/>,
-                    <span data-bind="text: colorClass"/>,
-                    <span data-bind="text: dryness"/>
+            <div class="well well-sm row alter-backgound" >
+                <div class='row col-sm-11'>
+                   <div class='row'>
+                      <div class='col-sm-1' ><span class='glyphicon glyphicon-pencil' data-bind="click: edit"  style="cursor:pointer" title="Edit VIN" ></span></div>
+                      <div class='col-sm-11' >
+                        <span data-bind="text: producer"/>
+                        <span data-bind="text: label().length == 0 ? '' : ', ' + label()"/>
+                      </div>
+                    </div>
+                   <div class='row'>
+                      <div class='col-sm-1'>&nbsp;</div>
+                      <div class='col-sm-11'>
+                        <span data-bind="text: country"/>
+                        <span data-bind="text: region().length == 0 ? '' : ', ' + region()"/>
+                        <span data-bind="text: location().length == 0 ? '' : ', ' + location()"/>
+                        <span data-bind="text: locale().length == 0 ? '' : ', ' + locale()"/>
+                        <span data-bind="text: site().length == 0 ? '' : ', ' + site()"/>
+                      </div>
+                    </div>
+                   <div class='row'>
+                      <div class='col-sm-1' >&nbsp;</div>
+                      <div class='col-sm-11' >
+                        <span data-bind="text: wineType"/>,
+                        <span data-bind="text: variety"/>,
+                        <span data-bind="text: colorClass"/>,
+                        <span data-bind="text: dryness"/>
+                      </div>
+                    </div>
                 </div>
                 <div class='col-sm-1' >
                     <span data-bind="text: id"/>
                 </div>
-
             </div>
-
             <!-- /ko -->
-
         </div>
     </script>
 

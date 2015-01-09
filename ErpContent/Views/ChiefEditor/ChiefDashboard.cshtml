@@ -543,7 +543,7 @@
                         };
 
                         m.save = function (o) {
-                            if (o.notesApproved > 0) {
+                            if (o.notesApproved > 0 ) {
                                 $.ajax({
                                         async: false,   // block
                                         type: 'POST',
@@ -551,14 +551,13 @@
                                         data: { id: self.id() },
                                         success: function (r) {
                                         self.wfState(100);
-
                                             ko.utils.arrayForEach(self.assignmentList(), function (item) {
                                                 item.wfState(100);
                                             });
 
                                         },
                                         error: function (request, status, error) {
-                                            PAGE_CONTEXT.error(request, status, error);
+                                            alert('Error while publishing the issue, please report to administrator.');
                                         }
                                     });
                                 }

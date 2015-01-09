@@ -170,7 +170,7 @@
             <!-- ko foreach: assignment.events -->
 
 
-                    <div class="row alter-backgound" data-bind="style: { color: draftCount() > 0 ? 'red' : 'black' }" >
+                    <div class="row" data-bind="style: { color: draftCount() > 0 ? 'red' : 'black' }" >
                         <div class="col-sm-6" data-bind="click : showNotesExt.bind($data, $parent.assignment)" style="cursor: pointer">
                             <strong><span data-bind="text: title"></span></strong>
                         </div>
@@ -227,7 +227,7 @@
         <div class="row" data-bind="visible: assignmentList().length > 0" >
             <div class="panel panel-success">
                     <div class="row">
-                         <div class="col-sm-8">Title</div>
+                         <div class="col-sm-9">Title</div>
                          <div class="col-sm-1">Created</div>
                          <div class="col-sm-1">Submit</div>
                          <div class="col-sm-1"># Notes</div>
@@ -236,8 +236,8 @@
             <!-- ko foreach: assignmentList -->
 
 
-                    <div class="row alter-backgound" style="cursor: pointer" data-bind="click: goToAssignmentDetails.bind($data, $parent), style: { color: wfState() != 100 ? 'red' : 'black', href: name }" >
-                        <div class="col-sm-8"><span data-bind="text: title"></span></div>
+                    <div class="row" style="cursor: pointer" data-bind="click: goToAssignmentDetails.bind($data, $parent), style: { color: wfState() != 100 ? 'red' : 'black', href: name }" >
+                        <div class="col-sm-9"><span data-bind="text: title"></span></div>
                         <div class="col-sm-1"><span data-bind="text: CreatedDate"></span></div>
                         <div class="col-sm-1"><span data-bind="text: submitDate"></span></div>
                         <div class="col-sm-1"><span class="label label-info " data-bind="text: notesCount"></span></div>
@@ -303,9 +303,11 @@
         <div class="row" style="height: 650px; overflow:auto">
 
             <!-- ko foreach: items -->
-            <div class="row alter-backgound"  style="border-bottom: solid 1px gray">
+            <div class="row"  style="border-bottom: solid 1px gray">
                 <div class='col-sm-9'>
+                        <span class='glyphicon glyphicon-glass' data-bind="style: { color: wineColor($data.colorClass()) }" ></span>&nbsp;
                         <span class='glyphicon glyphicon-pencil' data-bind="click: $parent.editVin.bind($data), visible : false" ></span>&nbsp;
+
                         <b><span data-bind="text: producer"></span>
                         <span data-bind="text: label"></span></b>, 
                         <!--<span data-bind="text: appellation"></span>,--> 

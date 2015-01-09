@@ -115,16 +115,16 @@
         <br />
         <div class="row" data-bind="visible: assignment.events().length > 0" >
             <div class="panel panel-success">
-                    <div class="row">
-                         <div class="col-sm-6">Title</div>
-                         <div class="col-sm-3">Location</div>
-                         <div class="col-sm-1">Notes</div>
-                         <div class="col-sm-1">Waiting</div>
+                    <div class="well row">
+                         <div class="col-sm-6"><span>Title</span></div>
+                         <div class="col-sm-3"><span>Location</span></div>
+                         <div class="col-sm-1"><span>Notes</span></div>
+                         <div class="col-sm-1"><span>Waiting</span></div>
                          <div class="col-sm-1">&nbsp;</div>
                     </div>
                 <div style="max-height:700px; overflow:auto">
             <!-- ko foreach: assignment.events -->
-                    <div class="well row alter-backgound" data-bind="style : { color : editorCount() > 0 ? 'red' : 'black' }">
+                    <div class="well row" data-bind="style : { color : editorCount() > 0 ? 'red' : 'black' }">
                         <div class="col-sm-6" data-bind="click: showNotesExt" style="cursor: pointer">
                             <strong><span data-bind="text: title"></span></strong>
                         </div>
@@ -132,7 +132,7 @@
                         <div class="col-sm-1"><span data-bind="text: notesCount"></span></div>
                         <div class="col-sm-1"><span data-bind="text: editorCount"></span></div>
 
-                        <div class="col-sm-1 pull-right">
+                        <div class="col-sm-1">
                             <span data-bind="click: $parent.assignment.editTastingEvent"
                                 class="glyphicon glyphicon-list-alt"
                                 style="cursor: pointer"
@@ -165,7 +165,7 @@
                     </div>
                 <div style="max-height:850px; overflow:auto">
             <!-- ko foreach: assignmentList -->
-                    <div class="well row alter-backgound"  style="cursor: pointer" data-bind="click: goToAssignmentDetails.bind($data, $parent), style: { color: wfState() != 100  ? 'red' : 'black' }"  >
+                    <div class="well row"  style="cursor: pointer" data-bind="click: goToAssignmentDetails.bind($data, $parent), style: { color: wfState() != 100  ? 'red' : 'black' }"  >
                         <div class="col-sm-3">
                             <span data-bind="text: publication"></span>(<span data-bind="    text: issue"></span>)
                         </div>

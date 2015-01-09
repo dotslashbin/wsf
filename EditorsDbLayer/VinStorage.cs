@@ -352,7 +352,11 @@ namespace EditorsDbLayer
                 using (SqlCommand cmd = new SqlCommand("", conn))
                 {
                     cmd.CommandText = sb.ToString();
-                    cmd.Parameters.AddWithValue("@filter", Utils.BuildSearchString(filter));
+
+
+                    filter = Utils.BuildSearchString(filter);
+
+                    cmd.Parameters.AddWithValue("@filter", filter);
 
                     cmd.CommandTimeout = 60;
 
@@ -604,7 +608,7 @@ namespace EditorsDbLayer
 
             sb.Append(" select distinct  ");
 
-            if (!String.IsNullOrEmpty(country))
+            if (!String.IsNullOrEmpty(country) || !String.IsNullOrEmpty(region) || !String.IsNullOrEmpty(location) || !String.IsNullOrEmpty(locale) || !String.IsNullOrEmpty(site))
             {
                 sb.Append(" COALESCE(country, '')  ");
             }
@@ -613,7 +617,7 @@ namespace EditorsDbLayer
                 sb.Append(" '' as country  ");
             }
 
-            if (!String.IsNullOrEmpty(region))
+            if (!String.IsNullOrEmpty(region) || !String.IsNullOrEmpty(location) || !String.IsNullOrEmpty(locale) || !String.IsNullOrEmpty(site))
             {
                 sb.Append(" ,COALESCE(region, '')  ");
             }
@@ -622,7 +626,7 @@ namespace EditorsDbLayer
                 sb.Append(" ,'' as region  ");
             }
 
-            if (!String.IsNullOrEmpty(location))
+            if (!String.IsNullOrEmpty(location) || !String.IsNullOrEmpty(locale) || !String.IsNullOrEmpty(site))
             {
                 sb.Append(" ,COALESCE(location, '')  ");
             }
@@ -630,7 +634,7 @@ namespace EditorsDbLayer
             {
                 sb.Append(" ,'' as location  ");
             }
-            if (!String.IsNullOrEmpty(locale))
+            if (!String.IsNullOrEmpty(locale) || !String.IsNullOrEmpty(site))
             {
                 sb.Append(" ,COALESCE(locale, '')  ");
             }
@@ -691,13 +695,13 @@ namespace EditorsDbLayer
                     {
                         cmd.Parameters.AddWithValue("@filterLocation", Utils.BuildSearchString(location));
                     }
-                    if (!String.IsNullOrEmpty(location))
+                    if (!String.IsNullOrEmpty(locale))
                     {
                         cmd.Parameters.AddWithValue("@filterLocale", Utils.BuildSearchString(locale));
                     }
                     if (!String.IsNullOrEmpty(site))
                     {
-                        cmd.Parameters.AddWithValue("@filterSite", Utils.BuildSearchString(locale));
+                        cmd.Parameters.AddWithValue("@filterSite", Utils.BuildSearchString(site));
                     }
 
 

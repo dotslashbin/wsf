@@ -51,13 +51,15 @@ namespace EditorsDbLayer
                     cmd.CommandText = @"
     update WineProducer set
 		Name = @Name, 
-		NameToShow = @NameToShow 
+		NameToShow = @NameToShow,
+        WebSiteURL = @WebSiteURL  
 	where ID = @ID";
 
 
                     cmd.Parameters.AddWithValue("@Name", wineProducer.name);
                     cmd.Parameters.AddWithValue("@NameToShow", wineProducer.nameToShow);
                     cmd.Parameters.AddWithValue("@ID", wineProducer.id);
+                    cmd.Parameters.AddWithValue("@WebSiteURL", String.IsNullOrEmpty(wineProducer.websiteUrl) ? "" : wineProducer.websiteUrl);
 
                     if (cmd.ExecuteNonQuery() != 1)
                         return null;
@@ -118,7 +120,9 @@ namespace EditorsDbLayer
 	            Name = wp.Name, 
 	            NameToShow = wp.NameToShow,
 	            WF_StatusID = wp.WF_StatusID,
+                WebSiteURL = wp.WebSiteURL,
 	            SortOrder = case when wp.NameToShow like right(@SearchString, len(@SearchString)-1) then 0 else 20 end
+
             from WineProducer wp (nolock)
             where wp.Name like @SearchString
             order by SortOrder, NameToShow, ID
@@ -137,6 +141,7 @@ namespace EditorsDbLayer
                                 item.name = dr.GetString(1);
                                 item.nameToShow = dr.GetString(2);
                                 item.wfState = (dr.IsDBNull(3) ? (short)0 : dr.GetInt16(3));
+                                item.websiteUrl = (dr.IsDBNull(4) ? "" : dr.GetString(4));
 
                                 res.Add(item);
                             } 
@@ -169,6 +174,7 @@ namespace EditorsDbLayer
 	            Name = wp.Name, 
 	            NameToShow = wp.NameToShow,
 	            WF_StatusID = wp.WF_StatusID,
+                WebSiteURL = wp.WebSiteURL,
 	            SortOrder = case when wp.NameToShow like right(@SearchString, len(@SearchString)-1) then 0 else 20 end,
                 linkCount = (select count(*) from WineProducer_WineImporter where ProducerId = wp.ID)
             from WineProducer wp (nolock)
@@ -189,7 +195,8 @@ namespace EditorsDbLayer
                             item.name = dr.GetString(1);
                             item.nameToShow = dr.GetString(2);
                             item.wfState = (dr.IsDBNull(3) ? (short)0 : dr.GetInt16(3));
-                            item.linkImportersCount = (dr.IsDBNull(5) ? 0 : dr.GetInt32(5));
+                            item.websiteUrl = (dr.IsDBNull(4) ? "" : dr.GetString(4));
+                            item.linkImportersCount = (dr.IsDBNull(6) ? 0 : dr.GetInt32(6));
 
                             res.Add(item);
                         }
@@ -215,7 +222,8 @@ namespace EditorsDbLayer
 	            ID = wp.ID, 
 	            Name = wp.Name, 
 	            NameToShow = wp.NameToShow,
-	            WF_StatusID = wp.WF_StatusID
+	            WF_StatusID = wp.WF_StatusID,
+                WebSiteURL = wp.WebSiteURL
             from WineProducer wp (nolock)
             where wp.WF_StatusID = @Status
             order by NameToShow, ID
@@ -232,6 +240,7 @@ namespace EditorsDbLayer
                             item.name = dr.GetString(1);
                             item.nameToShow = dr.GetString(2);
                             item.wfState = (dr.IsDBNull(3) ? (short)0 : dr.GetInt16(3));
+                            item.websiteUrl = (dr.IsDBNull(4) ? "" : dr.GetString(4));
 
                             res.Add(item);
                         }
@@ -258,6 +267,7 @@ namespace EditorsDbLayer
 	            Name = wp.Name, 
 	            NameToShow = wp.NameToShow,
 	            WF_StatusID = wp.WF_StatusID,
+                WebSiteURL = wp.WebSiteURL,
                 linkCount = (select count(*) from WineProducer_WineImporter where ProducerId = wp.ID)
             from WineProducer wp (nolock)
             where wp.WF_StatusID = @Status
@@ -275,7 +285,8 @@ namespace EditorsDbLayer
                             item.name = dr.GetString(1);
                             item.nameToShow = dr.GetString(2);
                             item.wfState = (dr.IsDBNull(3) ? (short)0 : dr.GetInt16(3));
-                            item.linkImportersCount = (dr.IsDBNull(4) ? 0 : dr.GetInt32(4));
+                            item.websiteUrl = (dr.IsDBNull(4) ? "" : dr.GetString(4));
+                            item.linkImportersCount = (dr.IsDBNull(5) ? 0 : dr.GetInt32(5));
 
                             res.Add(item);
                         }
@@ -310,6 +321,7 @@ namespace EditorsDbLayer
                                     item.id = dr.GetInt32(0);
                                     item.name = dr.GetString(1);
                                     item.nameToShow = dr.GetString(2);
+                                    item.websiteUrl = (dr.IsDBNull(3) ? "" : dr.GetString(3));
 
                                     item.wfState = (dr.IsDBNull(11) ? (short)0 : dr.GetInt16(11));
 
@@ -364,6 +376,7 @@ namespace EditorsDbLayer
                                 res.id = dr.GetInt32(0);
                                 res.name = dr.GetString(1);
                                 res.nameToShow = dr.GetString(2);
+                                res.websiteUrl = (dr.IsDBNull(3) ? "" : dr.GetString(3));
 
                                 res.wfState = (dr.IsDBNull(11) ? (short) 0 : dr.GetInt16(11));
 

@@ -36,11 +36,11 @@ namespace EditorsDbLayer
 
                 if (string.IsNullOrEmpty(result))
                 {
-                    result = "\"" + search_parts[i] + "*\"";
+                        result = "\"" + search_parts[i] + "*\"";
                 }
                 else
                 {
-                    result = "\"" + search_parts[i] + "\" near " + result;
+                        result = "\"" + search_parts[i] + "\" near " + result;
                 }
 
             }

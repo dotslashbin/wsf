@@ -122,7 +122,7 @@
                     </div>
                 <div style="max-height:700px; overflow:auto">
             <!-- ko foreach: assignment.events -->
-                    <div class="well row alter-backgound" data-bind="style : { color : proofreadCount() > 0 ? 'red' : 'black' }" >
+                    <div class="well row" data-bind="style : { color : proofreadCount() > 0 ? 'red' : 'black' }" >
                         <div class="col-sm-6" data-bind="click: showNotesExt" style="cursor: pointer">
                             <strong><span data-bind="text: title"></span></strong>
                         </div>
@@ -163,7 +163,7 @@
                     </div>
                 <div style="max-height:850px; overflow:auto">
             <!-- ko foreach: assignmentList -->
-                    <div class="well row alter-backgound"  style="cursor: pointer" data-bind="click: goToAssignmentDetails.bind($data, $parent), style: { color: wfState() != 100  ? 'red' : 'black' }"  >
+                    <div class="well row"  style="cursor: pointer" data-bind="click: goToAssignmentDetails.bind($data, $parent), style: { color: wfState() != 100  ? 'red' : 'black' }"  >
                         <div class="col-sm-3">
                             <span data-bind="text: publication"></span>(<span data-bind="    text: issue"></span>)
                         </div>

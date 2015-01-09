@@ -15,6 +15,8 @@ namespace EditorsCommon
         public int id;
         public string name;
         public string nameToShow;
+        public string websiteUrl;
+
 
         public DateTime dateCreated;
         public DateTime dateUpdated;

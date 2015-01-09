@@ -313,6 +313,7 @@
                return false;
            }, minLength: 1
        }).data("ui-autocomplete")._renderItem = function (ul, i) {
+
            return $("<li>").append("<a>" + i.country + "</a>").appendTo(ul);
        };
 
@@ -339,10 +340,26 @@
               },
               select: function (event, ui) {
                   $(this).val(ui.item.region);
+
+                  if (ui.item.country != null && ui.item.country.length > 0) {
+                      $("#note-edit-location-country").val(ui.item.country);
+                  }
+
                   return false;
               }, minLength: 1
-          }).data("ui-autocomplete")._renderItem = function (ul, i) {
-              return $("<li>").append("<a>" + i.region + "</a>").appendTo(ul);
+         }).data("ui-autocomplete")._renderItem = function (ul, i) {
+
+             var c = null;
+
+             if (i.country != null && i.country.length > 0) c =  i.country;
+
+             if (c) {
+                 c = " (" + c + ")";
+             } else {
+                 c = "";
+             }
+
+             return $("<li>").append("<a>" + i.region + c + "</a>").appendTo(ul);
           };
 
 
@@ -366,10 +383,33 @@
               },
               select: function (event, ui) {
                   $(this).val(ui.item.location);
+
+
+                  if (ui.item.region != null && ui.item.region.length > 0) {
+                      $("#note-edit-location-region").val(ui.item.region);
+                  }
+                  if (ui.item.country != null && ui.item.country.length > 0) {
+                      $("#note-edit-location-country").val(ui.item.country);
+                  }
+
+
                   return false;
               }, minLength: 1
           }).data("ui-autocomplete")._renderItem = function (ul, i) {
-              return $("<li>").append("<a>" + i.location + "</a>").appendTo(ul);
+
+              var c = null;
+
+              if (i.region  != null &&  i.region.length > 0) c = i.region;
+              if (i.country != null && i.country.length > 0) c = i.country + (c.length > 0 ? (', ' + c) : '');
+
+              if (c) {
+                  c = " (" + c + ")";
+              } else {
+                  c = "";
+              }
+
+
+              return $("<li>").append("<a>" + i.location + c + "</a>").appendTo(ul);
           };
 
           $(elements).find("#note-edit-location-locale").autocomplete(
@@ -391,10 +431,35 @@
               },
               select: function (event, ui) {
                   $(this).val(ui.item.locale);
+
+                  if (ui.item.location != null && ui.item.location.length > 0) {
+                      $("#note-edit-location-location").val(ui.item.location);
+                  }
+                  if (ui.item.region != null && ui.item.region.length > 0) {
+                      $("#note-edit-location-region").val(ui.item.region);
+                  }
+                  if (ui.item.country != null && ui.item.country.length > 0) {
+                      $("#note-edit-location-country").val(ui.item.country);
+                  }
+
+
                   return false;
               }, minLength: 1
           }).data("ui-autocomplete")._renderItem = function (ul, i) {
-              return $("<li>").append("<a>" + i.locale + "</a>").appendTo(ul);
+
+              var c = null;
+
+              if (i.location != null && i.location.length > 0) c = i.location;
+              if (i.region != null   && i.region.length > 0)   c = i.region + (c.length > 0 ? (', ' + c) : '');
+              if (i.country != null  && i.country.length > 0)  c = i.country + (c.length > 0 ? (', ' + c) : '');
+
+              if (c) {
+                  c = " (" + c + ")";
+              } else {
+                  c = "";
+              }
+
+              return $("<li>").append("<a>" + i.locale + c +  "</a>").appendTo(ul);
           };
 
          $(elements).find("#note-edit-location-site").autocomplete(
@@ -416,10 +481,40 @@
               },
               select: function (event, ui) {
                   $(this).val(ui.item.site);
+
+
+                  if (ui.item.locale != null && ui.item.locale.length > 0) {
+                      $("#note-edit-location-locale").val(ui.item.locale);
+                  }
+                  if (ui.item.location != null && ui.item.location.length > 0) {
+                      $("#note-edit-location-location").val(ui.item.location);
+                  }
+                  if (ui.item.region != null && ui.item.region.length > 0) {
+                      $("#note-edit-location-region").val(ui.item.region);
+                  }
+                  if (ui.item.country != null && ui.item.country.length > 0) {
+                      $("#note-edit-location-country").val(ui.item.country);
+                  }
+
+
                   return false;
               }, minLength: 1
-          }).data("ui-autocomplete")._renderItem = function (ul, i) {
-              return $("<li>").append("<a>" + i.site + "</a>").appendTo(ul);
+         }).data("ui-autocomplete")._renderItem = function (ul, i) {
+
+             var c = null;
+
+             if (i.locale != null && i.locale.length > 0)     c = i.locale ;
+             if (i.location != null && i.location.length > 0) c = i.location + (c.length > 0 ? (', ' + c) : '');
+             if (i.region != null && i.region.length > 0)     c = i.region + (c.length > 0 ? (', ' + c) : '');
+             if (i.country != null && i.country.length > 0)   c = i.country + (c.length > 0 ? (', ' + c) : '');
+
+             if (c) {
+                 c = " (" + c + ")";
+             } else {
+                 c = "";
+             }
+
+             return $("<li>").append("<a>" + i.site + c + "</a>").appendTo(ul);
           };
 
 

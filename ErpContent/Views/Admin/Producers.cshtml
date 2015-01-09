@@ -77,7 +77,7 @@
             <br />
             <div style="max-height:650px; overflow:auto; border-bottom: solid 1px gray;"">
             <!-- ko foreach: notes -->
-            <div class="well well-sm row alter-backgound" >
+            <div class="well well-sm row">
 
                 <div class="row">
                     <div class="col-sm-1">
@@ -168,19 +168,23 @@
         <div class="row" style="height: 650px; overflow:auto">
             <div class="row"  style="border-bottom: solid 1px gray;">
                 <div class='col-sm-1'>&nbsp;</div>
-                <div class='col-sm-4'>Name</div>
-                <div class='col-sm-4'>Name To Show</div>
+                <div class='col-sm-3'>Name</div>
+                <div class='col-sm-3'>Name To Show</div>
+                <div class='col-sm-3'>URL</div>
             </div>
             <!-- ko foreach: items -->
             <div class="row"  style="border-bottom: solid 1px gray;">
                 <div class='col-sm-1'>
                       <span data-bind="click: edit" class='glyphicon glyphicon-pencil' style="cursor:pointer" title="Start editing"></span>
                 </div>  
-                <div class='col-sm-4' data-bind="style: { color: erp.utils.statusColor($data.wfState()) }">
+                <div class='col-sm-3' data-bind="style: { color: erp.utils.statusColor($data.wfState()) }">
                       <span data-bind="text: name"></span>
                 </div>
-                <div class='col-sm-4' data-bind="style: { color: erp.utils.statusColor($data.wfState()) }">
+                <div class='col-sm-3' data-bind="style: { color: erp.utils.statusColor($data.wfState()) }">
                       <span data-bind="text: nameToShow"></span>
+                </div>
+                <div class='col-sm-3' data-bind="style: { color: erp.utils.statusColor($data.wfState()) }">
+                      <span data-bind="text: websiteUrl"></span>
                 </div>
                <div class='col-sm-2' >
                   <button class="btn btn-primary btn-xs" style="cursor:pointer" data-bind="click: loadNotes">Show Notes</button>
@@ -225,6 +229,20 @@
                 <div class="col-sm-6">'Name' field presents a producer name how it would be used while soritng producer by name
                 </div>
             </div>
+
+            <br />
+            <div class="row form-group">
+                <div class="col-sm-3">URL: </div>
+                <div class="col-sm-6">
+                    <input class="form-control input-sm" 
+                        id="producerUrl" 
+                        type="url"
+                        name="url" 
+                        data-bind="value:websiteUrl, valueUpdate: 'blur'" placeholder="Web Site URL"/>
+                </div>
+            </div>
+
+
         </form>
     </script>
 

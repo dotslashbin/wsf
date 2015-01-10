@@ -39,7 +39,7 @@
     <script  src="~/Scripts/models/PageDataModel.js"></script>
 
 <script id="tasting-event-details-template" type="text/html">
-        <div class="well  panel panel-success" style="background-color: white" data-bind="visible: open">
+        <div class="panel panel-success" style="background-color: white" data-bind="visible: open">
             <div class="row" style="border-bottom: solid 1px gray;">
                 <span class="col-sm-11  pull-right" data-bind="html: erp.utils.Str2Html(comments())"></span>
             </div>
@@ -113,7 +113,7 @@
         <br />
         <div class="row" data-bind="visible: assignment.events().length > 0" >
             <div class="panel panel-success">
-                    <div class="row">
+                    <div class="row  panel-heading">
                          <div class="col-sm-6">Title</div>
                          <div class="col-sm-3">Location</div>
                          <div class="col-sm-1">Notes</div>
@@ -122,7 +122,7 @@
                     </div>
                 <div style="max-height:700px; overflow:auto">
             <!-- ko foreach: assignment.events -->
-                    <div class="well row" data-bind="style : { color : proofreadCount() > 0 ? 'red' : 'black' }" >
+                    <div class="row" data-bind="style : { color : proofreadCount() > 0 ? 'red' : 'black' }" >
                         <div class="col-sm-6" data-bind="click: showNotesExt" style="cursor: pointer">
                             <strong><span data-bind="text: title"></span></strong>
                         </div>
@@ -155,7 +155,7 @@
 
         <div class="row" data-bind="visible:  assignmentList().length > 0" >
             <div class="panel panel-success">
-                    <div class="row">
+                    <div class="row  panel-heading">
                          <div class="col-sm-3">Publication (Issue # )</div>
                          <div class="col-sm-6">Title</div>
                          <div class="col-sm-1"># Notes</div>
@@ -163,7 +163,7 @@
                     </div>
                 <div style="max-height:850px; overflow:auto">
             <!-- ko foreach: assignmentList -->
-                    <div class="well row"  style="cursor: pointer" data-bind="click: goToAssignmentDetails.bind($data, $parent), style: { color: wfState() != 100  ? 'red' : 'black' }"  >
+                    <div class="row"  style="cursor: pointer" data-bind="click: goToAssignmentDetails.bind($data, $parent), style: { color: wfState() != 100  ? 'red' : 'black' }"  >
                         <div class="col-sm-3">
                             <span data-bind="text: publication"></span>(<span data-bind="    text: issue"></span>)
                         </div>

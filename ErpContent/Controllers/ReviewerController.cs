@@ -56,6 +56,11 @@ namespace ErpContent.Controllers
             return View("Importers");
         }
 
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameReviewer + "," + EditorsCommon.Constants.roleNameAdmin)]
+        public ActionResult Wines()
+        {
+            return View("Wines");
+        }
 
         [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameReviewer + "," + EditorsCommon.Constants.roleNameAdmin)]
         public ActionResult ProducersImporters()

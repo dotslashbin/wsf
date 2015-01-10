@@ -9,7 +9,7 @@
 
 
 @section LeftMenu{
-   @Html.Partial("_AdminMenuPartial")
+   @Html.Partial("_ReviewerLeftMenu")
  }
 
 
@@ -67,27 +67,8 @@
 
 
             <!-- ko foreach: items -->
-            <div class="row"  style="border-bottom: solid 1px gray;">
+            <div class="row" style="border-bottom: solid 1px gray;">
                 <div class='col-sm-8' >
-<!--
-                        <span class='glyphicon glyphicon-pencil' data-bind="click: edit"  style="cursor:pointer" title="Edit VIN" ></span>
-
-                        (<span data-bind="text: id"></span>) 
-                        <span  data-bind="style : {color:erp.utils.statusColor($data.workflow())}">
-                        <b> 
-                           <span data-bind="text: producer, style : {color:erp.utils.statusColor($data.workflow())}"></span>
-                           <span data-bind="text: label"></span>
-                        </b>
-                        </span>, 
-                        <span data-bind="text: country"/>,
-                        <span data-bind="text: region"/>,
-                        <span data-bind="text: location"/>,
-                        <span data-bind="text: locale"/>,
-                        <span data-bind="text: site"/>,
-                        <span data-bind="text: variety"></span>, 
-                        <span data-bind="text: colorClass"></span>, 
-                        <span data-bind="text: dryness"></span>
--->
                     <div class="row">
                         <div class='col-sm-2'><span class='glyphicon glyphicon-pencil' data-bind="click: edit"  style="cursor:pointer" title="Edit VIN" ></span>
                            (<span data-bind="text: id"></span>) 
@@ -122,8 +103,6 @@
                             <span data-bind="text: dryness"></span>
                          </div>
                     </div> 
-
-
 
                 </div>
                <div class='col-sm-3' >

@@ -608,6 +608,7 @@
     <Content Include="Views\Admin\SimilarWines.cshtml" />
     <Content Include="Views\ChiefEditor\_ChiefEditorLeftMenu.cshtml" />
     <Content Include="Views\Issue\ExportAssignment2Doc.cshtml" />
+    <Content Include="Views\Reviewer\Wines.cshtml" />
     <None Include="Web.Prod.config" />
   </ItemGroup>
   <ItemGroup>

@@ -43,13 +43,14 @@
 
 
     <script id="tasting-event-details-template" type="text/html">
-        <div class="well  panel panel-success" style="background-color: white" data-bind="visible: open">
+        <div class="panel panel-success" style="background-color: white" data-bind="visible: open">
             <div class="row" style="border-bottom: solid 1px gray;">
                 <span class="col-sm-11  pull-right" data-bind="html: erp.utils.Str2Html(comments())"></span>
             </div>
 
+            <div style="max-height:700px; overflow:auto">
             <!-- ko foreach: notes -->
-            <div class="well">
+            <div style="border-bottom: solid 1px gray;">
 
             <div class="row  panel-heading">
                 <div class="col-sm-1" style="margin-bottom: 5px; cursor: pointer">
@@ -85,6 +86,7 @@
             </div>
             </div>
             <!-- /ko -->
+            </div>
         </div>
     </script>
 
@@ -93,13 +95,9 @@
 
         <div class="row">
             <div class="col-sm-9">
-
-                <h4><span data-bind="html: assignment.title()"></span> (<span data-bind="    html: assignment.publication()"></span>, issue#<span data-bind="    html: assignment.issue()"></span>)</h4>
-
                 <span style="margin-right: 20px;">Submission Deadline: <strong data-bind="html: assignment.submitDate"></strong></span>
                 <span style="margin-right: 20px;">Approval Deadline: <strong data-bind="html: assignment.approveDate"></strong></span>
                 <span style="margin-right: 20px;">Author: <strong data-bind="html: assignment.author.name"></strong></span>
-
             </div>
 
 
@@ -115,7 +113,7 @@
         <br />
         <div class="row" data-bind="visible: assignment.events().length > 0" >
             <div class="panel panel-success">
-                    <div class="well row">
+                    <div class="row">
                          <div class="col-sm-6"><span>Title</span></div>
                          <div class="col-sm-3"><span>Location</span></div>
                          <div class="col-sm-1"><span>Notes</span></div>
@@ -124,7 +122,7 @@
                     </div>
                 <div style="max-height:700px; overflow:auto">
             <!-- ko foreach: assignment.events -->
-                    <div class="well row" data-bind="style : { color : editorCount() > 0 ? 'red' : 'black' }">
+                    <div class="row" style="border-bottom: solid 1px gray;" data-bind="style : { color : editorCount() > 0 ? 'red' : 'black' }">
                         <div class="col-sm-6" data-bind="click: showNotesExt" style="cursor: pointer">
                             <strong><span data-bind="text: title"></span></strong>
                         </div>
@@ -157,19 +155,15 @@
 
         <div class="row" data-bind="visible:  assignmentList().length > 0" >
             <div class="panel panel-success">
-                    <div class="row">
-                         <div class="col-sm-3">Publication (Issue # )</div>
-                         <div class="col-sm-6">Title</div>
+                    <div class="row" style="border-bottom: solid 1px gray;">
+                         <div class="col-sm-9">Title</div>
                          <div class="col-sm-1"># Notes</div>
                          <div class="col-sm-2">Approval Deadline</div>
                     </div>
-                <div style="max-height:850px; overflow:auto">
+                <div style="max-height:700px; overflow:auto">
             <!-- ko foreach: assignmentList -->
-                    <div class="well row"  style="cursor: pointer" data-bind="click: goToAssignmentDetails.bind($data, $parent), style: { color: wfState() != 100  ? 'red' : 'black' }"  >
-                        <div class="col-sm-3">
-                            <span data-bind="text: publication"></span>(<span data-bind="    text: issue"></span>)
-                        </div>
-                        <div class="col-sm-6"><span data-bind="text: title"></span></div>
+                    <div class="row"  style="cursor: pointer" data-bind="click: goToAssignmentDetails.bind($data, $parent), style: { color: wfState() != 100  ? 'red' : 'black' }"  >
+                        <div class="col-sm-9"><span data-bind="text: title"></span></div>
                         <div class="col-sm-1" ><span data-bind="text: notesCount"></span></div>
                         <div class="col-sm-2" ><span data-bind="text: approveDate"></span></div>
                     </div>
@@ -583,7 +577,7 @@
                      });
 
             }
-            pageData.drillDownExt('issue-details-template', this, this.title());
+            pageData.drillDownExt('issue-details-template', this, this.publicationName() + " " + this.title());
         }
 
         IssueItemModel.prototype.drillDown = issueDrillDownCallback;

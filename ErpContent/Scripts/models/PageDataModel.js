@@ -170,6 +170,26 @@ function PageData() {
          }
      });
 
+    //
+    // back button setup
+    //
 
+    //if (history && history.pushState) {
+    //    history.pushState({ module: "leave" }, document.title, this.href);
+    //}
+
+    //if (history && history.replaceState) {
+    //    history.replaceState({ module: "leave" }, document.title, this.href);
+    //}
+
+
+
+    //$(window).bind("popstate", function (evt) {
+    //    var state = evt.originalEvent.state;
+    //    if (state && state.module === "leave") {
+    //        alert('history call');
+    //        $.getScript(location.href);
+    //    }
+    //});
 
 }

@@ -341,6 +341,7 @@ namespace EditorsDbLayer
                           INNER JOIN CONTAINSTABLE(vWineVinNDetails,keywords,@filter,1000) AS KEY_TBL  ON v.Wine_VinN_ID =  KEY_TBL.[KEY]
                           INNER JOIN Wine_N as w on w.Wine_VinN_ID = v.Wine_VinN_ID
                           INNER JOIN WineVintage as wv on wv.ID = w.VintageID
+                          where color <> ''
                           order by v.Wine_VinN_ID ,wv.name desc
            ";
 

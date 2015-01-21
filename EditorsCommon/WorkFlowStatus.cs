@@ -32,6 +32,7 @@ namespace EditorsCommon
         public const int STATE_GROUP_PUBLISHED = 2;
         public const int STATE_GROUP_ARCHIVED = 3;
         public const int STATE_GROUP_ALL = 99;
+        public const int STATE_RFC = 101;
 
 
 

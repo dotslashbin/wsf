@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Profile;
 using System.Web.Script.Serialization;
 using System.Web.Security;
 
@@ -51,6 +52,31 @@ namespace ErpContent.Controllers
 
             return Json(result, JsonRequestBehavior.AllowGet);
         }
+
+        [Authorize]
+        [HttpPost]
+        [OutputCache(Duration = 0, VaryByParam = "none")]
+        public ActionResult GetNewAssignmentForAuthor()
+        {
+
+            var id = (int)Membership.GetUser(User.Identity.Name).ProviderUserKey;
+
+            MembershipUser mu = ((ERP.Providers.SqlMembershipProvider)Membership.Provider).GetUser(id, false);
+            ProfileBase p = ProfileBase.Create(mu.UserName);
+
+            var result = new AssignmentItem();
+
+            result.ProcessActor(id, ActorRole.reviewer, (string)p["FirstName"] + " " + (string)p["LastName"]);
+            result.submitDate = DateTime.Now;
+            result.proofreadDate = DateTime.Now;
+            result.approveDate = DateTime.Now;
+            result.CreatedDate = DateTime.Now;
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+
+
 
         [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
         [OutputCache(Duration = 0, VaryByParam = "none")]
@@ -279,6 +305,28 @@ namespace ErpContent.Controllers
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
+
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        [System.Web.Mvc.Authorize(Roles =  EditorsCommon.Constants.roleNameAll)]
+        [OutputCache(Duration = 0, VaryByParam = "none")]
+        [HttpPost]
+        public ActionResult AddReviewerAssignment(String str)
+        {
+            AssignmentItem o = new JavaScriptSerializer().Deserialize<AssignmentItem>(str);
+
+
+            var result = _assignmentStorage.Create(o);
+
+            _assignmentStorage.AssignmentResources_AddActor(result.id, o.author);
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
 
 
         /// <summary>

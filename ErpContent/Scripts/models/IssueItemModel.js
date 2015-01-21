@@ -245,7 +245,7 @@
 
     }
 
-    self.deleteAssignment = function (objectToEvaluate) {
+    self.deleteAssignment = function (item) {
 
         var confirmation = confirm('Are you sure you want to delete this assignment?');
 
@@ -254,9 +254,12 @@
             $.ajax({
                 type: 'POST',
                 url: erp.wsf_path + 'Assignment/DeleteAssignment',
-                data: { assignmentID: objectToEvaluate.id },
-                success: function (r) {
-                    $('#assignment_' + objectToEvaluate.id).remove();
+                data: { assignmentID: item.id },
+                success: function (r)
+                {
+
+                    self.assignmentList.remove(item);
+
                 },
                 error: function (request, status, error) {
 

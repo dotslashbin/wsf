@@ -38,8 +38,6 @@ namespace EditorsDbLayer
 
 
 
-
-
         //            return l;
         //        }
 
@@ -91,18 +89,20 @@ namespace EditorsDbLayer
 
 
 
-
-
-
-
-
-
-
-
         public IEnumerable<VinN> Search(string filter)
         {
             throw new NotImplementedException();
         }
+
+
+
+        public IEnumerable<VinN> Search(VinN filter)
+        {
+            throw new NotImplementedException();
+        }
+
+
+
 
         public IEnumerable<VinN> SearchAppelation(string filter)
         {
@@ -303,7 +303,7 @@ namespace EditorsDbLayer
         public IEnumerable<VinN> SearchWineN(string filter)
         {
             //var l = new List<VinN>();
-            var dict = new Dictionary<Int32, VinExt>(); 
+            var dict = new Dictionary<Int32, VinN>(); 
 
             if (string.IsNullOrEmpty(filter))
             {
@@ -311,26 +311,45 @@ namespace EditorsDbLayer
             }
 
             string sb = @" 
-                         select top 500 
+
+
+                     select top 500 
                           v.Wine_VinN_ID 
-                        , label, producerToShow 
-                        , COALESCE(country, '')
-                        , COALESCE(region, '')
-                        , COALESCE(Location, '')
-                        , COALESCE(locale, '')
-                        , COALESCE(site, '')  
-                        , COALESCE(color, '')
-                        , COALESCE(variety, '')
-                        , COALESCE(dryness, '') 
-                        , COALESCE(type, 'Table') 
+                        , v.label
+                        , v.producerToShow 
+                        , COALESCE(v.country, '')
+                        , COALESCE(v.region, '')
+                        , COALESCE(v.Location, '')
+                        , COALESCE(v.locale, '')
+                        , COALESCE(v.site, '')  
+                        , COALESCE(v.color, '')
+                        , COALESCE(v.variety, '')
+                        , COALESCE(v.dryness, '') 
+                        , COALESCE(v.type, 'Table') 
                         , v.Wine_VinN_WF_StatusID
+
+
+						, rfc.id
+						, rfc.label
+						, rfc.producer 
+						, COALESCE(rfc.loccountry, '')  as rfccountry
+						, COALESCE(rfc.locregion, '')   as rfcregion
+						, COALESCE(rfc.locLocation, '') as rfclocation
+						, COALESCE(rfc.loclocale, '')  as rfclocale
+						, COALESCE(rfc.locsite, '')    as rfcsite  
+						, COALESCE(rfc.color, '')    as rfccolor
+						, COALESCE(rfc.variety, '')  as rfcvariety
+						, COALESCE(rfc.dryness, '') as rfcdryness 
+						, COALESCE(rfc.type, 'Table') as rfctype 
+
 
                           FROM vWineVinNDetails as v  WITH (NOEXPAND) 
                           INNER JOIN CONTAINSTABLE(vWineVinNDetails,keywords,@filter,500) AS KEY_TBL  ON v.Wine_VinN_ID =  KEY_TBL.[KEY]
-                          where color <> ''
-                          order by v.Wine_VinN_ID;
+                          left join  Wine_VinN_RFC as rfc  on v.Wine_VinN_ID = rfc.VinN_ID
+                          where v.color <> ''
+                          order by v.Wine_VinN_ID
 
-
+ 
                          select top 1000 
                          v.Wine_VinN_ID
                         , w.ID 
@@ -371,11 +390,12 @@ namespace EditorsDbLayer
 
                         while (rdr.Read())
                         {
-                            Int32 vinId = rdr.GetInt32(0);
 
-                            VinExt vinN = new VinExt
+                            if (!rdr.IsDBNull(13))
+                            {
+                                VinN_Ext_RFC vinN = new VinN_Ext_RFC
                                 {
-                                    id = vinId,
+                                    id = rdr.GetInt32(0),
                                     label = rdr.GetString(1),
                                     producer = rdr.GetString(2),
                                     country = rdr.GetString(3),
@@ -387,14 +407,56 @@ namespace EditorsDbLayer
                                     colorClass = rdr.GetString(8),
                                     variety = rdr.GetString(9),
                                     dryness = rdr.GetString(10),
-                                    wineType = rdr.GetString(11),
-                                    workflow = rdr.GetFieldValue<Int16>(12)
+                                    wineType = rdr.GetString(11)
 
                                 };
-                                vinN.wines = new List<WineN>();
 
-                                dict.Add(vinId, vinN);
-                            
+
+                                vinN.rfc = new VinN_RFC()
+                                {
+                                    id = rdr.GetInt32(13),
+                                    label = rdr.GetString(14),
+                                    producer = rdr.GetString(15),
+                                    country = rdr.GetString(16),
+                                    region = rdr.GetString(17),
+                                    location = rdr.GetString(18),
+                                    locale = rdr.GetString(19),
+                                    site = rdr.GetString(20),
+
+                                    colorClass = rdr.GetString(21),
+                                    variety = rdr.GetString(22),
+                                    dryness = rdr.GetString(23),
+                                    wineType = rdr.GetString(24)
+                                };
+
+                                vinN.wines = new List<WineN>();
+                                dict.Add(vinN.id, vinN);
+                            }
+                            else
+                            {
+
+
+                                VinN vinN = new VinN
+                                    {
+                                        id = rdr.GetInt32(0),
+                                        label = rdr.GetString(1),
+                                        producer = rdr.GetString(2),
+                                        country = rdr.GetString(3),
+                                        region = rdr.GetString(4),
+                                        location = rdr.GetString(5),
+                                        locale = rdr.GetString(6),
+                                        site = rdr.GetString(7),
+
+                                        colorClass = rdr.GetString(8),
+                                        variety = rdr.GetString(9),
+                                        dryness = rdr.GetString(10),
+                                        wineType = rdr.GetString(11),
+                                        workflow = rdr.GetFieldValue<Int16>(12)
+
+                                    };
+                                vinN.wines = new List<WineN>();
+                                dict.Add(vinN.id, vinN);
+                            }
 
                         }
 
@@ -413,10 +475,8 @@ namespace EditorsDbLayer
                                         vinN.wines.Add(new WineN()
                                         {
                                             id = rdr.GetInt32(1)
-                                            ,
-                                            vintage = rdr.GetString(2)
-                                            ,
-                                            workflow = rdr.GetFieldValue<Int16>(3)
+                                            ,vintage = rdr.GetString(2)
+                                            ,workflow = rdr.GetFieldValue<Int16>(3)
                                         });
                                     }
                                 }
@@ -436,53 +496,83 @@ namespace EditorsDbLayer
         public IEnumerable<VinN> SearchNewWineN()
         {
             //var l = new List<VinN>();
-            var dict = new Dictionary<Int32, VinExt>();
+            var dict = new Dictionary<Int32, VinN>();
 
 
             string sb = @" 
 
-
-             select top 1000  * from
+          select top 1000  * from
              (
              select  
               v.Wine_VinN_ID 
-            , label, producerToShow 
-            , COALESCE(country, '')  as country
-            , COALESCE(region, '')   as region
-            , COALESCE(Location, '') as location
-            ,  COALESCE(locale, '')  as locale
-            ,  COALESCE(site, '')    as site  
-            , COALESCE(color, '')    as color
-            , COALESCE(variety, '')  as variety
-            ,  COALESCE(dryness, '') as dryness 
-            , COALESCE(type, 'Table') as type 
+            , v.label  as rfclabel
+            , v.producerToShow 
+            , COALESCE(v.country, '')  as country
+            , COALESCE(v.region, '')   as region
+            , COALESCE(v.Location, '') as location
+            , COALESCE(v.locale, '')   as locale
+            , COALESCE(v.site, '')     as site  
+            , COALESCE(v.color, '')    as color
+            , COALESCE(v.variety, '')  as variety
+            , COALESCE(v.dryness, '')  as dryness 
+            , COALESCE(v.type, 'Table')  as type 
             , v.Wine_VinN_WF_StatusID
 
+			, rfc.id
+			, rfc.label
+			, rfc.producer 
+			, COALESCE(rfc.loccountry, '')  as rfccountry
+			, COALESCE(rfc.locregion, '')   as rfcregion
+			, COALESCE(rfc.locLocation, '') as rfclocation
+			, COALESCE(rfc.loclocale, '')  as rfclocale
+			, COALESCE(rfc.locsite, '')    as rfcsite  
+			, COALESCE(rfc.color, '')    as rfccolor
+			, COALESCE(rfc.variety, '')  as rfcvariety
+			, COALESCE(rfc.dryness, '') as rfcdryness 
+			, COALESCE(rfc.type, 'Table') as rfctype 
+
               FROM vWineVinNDetails as v  WITH (NOEXPAND)
+              left join  Wine_VinN_RFC as rfc  on v.Wine_VinN_ID = rfc.VinN_ID
               where  v.Wine_VinN_WF_StatusID < 100
 
             union
 
              select distinct 
               v.Wine_VinN_ID 
-            , label, producerToShow 
-            , COALESCE(country, '')  as country
-            , COALESCE(region, '')   as region
-            , COALESCE(Location, '') as location
-            ,  COALESCE(locale, '')  as locale
-            ,  COALESCE(site, '')    as site  
-            , COALESCE(color, '')    as color
-            , COALESCE(variety, '')  as variety
-            ,  COALESCE(dryness, '') as dryness 
-            , COALESCE(type, 'Table') as type 
+            , v.label
+            , v.producerToShow 
+            , COALESCE(v.country, '')  as country
+            , COALESCE(v.region, '')   as region
+            , COALESCE(v.Location, '') as location
+            , COALESCE(v.locale, '')  as locale
+            , COALESCE(v.site, '')    as site  
+            , COALESCE(v.color, '')    as color
+            , COALESCE(v.variety, '')  as variety
+            , COALESCE(v.dryness, '') as dryness 
+            , COALESCE(v.type, 'Table') as type 
             , v.Wine_VinN_WF_StatusID
+
+			, rfc.id
+			, rfc.label as rfclabel
+			, rfc.producer 
+			, COALESCE(rfc.loccountry, '')  as rfccountry
+			, COALESCE(rfc.locregion, '')   as rfcregion
+			, COALESCE(rfc.locLocation, '') as rfclocation
+			, COALESCE(rfc.loclocale, '')  as rfclocale
+			, COALESCE(rfc.locsite, '')    as rfcsite  
+			, COALESCE(rfc.color, '')    as rfccolor
+			, COALESCE(rfc.variety, '')  as rfcvariety
+			, COALESCE(rfc.dryness, '') as rfcdryness 
+			, COALESCE(rfc.type, 'Table') as rfctype 
 
               FROM vWineVinNDetails as v  WITH (NOEXPAND)
               left join Wine_N as w on w.Wine_VinN_ID = v.Wine_VinN_ID
+              left join  Wine_VinN_RFC as rfc  on v.Wine_VinN_ID = rfc.VinN_ID
               where  w.WF_StatusID < 100
 
               )  as v 
-              order by Wine_VinN_ID             
+              order by Wine_VinN_ID          
+
             ---
             ---
             ---
@@ -532,30 +622,71 @@ namespace EditorsDbLayer
 
                         while (rdr.Read())
                         {
-                            Int32 vinId = rdr.GetInt32(0);
-
-                            VinExt vinN = new VinExt
+                            if (!rdr.IsDBNull(13))
                             {
-                                id = vinId,
-                                label = rdr.GetString(1),
-                                producer = rdr.GetString(2),
-                                country = rdr.GetString(3),
-                                region = rdr.GetString(4),
-                                location = rdr.GetString(5),
-                                locale = rdr.GetString(6),
-                                site = rdr.GetString(7),
+                                VinN_Ext_RFC vinN = new VinN_Ext_RFC
+                                {
+                                    id = rdr.GetInt32(0),
+                                    label = rdr.GetString(1),
+                                    producer = rdr.GetString(2),
+                                    country = rdr.GetString(3),
+                                    region = rdr.GetString(4),
+                                    location = rdr.GetString(5),
+                                    locale = rdr.GetString(6),
+                                    site = rdr.GetString(7),
 
-                                colorClass = rdr.GetString(8),
-                                variety = rdr.GetString(9),
-                                dryness = rdr.GetString(10),
-                                wineType = rdr.GetString(11),
-                                workflow = rdr.GetFieldValue<Int16>(12)
+                                    colorClass = rdr.GetString(8),
+                                    variety = rdr.GetString(9),
+                                    dryness = rdr.GetString(10),
+                                    wineType = rdr.GetString(11)
 
-                            };
-                            vinN.wines = new List<WineN>();
+                                };
 
-                            dict.Add(vinId, vinN);
 
+                                vinN.rfc = new VinN_RFC()
+                                {
+                                    id = rdr.GetInt32(13),
+                                    label = rdr.GetString(14),
+                                    producer = rdr.GetString(15),
+                                    country = rdr.GetString(16),
+                                    region = rdr.GetString(17),
+                                    location = rdr.GetString(18),
+                                    locale = rdr.GetString(19),
+                                    site = rdr.GetString(20),
+
+                                    colorClass = rdr.GetString(21),
+                                    variety = rdr.GetString(22),
+                                    dryness = rdr.GetString(23),
+                                    wineType = rdr.GetString(24)
+                                };
+
+                                vinN.wines = new List<WineN>();
+                                dict.Add(vinN.id, vinN);
+                            }
+                            else
+                            {
+
+                                VinN vinN = new VinN
+                                {
+                                    id = rdr.GetInt32(0),
+                                    label = rdr.GetString(1),
+                                    producer = rdr.GetString(2),
+                                    country = rdr.GetString(3),
+                                    region = rdr.GetString(4),
+                                    location = rdr.GetString(5),
+                                    locale = rdr.GetString(6),
+                                    site = rdr.GetString(7),
+
+                                    colorClass = rdr.GetString(8),
+                                    variety = rdr.GetString(9),
+                                    dryness = rdr.GetString(10),
+                                    wineType = rdr.GetString(11),
+                                    workflow = rdr.GetFieldValue<Int16>(12)
+
+                                };
+                                vinN.wines = new List<WineN>();
+                                dict.Add(vinN.id, vinN);
+                            }
 
                         }
 
@@ -564,7 +695,7 @@ namespace EditorsDbLayer
                             while (rdr.Read())
                             {
                                 Int32 vinId = rdr.GetInt32(0);
-                                VinExt vinN = null;
+                                VinN vinN = null;
 
                                 if (dict.TryGetValue(vinId, out vinN))
                                 {
@@ -732,18 +863,12 @@ namespace EditorsDbLayer
 
 
 
-
-        public IEnumerable<VinN> Search(VinN filter)
-        {
-            throw new NotImplementedException();
-        }
-
-
         /// <summary>
         /// 
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
+        /// 
         public int ApproveVin(int id)
         {
             string sb = @"
@@ -886,60 +1011,60 @@ namespace EditorsDbLayer
         }
 
 
-        VinN IVinStorage.Search(VinN vinN)
-        {
-            string sb = @" exec WineVin_GetID
-	                        @Producer=@Producer
-                           , @WineType=@WineType
-                           , @Label=@Label
-                           , @Variety=@Variety
-                           , @Dryness = @Dryness 
-                           , @Color = @Color
-                           , @locCountry = @locRegion
-                           , @locRegion = @locRegion
-                           , @locLocation = @locLocation
-                           , @locLocale = @locLocale
-                           , @locSite = @locSite
-                           , @IsAutoCreate bit = 0  ";
+//        public VinN Search(VinN vinN)
+//        {
+//            string sb = @" exec WineVin_GetID
+//	                        @Producer=@Producer
+//                           , @WineType=@WineType
+//                           , @Label=@Label
+//                           , @Variety=@Variety
+//                           , @Dryness = @Dryness 
+//                           , @Color = @Color
+//                           , @locCountry = @locRegion
+//                           , @locRegion = @locRegion
+//                           , @locLocation = @locLocation
+//                           , @locLocale = @locLocale
+//                           , @locSite = @locSite
+//                           , @IsAutoCreate bit = 0  ";
 
-            using (SqlConnection conn = _connFactory.GetConnection())
-            {
-                using (SqlCommand cmd = new SqlCommand("", conn))
-                {
-                    cmd.CommandText = sb.ToString();
+//            using (SqlConnection conn = _connFactory.GetConnection())
+//            {
+//                using (SqlCommand cmd = new SqlCommand("", conn))
+//                {
+//                    cmd.CommandText = sb.ToString();
 
-                    cmd.Parameters.AddWithValue("@Producer",String.IsNullOrEmpty(vinN.producer) == true ? "" : vinN.producer);
-                    cmd.Parameters.AddWithValue("@WineType",String.IsNullOrEmpty(vinN.wineType) == true ? "" : vinN.wineType);
-                    cmd.Parameters.AddWithValue("@Label",String.IsNullOrEmpty(vinN.label) == true ? "" : vinN.label);
-                    cmd.Parameters.AddWithValue("@Variety",String.IsNullOrEmpty(vinN.variety) == true ? "" : vinN.variety);
-                    cmd.Parameters.AddWithValue("@Dryness",String.IsNullOrEmpty(vinN.dryness) == true ? "" : vinN.dryness); 
-                    cmd.Parameters.AddWithValue("@Color",String.IsNullOrEmpty(vinN.colorClass) == true ? "" : vinN.colorClass);
-                    cmd.Parameters.AddWithValue("@locCountry",String.IsNullOrEmpty(vinN.country) == true ? "" : vinN.country);
-                    cmd.Parameters.AddWithValue("@locRegion",String.IsNullOrEmpty(vinN.region) == true ? "" : vinN.region);
-                    cmd.Parameters.AddWithValue("@locLocation",String.IsNullOrEmpty(vinN.location) == true ? "" : vinN.location);
-                    cmd.Parameters.AddWithValue("@locLocale",String.IsNullOrEmpty(vinN.locale) == true ? "" : vinN.locale);
-                    cmd.Parameters.AddWithValue("@locSite", String.IsNullOrEmpty(vinN.site) == true ? "" : vinN.site);
+//                    cmd.Parameters.AddWithValue("@Producer",String.IsNullOrEmpty(vinN.producer) == true ? "" : vinN.producer);
+//                    cmd.Parameters.AddWithValue("@WineType",String.IsNullOrEmpty(vinN.wineType) == true ? "" : vinN.wineType);
+//                    cmd.Parameters.AddWithValue("@Label",String.IsNullOrEmpty(vinN.label) == true ? "" : vinN.label);
+//                    cmd.Parameters.AddWithValue("@Variety",String.IsNullOrEmpty(vinN.variety) == true ? "" : vinN.variety);
+//                    cmd.Parameters.AddWithValue("@Dryness",String.IsNullOrEmpty(vinN.dryness) == true ? "" : vinN.dryness); 
+//                    cmd.Parameters.AddWithValue("@Color",String.IsNullOrEmpty(vinN.colorClass) == true ? "" : vinN.colorClass);
+//                    cmd.Parameters.AddWithValue("@locCountry",String.IsNullOrEmpty(vinN.country) == true ? "" : vinN.country);
+//                    cmd.Parameters.AddWithValue("@locRegion",String.IsNullOrEmpty(vinN.region) == true ? "" : vinN.region);
+//                    cmd.Parameters.AddWithValue("@locLocation",String.IsNullOrEmpty(vinN.location) == true ? "" : vinN.location);
+//                    cmd.Parameters.AddWithValue("@locLocale",String.IsNullOrEmpty(vinN.locale) == true ? "" : vinN.locale);
+//                    cmd.Parameters.AddWithValue("@locSite", String.IsNullOrEmpty(vinN.site) == true ? "" : vinN.site);
 
 
 
-                    using(SqlDataReader rdr = cmd.ExecuteReader()){
+//                    using(SqlDataReader rdr = cmd.ExecuteReader()){
 
-                        if (rdr.Read())
-                        {
-                            vinN.id = rdr.GetInt32(0);
-                        }
-                        else
-                        {
-                            vinN.id = 0;
-                        }
-                    }
+//                        if (rdr.Read())
+//                        {
+//                            vinN.id = rdr.GetInt32(0);
+//                        }
+//                        else
+//                        {
+//                            vinN.id = 0;
+//                        }
+//                    }
 
-                    return vinN;
+//                    return vinN;
 
-                }
+//                }
 
-            }
-        }
+//            }
+//        }
 
         /// <summary>
         /// 
@@ -984,12 +1109,6 @@ namespace EditorsDbLayer
                     cmd.Parameters.AddWithValue("@locSite", String.IsNullOrEmpty(vinN.site) == true ? "" : vinN.site.Trim());
 
 
-                    //var returnParameter = cmd.Parameters.Add("@ReturnVal", SqlDbType.Int);
-                    //returnParameter.Direction = ParameterDirection.ReturnValue;
-
-                    //cmd.ExecuteNonQuery();
-
-                    //vinN.id = (int)returnParameter.Value;
 
                     using (SqlDataReader rdr = cmd.ExecuteReader())
                     {
@@ -1005,21 +1124,403 @@ namespace EditorsDbLayer
                             vinN.id = rdr.GetInt32(0);
                         }
                         
-                        
-                        //if (rdr.NextResult() && rdr.NextResult() && rdr.Read())
-                        //{
-                        //    vinN.id = rdr.GetInt32(0);
-                        //}
-                        //else
-                        //{
-                        //    vinN.id = 0;
-                        //}
                     }
 
                     return vinN;
                 }
 
             }
+        }
+
+
+        public VinN CreateRFC(int authorId, VinN vinN)
+        {
+            string sb = @" 
+
+INSERT INTO Wine_VinN_RFC
+           ([VinN_ID]
+           ,[Producer]
+           ,[Type]
+           ,[Label]
+           ,[Variety]
+           ,[Dryness]
+           ,[Color]
+           ,[locCountry]
+           ,[locRegion]
+           ,[locLocation]
+           ,[locLocale]
+           ,[locSite]
+           ,[author])
+     VALUES
+           (  @VinN_ID
+	        , @Producer
+            , @WineType
+            , @Label
+            , @Variety
+            , @Dryness 
+            , @Color
+            , @locCountry
+            , @locRegion
+            , @locLocation
+            , @locLocale
+            , @locSite
+            , @authorID);
+
+
+       select  
+              v.Wine_VinN_ID 
+              , v.label
+              , v.producerToShow 
+            , COALESCE(v.country, '')
+            , COALESCE(v.region, '')
+            , COALESCE(v.Location, '')
+            , COALESCE(v.locale, '')
+            , COALESCE(v.site, '')  
+            , COALESCE(v.color, '')
+            , COALESCE(v.variety, '')
+            , COALESCE(v.dryness, '') 
+            , COALESCE(v.type, 'Table') 
+            , v.Wine_VinN_WF_StatusID
+
+
+			, rfc.id
+			, rfc.label
+			, rfc.producer 
+			, COALESCE(rfc.loccountry, '')  as rfccountry
+			, COALESCE(rfc.locregion, '')   as rfcregion
+			, COALESCE(rfc.locLocation, '') as rfclocation
+			, COALESCE(rfc.loclocale, '')  as rfclocale
+			, COALESCE(rfc.locsite, '')    as rfcsite  
+			, COALESCE(rfc.color, '')    as rfccolor
+			, COALESCE(rfc.variety, '')  as rfcvariety
+			, COALESCE(rfc.dryness, '') as rfcdryness 
+			, COALESCE(rfc.type, 'Table') as rfctype 
+
+
+            FROM vWineVinNDetails as v  WITH (NOEXPAND) 
+            left join  Wine_VinN_RFC as rfc  on v.Wine_VinN_ID = rfc.VinN_ID
+            where 
+            v.Wine_VinN_ID = @VinN_ID 
+            order by v.Wine_VinN_ID
+
+";
+
+
+            using (SqlConnection conn = _connFactory.GetConnection())
+            {
+
+                using (SqlCommand cmd = new SqlCommand("", conn))
+                {
+                    cmd.CommandText = sb.ToString();
+
+                    cmd.Parameters.AddWithValue("@VinN_ID", vinN.id);
+                    cmd.Parameters.AddWithValue("@Producer", String.IsNullOrEmpty(vinN.producer) == true ? "" : vinN.producer.Trim());
+                    cmd.Parameters.AddWithValue("@WineType", String.IsNullOrEmpty(vinN.wineType) == true ? "" : vinN.wineType.Trim());
+                    cmd.Parameters.AddWithValue("@Label", String.IsNullOrEmpty(vinN.label) == true ? "" : vinN.label.Trim());
+                    cmd.Parameters.AddWithValue("@Variety", String.IsNullOrEmpty(vinN.variety) == true ? "" : vinN.variety.Trim());
+                    cmd.Parameters.AddWithValue("@Dryness", String.IsNullOrEmpty(vinN.dryness) == true ? "" : vinN.dryness.Trim());
+                    cmd.Parameters.AddWithValue("@Color", String.IsNullOrEmpty(vinN.colorClass) == true ? "" : vinN.colorClass.Trim());
+                    cmd.Parameters.AddWithValue("@locCountry", String.IsNullOrEmpty(vinN.country) == true ? "" : vinN.country.Trim());
+                    cmd.Parameters.AddWithValue("@locRegion", String.IsNullOrEmpty(vinN.region) == true ? "" : vinN.region.Trim());
+                    cmd.Parameters.AddWithValue("@locLocation", String.IsNullOrEmpty(vinN.location) == true ? "" : vinN.location.Trim());
+                    cmd.Parameters.AddWithValue("@locLocale", String.IsNullOrEmpty(vinN.locale) == true ? "" : vinN.locale.Trim());
+                    cmd.Parameters.AddWithValue("@locSite", String.IsNullOrEmpty(vinN.site) == true ? "" : vinN.site.Trim());
+                    cmd.Parameters.AddWithValue("@authorID", authorId);
+
+
+                    using (SqlDataReader rdr = cmd.ExecuteReader())
+                    {
+                        if (rdr.Read())
+                        {
+                            VinN_Ext_RFC result = new VinN_Ext_RFC
+                            {
+                                id = rdr.GetInt32(0),
+                                label = rdr.GetString(1),
+                                producer = rdr.GetString(2),
+                                country = rdr.GetString(3),
+                                region = rdr.GetString(4),
+                                location = rdr.GetString(5),
+                                locale = rdr.GetString(6),
+                                site = rdr.GetString(7),
+
+                                colorClass = rdr.GetString(8),
+                                variety = rdr.GetString(9),
+                                dryness = rdr.GetString(10),
+                                wineType = rdr.GetString(11)
+
+                            };
+
+
+                            result.rfc = new VinN_RFC()
+                            {
+                                id = rdr.GetInt32(13),
+                                label = rdr.GetString(14),
+                                producer = rdr.GetString(15),
+                                country = rdr.GetString(16),
+                                region = rdr.GetString(17),
+                                location = rdr.GetString(18),
+                                locale = rdr.GetString(19),
+                                site = rdr.GetString(20),
+
+                                colorClass = rdr.GetString(21),
+                                variety = rdr.GetString(22),
+                                dryness = rdr.GetString(23),
+                                wineType = rdr.GetString(24)
+                            };
+
+                            result.wines = new List<WineN>();
+                            return result;
+
+                        }
+                        else
+                        {
+                            return null;
+                        }
+
+                    }
+
+                }
+
+            }
+        }
+
+
+
+
+
+        public IEnumerable<VinN> LoadRFC()
+        {
+            //var l = new List<VinN>();
+            var dict = new Dictionary<Int32, VinN>();
+
+
+            string sb = @" 
+
+
+                     select top 500 
+                          v.Wine_VinN_ID 
+                        , v.label
+                        , v.producerToShow 
+                        , COALESCE(v.country, '')
+                        , COALESCE(v.region, '')
+                        , COALESCE(v.Location, '')
+                        , COALESCE(v.locale, '')
+                        , COALESCE(v.site, '')  
+                        , COALESCE(v.color, '')
+                        , COALESCE(v.variety, '')
+                        , COALESCE(v.dryness, '') 
+                        , COALESCE(v.type, 'Table') 
+                        , v.Wine_VinN_WF_StatusID
+
+
+						, rfc.id
+						, rfc.label
+						, rfc.producer 
+						, COALESCE(rfc.loccountry, '')  as rfccountry
+						, COALESCE(rfc.locregion, '')   as rfcregion
+						, COALESCE(rfc.locLocation, '') as rfclocation
+						, COALESCE(rfc.loclocale, '')  as rfclocale
+						, COALESCE(rfc.locsite, '')    as rfcsite  
+						, COALESCE(rfc.color, '')    as rfccolor
+						, COALESCE(rfc.variety, '')  as rfcvariety
+						, COALESCE(rfc.dryness, '') as rfcdryness 
+						, COALESCE(rfc.type, 'Table') as rfctype 
+
+
+                          FROM vWineVinNDetails as v  WITH (NOEXPAND) 
+                          left join  Wine_VinN_RFC as rfc  on v.Wine_VinN_ID = rfc.VinN_ID
+                          where v.color <> ''
+                          and rfc.id is not null
+                          order by v.Wine_VinN_ID
+
+ 
+                         select top 1000 
+                         v.Wine_VinN_ID
+                        , w.ID 
+                        , wv.name 
+                        , w.WF_StatusID
+
+                          FROM vWineVinNDetails as v  WITH (NOEXPAND) 
+                          INNER JOIN Wine_N as w on w.Wine_VinN_ID = v.Wine_VinN_ID
+                          INNER JOIN WineVintage as wv on wv.ID = w.VintageID
+                          left join  Wine_VinN_RFC as rfc  on v.Wine_VinN_ID = rfc.VinN_ID
+                          where v.color <> ''
+                          and rfc.id is not null
+                          order by v.Wine_VinN_ID ,wv.name desc
+           ";
+
+
+
+
+
+            using (SqlConnection conn = _connFactory.GetConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("", conn))
+                {
+                    cmd.CommandText = sb.ToString();
+                    cmd.CommandTimeout = 60;
+
+                    using (var rdr = cmd.ExecuteReader())
+                    {
+                        //
+                        // sort wines by vintage  descending
+                        //
+                        //
+
+                        while (rdr.Read())
+                        {
+
+                            if (!rdr.IsDBNull(13))
+                            {
+                                VinN_Ext_RFC vinN = new VinN_Ext_RFC
+                                {
+                                    id = rdr.GetInt32(0),
+                                    label = rdr.GetString(1),
+                                    producer = rdr.GetString(2),
+                                    country = rdr.GetString(3),
+                                    region = rdr.GetString(4),
+                                    location = rdr.GetString(5),
+                                    locale = rdr.GetString(6),
+                                    site = rdr.GetString(7),
+
+                                    colorClass = rdr.GetString(8),
+                                    variety = rdr.GetString(9),
+                                    dryness = rdr.GetString(10),
+                                    wineType = rdr.GetString(11)
+
+                                };
+
+
+                                vinN.rfc = new VinN_RFC()
+                                {
+                                    id = rdr.GetInt32(13),
+                                    label = rdr.GetString(14),
+                                    producer = rdr.GetString(15),
+                                    country = rdr.GetString(16),
+                                    region = rdr.GetString(17),
+                                    location = rdr.GetString(18),
+                                    locale = rdr.GetString(19),
+                                    site = rdr.GetString(20),
+
+                                    colorClass = rdr.GetString(21),
+                                    variety = rdr.GetString(22),
+                                    dryness = rdr.GetString(23),
+                                    wineType = rdr.GetString(24)
+                                };
+
+                                vinN.wines = new List<WineN>();
+                                dict.Add(vinN.id, vinN);
+                            }
+                            else
+                            {
+
+
+                                VinN vinN = new VinN
+                                {
+                                    id = rdr.GetInt32(0),
+                                    label = rdr.GetString(1),
+                                    producer = rdr.GetString(2),
+                                    country = rdr.GetString(3),
+                                    region = rdr.GetString(4),
+                                    location = rdr.GetString(5),
+                                    locale = rdr.GetString(6),
+                                    site = rdr.GetString(7),
+
+                                    colorClass = rdr.GetString(8),
+                                    variety = rdr.GetString(9),
+                                    dryness = rdr.GetString(10),
+                                    wineType = rdr.GetString(11),
+                                    workflow = rdr.GetFieldValue<Int16>(12)
+
+                                };
+                                vinN.wines = new List<WineN>();
+                                dict.Add(vinN.id, vinN);
+                            }
+
+                        }
+
+                        if (rdr.NextResult())
+                        {
+                            while (rdr.Read())
+                            {
+                                Int32 vinId = rdr.GetInt32(0);
+
+                                if (dict.ContainsKey(vinId))
+                                {
+                                    var vinN = dict[vinId];
+
+                                    if (vinN != null)
+                                    {
+                                        vinN.wines.Add(new WineN()
+                                        {
+                                            id = rdr.GetInt32(1)
+                                            ,
+                                            vintage = rdr.GetString(2)
+                                            ,
+                                            workflow = rdr.GetFieldValue<Int16>(3)
+                                        });
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+
+                    return dict.Values.ToList();
+                }
+
+            }
+        }
+
+
+
+
+        public VinN DeleteRFC(VinN_Ext_RFC vinN)
+        {
+            string sb = @" DELETE FROM  Wine_VinN_RFC where id = @ID ";
+
+
+            using (SqlConnection conn = _connFactory.GetConnection())
+            {
+
+                using (SqlCommand cmd = new SqlCommand("", conn))
+                {
+                    cmd.CommandText = sb.ToString();
+                    cmd.Parameters.AddWithValue("@ID", vinN.rfc.id);
+
+
+                    cmd.ExecuteNonQuery();
+
+                    vinN.rfc = null;
+                    return vinN;
+                }
+
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="vinN"></param>
+        /// <returns></returns>
+        public VinN ApproveRFC(VinN_Ext_RFC vinN)
+        {
+
+            if (vinN.rfc != null)
+            {
+                vinN.copyFromRFC();
+
+                Update(vinN);
+
+                DeleteRFC(vinN);
+
+                vinN.rfc = null;
+
+                return vinN;
+
+            }
+
+            return null;
         }
     }
 

@@ -53,6 +53,12 @@ namespace EditorsCommon
         protected DateTime updated;
 
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public List<WineN> wines;
+
+
         public String appellation
         {
             get
@@ -83,10 +89,6 @@ namespace EditorsCommon
 
              /////
              //if (state == EditorsCommon.WorkFlowState.STATE_GROUP_PUBLISHED)
-        /// <summary>
-        /// 
-        /// </summary>
-        public List<WineN> wines;
         public bool HasState(int state)
         {
 
@@ -153,11 +155,56 @@ namespace EditorsCommon
         //
         //
         public Int32 id1;
-
-
-    
     
     }
+
+    public class VinN_RFC 
+    {
+        public Int32 id;
+        public String producer;
+        public String label;
+
+        public String colorClass;
+        public String variety;
+        public String dryness;
+        public String wineType;
+
+
+        public String country;
+        public String region;
+        public String location;
+        public String locale;
+        public String site;
+
+
+        protected DateTime created;
+    }
+
+    public class VinN_Ext_RFC : VinN
+    {
+
+        public VinN_RFC rfc;
+
+        public void copyFromRFC()
+        {
+             producer = rfc.producer;
+             label = rfc.label;
+
+             colorClass = rfc.colorClass;
+             variety = rfc.variety;
+             dryness = rfc.dryness;
+             wineType = rfc.wineType;
+
+
+             country = rfc.country;
+             region = rfc.region;
+             location  =rfc.location;
+             locale = rfc.locale;
+             site = rfc.site;
+        }
+    }
+
+
 
 
     public interface IVinStorage : IStorage<VinN>
@@ -184,6 +231,9 @@ namespace EditorsCommon
         /// <param name="context"></param>
         /// <returns></returns>
         IEnumerable<VinN> Search(String filter);
+
+
+        ///VinN Search(VinN vinN);
 
         /// <summary>
         /// 
@@ -260,15 +310,36 @@ namespace EditorsCommon
         /// <returns></returns>
         IEnumerable<VinN> LoadSimilar(int flag);
 
+     
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="authorId"></param>
         /// <param name="vinN"></param>
         /// <returns></returns>
-        new VinN Search(VinN vinN);
+        VinN CreateRFC(int authorId, VinN vinN);
 
-      
-    
-    
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        IEnumerable<VinN> LoadRFC();
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="o"></param>
+        /// <returns></returns>
+        VinN DeleteRFC(VinN_Ext_RFC o);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="o"></param>
+        /// <returns></returns>
+        VinN ApproveRFC(VinN_Ext_RFC o);
     }
 }

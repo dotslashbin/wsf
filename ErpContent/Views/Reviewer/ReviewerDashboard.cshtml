@@ -45,6 +45,35 @@
     </script>
 
 
+    <script id="assignment-edit-template" type="text/html">
+        <br />
+
+        <form name="assignment-edit-template-form" id="assignment-edit-template-form" action="#">
+            <div class="row form-group">
+                <div class="col-sm-3">Publication: </div>
+                <div class="col-sm-6"><span data-bind="text: publication"></span></div>
+            </div>
+            <div class="row form-group">
+                <div class="col-sm-3">Issue#: </div>
+                <div class="col-sm-6"><span data-bind="text: issue"></span></div>
+            </div>
+            <div class="row form-group">
+                <div class="col-sm-3">Author</div>
+                <div class="col-sm-6"><span data-bind="text: author.name"></span></div>
+             </div>
+
+            <br />
+            <div class="row form-group">
+                <div class="col-sm-3">Assignment Title: </div>
+                <div class="col-sm-8">
+                    <input class="form-control input-sm" id="assgnmtTitle" name="assgnmtTitle" data-bind="value: title, valueUpdate: 'blur'" placeholder="Title" required />
+                </div>
+            </div>
+
+
+        </form>
+    </script>
+
 
     <script id="tasting-event-details-template" type="text/html">
 
@@ -216,6 +245,14 @@
             <div class="col-sm-2">
                 <span data-bind="text: publicationName"></span>
             </div>
+            <div class="col-sm-2 pull-right">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <a href="#" class="btn btn-xs" data-bind="click: NewAssignment, visible: AllowPrivateAssignment() == true "><span class='glyphicon glyphicon-plus' title="Add New Assignment">&nbsp;</span>Add New Assignment</a>
+                    </div>
+                </div>
+            </div>
+
          </div>
         <div class="row">
             <div class="col-sm-2">
@@ -227,21 +264,24 @@
         <div class="row" data-bind="visible: assignmentList().length > 0" >
             <div class="panel panel-success">
                     <div class="row  panel-heading">
-                         <div class="col-sm-9">Title</div>
+                         <div class="col-sm-8">Title</div>
                          <div class="col-sm-1">Created</div>
                          <div class="col-sm-1">Submit</div>
                          <div class="col-sm-1"># Notes</div>
+                         <div class="col-sm-1">&nbsp;</div>
                     </div>
                 <div style="max-height:650px; overflow:auto">
             <!-- ko foreach: assignmentList -->
 
 
-                    <div class="row" style="cursor: pointer" data-bind="click: goToAssignmentDetails.bind($data, $parent), style: { color: wfState() != 100 ? 'red' : 'black', href: name }" >
-                        <div class="col-sm-9"><span data-bind="text: title"></span></div>
+                    <div class="row" style="cursor: pointer" data-bind=" style: { color: wfState() != 100 && $parent.AllowPrivateAssignment() == false ? 'red' : 'black', href: name }" >
+                        <div class="col-sm-8"><span data-bind="text: title, click: goToAssignmentDetails.bind($data, $parent)"></span></div>
                         <div class="col-sm-1"><span data-bind="text: CreatedDate"></span></div>
                         <div class="col-sm-1"><span data-bind="text: submitDate"></span></div>
                         <div class="col-sm-1"><span class="label label-info " data-bind="text: notesCount"></span></div>
-
+                        <div class="col-sm-1">
+                                <span data-bind="click: $parent.deleteAssignment, visible: notesCount() == 0 && $parent.AllowPrivateAssignment() == true " class='glyphicon glyphicon-trash' style="cursor:pointer" title="Delete Assignment (if empty)"></span>
+                        </div>
                     </div>
 
                     <!-- /ko -->
@@ -542,88 +582,11 @@
 
     </script>
 
-    @{
-        @Html.Partial("_ArticleFormTemplate")
-    }
-
-    @{
-        @Html.Partial("_ArticlePreviewTemplate");     
-    }
-
-    @{
-       @Html.Partial("_ArticleEntityJScripts"); 
-    }
-    
-
-
+   
 
 
     <script type="text/javascript">
 
-        function IssueModel() {
-            var self = this;
-
-
-            self.loaded = false;
-
-
-            self.publicationId = ko.observable(0);
-            //self.publications = ko.observableArray();
-
-
-            self.stateGroupId = ko.observable(0);
-            //self.stateGroups = ko.observableArray();
-
-
-
-            self.assignmentList = ko.observableArray();
-            self.workflow = ko.observable(0);
-
-            self.init = function () {
-
-                if (!self.loaded) {
-                    self.loaded = !self.loaded;
-
-                    self.stateGroupId(@EditorsCommon.WorkFlowState.STATE_GROUP_IN_PROCESS);
-
-                    // now we can load assignments
-
-                    self.loadAssignements();
-                }
-            }
-
-
-            self.loadAssignements = function () {
-
-                var id = 0;
-
-                if (self.publicationId() !== undefined) {
-                    id = self.publicationId();
-                }
-
-                $.get('@Url.Content("~/Assignment/GetAssignmentsByUser")', { publicationid: id, state : self.stateGroupId() },
-                 function (result) {
-
-                     /**/
-                     var dt2js = function (options) { return erp.utils.Json2Date(options.data) };
-                     var t = ko.mapping.fromJS(
-                         {'children' : result}, 
-                         {'children': 
-                             {
-                                 create: function(options) {
-                                     
-                                     var result = new AssigmentModel(options.data);
-                                     return result;
-
-                                 }
-                             }},{} );
-
-                     self.assignmentList(t.children());
-                     /**/
-
-                 });
-            }
-        }
 
 
         function NotesModel(issue, assignment) {
@@ -1253,9 +1216,6 @@
         }
 
 
-        //
-        // R&D
-        //
 
         TastingEventModel.prototype.createNoteFromExisting = function (tastingEvent) {
 
@@ -1279,8 +1239,6 @@
 
             item.assignment = assignment;
 
-
-
             if (!item.exit) {
                 item.exit = function (model) {
                     model.refreshCounts();
@@ -1295,6 +1253,95 @@
         {
             alert('Approve whole assignments. Not yet implemented. Comming soon.');
         };
+
+
+        IssueItemModel.prototype.AllowPrivateAssignment = function () {
+            var self = this;
+
+            return self.title().toLowerCase().localeCompare("generic assignments") == 0;
+
+        }
+
+        IssueItemModel.prototype.NewAssignment = function () {
+
+            var self = this;
+
+            $.ajax({
+                type: 'POST',
+                url: erp.wsf_path + 'Assignment/GetNewAssignmentForAuthor',
+                data: {},
+                success: function (r) {
+                    //
+                    // use return value as template
+                    //
+                    //
+                    var m = new AssignmentModel(r);
+
+                    m.issue(self.title());
+                    m.issueId(self.id());
+                    m.publicationId(self.publicationID());
+                    m.publication(self.publicationName());
+
+
+                    m.init = function (elements) {
+                        m.validator = $("#assignment-edit-template-form").validate();
+                    };
+
+                    m.validate = function () {
+                        var result = true;
+                        result = m.validator.form();
+                        if (!result) {
+                            m.validator.showErrors();
+                        }
+                        return result;
+                    }
+
+
+                    m.save = function (o) {
+
+                        if (!m.validate()) {
+                            return false;
+                        }
+
+
+                            $.ajax({
+                                type: 'POST',
+                                url: '@Url.Content("~/Assignment/AddReviewerAssignment")',
+                            data:
+                                {
+                                    str: JSON.stringify(m.toObject())
+                                },
+                            success: function (r) {
+                                var v = new AssignmentModel(r);
+                                self.assignmentList.unshift(v);
+                            },
+                            error: function (request, status, error) {
+
+                                PAGE_CONTEXT.error(request, status, error)
+                            }
+                        });
+
+                        return true;
+
+                };
+
+
+                var d = pageData.OpenDialog(m, m, "assignment-edit-template");
+                d.dialog("option", "title", "Create New assignment");
+                d.dialog("option", "height", 350);
+
+
+            },
+            error: function (request, status, error) {
+
+                PAGE_CONTEXT.error(request, status, error)
+
+            }
+        });
+
+
+        }
+
 
 
 

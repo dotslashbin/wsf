@@ -123,7 +123,45 @@
                          </div>
                     </div> 
 
+                  <!-- ko if:  $data.rfc   -->
+                   <div class="row">
+                        <div class='col-sm-2'>
+                            RFC
+                            &nbsp;&nbsp;<span class='glyphicon glyphicon-thumbs-down' data-bind="click: $parent.deleteRFC"  style="cursor:pointer; color: red" title="delete RFC" ></span>
+                            &nbsp;&nbsp;<span class='glyphicon glyphicon-thumbs-up' data-bind="click: $parent.approveRFC"  style="cursor:pointer; color : green" title="approve RFC" ></span>
+                        </div>
+                        <div class='col-sm-10'>
+                           <span >
+                           <b> 
+                           <span data-bind="text: rfc.producer, style : {color: producer() != rfc.producer() ? 'red' : 'black'}"></span>
+                           <span data-bind="text: rfc.label().length == 0 ? '' : ', ' + rfc.label(), style : {color: label() != rfc.label() ? 'red' : 'black'}"/>
+                           </b>
+                           </span> 
+                         </div>
+                       <div class="row">
+                            <div class='col-sm-2'>&nbsp;
+                             </div>
+                            <div class='col-sm-10'>
+                                <span data-bind="text: rfc.country"/>
+                                <span data-bind="text: rfc.region().length == 0 ? '' : ', ' + rfc.region()"/>
+                                <span data-bind="text: rfc.location().length == 0 ? '' : ', ' + rfc.location()"/>
+                                <span data-bind="text: rfc.locale().length == 0 ? '' : ', ' + rfc.locale()"/>
+                                <span data-bind="text: rfc.site().length == 0 ? '' : ', ' + rfc.site()"/>
+                            </div>
+                        </div> 
+                        <div class="row">
+                            <div class='col-sm-2'>&nbsp;
+                             </div>
+                            <div class='col-sm-10'>
+                                <span data-bind="text: rfc.variety"></span>, 
+                                <span data-bind="text: rfc.colorClass"></span>, 
+                                <span data-bind="text: rfc.dryness"></span>
+                             </div>
+                        </div> 
 
+
+                    </div>
+                    <!-- /ko -->
 
                 </div>
                <div class='col-sm-3' >
@@ -392,6 +430,9 @@
         }
 
 
+
+
+
         self.edit = function(item){
 
             var m = new VinModel( item.toObject());
@@ -454,6 +495,72 @@
 
 
 
+
+        self.deleteRFC = function(item){
+            if( !window.confirm("Do you want delete this RFC?")){
+                return false;
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/vin/DeleteRFC")',
+                data:
+                    {
+                        str: JSON.stringify(item.toObject())
+                    },
+                success: function (r) {
+                    if (r){
+                        item.fromObject(r);
+
+                        var tmp = self.items();
+                        self.items([]);
+                        self.items(tmp);
+
+                    }
+                },
+                error: function (request, status, error) {
+                    alert("There is an error on the server while executing this operation.\nPlease report to admin.");
+                }
+            });
+        }
+
+        self.approveRFC = function(item){
+            if( !window.confirm("Do you want approve this RFC?")){
+                return false;
+            }
+ 
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/vin/ApproveRFC")',
+                data:
+                    {
+                        str: JSON.stringify(item.toObject())
+                    },
+                success: function (r) {
+                    if (r){
+
+                        var result = new VinModel(r);
+                        var ndx    = self.items().indexOf(item);
+                        
+                        if( ndx >=0  ){
+                            self.items()[ndx] = result;
+                        }
+
+                        //item.fromObject(r);
+
+                        var tmp = self.items();
+                        self.items([]);
+                        self.items(tmp);
+                    }
+                },
+                error: function (request, status, error) {
+                    alert("There is an error on the server while executing this operation.\nPlease report to admin.");
+                }
+            });
+        }
+
+
+
         self.search = function () {
             // do nothing at the moment
             //
@@ -492,10 +599,11 @@
             if( ! self.initOnce ){
 
                 self.stateGroups([
-                    {name:'ALL',id:@EditorsCommon.WorkFlowState.STATE_GROUP_ALL},
+                   {name:'ALL',id:@EditorsCommon.WorkFlowState.STATE_GROUP_ALL},
                    {name:'In Process',id:@EditorsCommon.WorkFlowState.STATE_GROUP_IN_PROCESS},
                    {name:'Published',id:@EditorsCommon.WorkFlowState.STATE_GROUP_PUBLISHED},
-                    ]);
+                   {name:'RFC',id:@EditorsCommon.WorkFlowState.STATE_RFC},
+                ]);
 
                   self.stateGroupId(@EditorsCommon.WorkFlowState.STATE_GROUP_ALL);
                   self.initOnce = !self.initOnce;

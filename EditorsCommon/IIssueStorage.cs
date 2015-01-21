@@ -77,6 +77,14 @@ namespace EditorsCommon.Publication {
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="issueID"></param>
+        /// <returns></returns>
+        IEnumerable<Issue> GetIssuesForUser(int userId);
+
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <returns></returns>
         IEnumerable<PublicationItem> GetPublications();
 

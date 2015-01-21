@@ -250,6 +250,60 @@ namespace EditorsDbLayer.Data.Publication
             return e;
         }
 
+
+
+        public IEnumerable<Issue> GetIssuesForUser(int userId)
+        {
+
+            List<Issue> res = new List<Issue>();
+
+
+            using (SqlConnection conn = _connFactory.GetConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("Issue_GetList_ForUser", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@UserID", userId);
+
+
+                    using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.CloseConnection))
+                    {
+
+                            while (dr.Read())
+                            {
+                                Issue item = new Issue();
+                                item.id = dr.GetInt32(0);
+                                item.publicationID = dr.GetInt32(1);
+                                item.publicationName = dr.GetString(2);
+                                item.chiefEditorId = (dr.IsDBNull(3) ? 0 : dr.GetInt32(3));
+                                item.chiefEditorName = (dr.IsDBNull(4) ? "" : dr.GetString(4));
+                                item.title = dr.GetString(5);
+                                if (!dr.IsDBNull(6))
+                                    item.createdDate = dr.GetDateTime(6);
+                                if (!dr.IsDBNull(7))
+                                    item.publicationDate = dr.GetDateTime(7);
+                                item.Notes = (dr.IsDBNull(8) ? "" : dr.GetString(8));
+                                item.wfState = dr.GetInt32(9);
+
+
+
+                                item.articlesCnt = (dr.IsDBNull(12) ? 0 : dr.GetInt32(12));
+                                item.articlesPublishedCnt = (dr.IsDBNull(13) ? 0 : dr.GetInt32(13));
+                                item.tasteNotesCnt = (dr.IsDBNull(14) ? 0 : dr.GetInt32(14));
+                                item.tasteNotesPublishedCnt = (dr.IsDBNull(15) ? 0 : dr.GetInt32(15));
+                                item.tastingEventsCnt = (dr.IsDBNull(16) ? 0 : dr.GetInt32(16));
+                                item.tastingEventsPublishedCnt = (dr.IsDBNull(17) ? 0 : dr.GetInt32(17));
+
+                                res.Add(item);
+                            }
+                    }
+                }
+            }
+
+            return res;
+        }
+
+
         public IEnumerable<Issue> Search(Issue e)
         {
 
@@ -341,13 +395,13 @@ namespace EditorsDbLayer.Data.Publication
                                 item.tastingEventsPublishedCnt = (dr.IsDBNull(17) ? 0 : dr.GetInt32(17));
 
                                 res.Add(item);
-                            } // while
+                            } 
                         }
                         if (dr != null && !dr.IsClosed)
                             dr.Close();
-                    } // datareader
-                } // sqlCommand
-            } // sqlConn
+                    } 
+                } 
+            } 
 
             return res;
         }
@@ -1125,6 +1179,7 @@ order by te.ID
                 }
             } 
         }
+
 
     }
 }

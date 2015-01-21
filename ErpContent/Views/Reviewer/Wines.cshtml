@@ -1,7 +1,7 @@
 ﻿
 @{
     ViewBag.Title = "Wines";
-    ViewBag.PageTitle = "ADMIN DASHBOARD: Wines";
+    ViewBag.PageTitle = "Reviewer Dashboard: Wines";
     Layout = "~/Views/Shared/_LayoutBootstrap.cshtml";
 }
 
@@ -12,8 +12,6 @@
    @Html.Partial("_ReviewerLeftMenu")
  }
 
-
-<h2>Wines</h2>
 
 <div data-bind="template: { name: mv().view, data: mv().model, afterRender: $root.modelInit } "></div>
 
@@ -70,9 +68,8 @@
             <div class="row" style="border-bottom: solid 1px gray;">
                 <div class='col-sm-8' >
                     <div class="row">
-                        <div class='col-sm-2'><span class='glyphicon glyphicon-pencil' data-bind="click: edit"  style="cursor:pointer" title="Edit VIN" ></span>
+                        <div class='col-sm-2'><span class='glyphicon glyphicon-pencil' data-bind="click: $parent.edit"  style="cursor:pointer" title="Edit VIN" ></span>
                            (<span data-bind="text: id"></span>) 
-
                          </div>
                         <div class='col-sm-10'>
                            <span  data-bind="style : {color:erp.utils.statusColor($data.workflow())}">
@@ -103,6 +100,47 @@
                             <span data-bind="text: dryness"></span>
                          </div>
                     </div> 
+                    <!-- ko if: $data.rfc  -->
+                   <div class="row">
+                        <div class='col-sm-2'>
+                            RFC
+                            &nbsp;&nbsp;<span class='glyphicon glyphicon-thumbs-down' data-bind="click: $parent.deleteRFC"  style="cursor:pointer; color: red" title="delete RFC" ></span>
+                        </div>
+                        <div class='col-sm-10'>
+                           <span >
+                           <b> 
+                           <span data-bind="text: rfc.producer, style : {color: producer() != rfc.producer() ? 'red' : 'black'}"></span>
+                           <span data-bind="text: rfc.label().length == 0 ? '' : ', ' + rfc.label(), style : {color: label() != rfc.label() ? 'red' : 'black'}"/>
+                           </b>
+                           </span> 
+                         </div>
+                       <div class="row">
+                            <div class='col-sm-2'>&nbsp;
+                             </div>
+                            <div class='col-sm-10'>
+                                <span data-bind="text: rfc.country"/>
+                                <span data-bind="text: rfc.region().length == 0 ? '' : ', ' + rfc.region()"/>
+                                <span data-bind="text: rfc.location().length == 0 ? '' : ', ' + rfc.location()"/>
+                                <span data-bind="text: rfc.locale().length == 0 ? '' : ', ' + rfc.locale()"/>
+                                <span data-bind="text: rfc.site().length == 0 ? '' : ', ' + rfc.site()"/>
+                            </div>
+                        </div> 
+                        <div class="row">
+                            <div class='col-sm-2'>&nbsp;
+                             </div>
+                            <div class='col-sm-10'>
+                                <span data-bind="text: rfc.variety"></span>, 
+                                <span data-bind="text: rfc.colorClass"></span>, 
+                                <span data-bind="text: rfc.dryness"></span>
+                             </div>
+                        </div> 
+
+
+                    </div>
+                    <!-- /ko -->
+
+
+
 
                 </div>
                <div class='col-sm-3' >
@@ -111,9 +149,9 @@
             <!-- /ko -->
                </div>
                <div class='col-sm-1' >
-                  <button class="btn btn-primary btn-xs" style="cursor:pointer" data-bind="click : approve, visible : needApprove() == true">Approve</button>
                </div>
             </div>
+
             <!-- /ko -->
 
         </div>
@@ -371,7 +409,31 @@
         }
 
 
+
+
+
+
+
+
+    }
+
+
+    function WinesPageModel() {
+        var self = this;
+
+        self.items = ko.observableArray();
+        self.searchString = ko.observable();
+
+
+
         self.edit = function(item){
+
+            if( item.rfc ) 
+            {
+                alert("Could edit this wine because RFC was already issued for it.");
+                return;
+            }
+
 
             var m = new VinModel( item.toObject());
  
@@ -392,14 +454,20 @@
 
                 $.ajax({
                     type: 'POST',
-                    url: '@Url.Content("~/vin/Update")',
+                    url: '@Url.Content("~/vin/CreateRFC")',
                     data:
                         {
                             str: JSON.stringify(o.toObject())
                         },
                     success: function (r) {
-                        if (r)
+                        if (r){
                             item.fromObject(r);
+
+                            var tmp = self.items();
+                            self.items([]);
+                            self.items(tmp);
+
+                        }
                     },
                     error: function (request, status, error) {
                         alert("There is an error on the server while executing this operation.\nPlease report to admin.");
@@ -420,15 +488,59 @@
 
 
 
+        self.deleteRFC = function(item){
+            if( !window.confirm("Do you want delete this RFC?")){
+                return false;
+            }
 
-    }
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/vin/DeleteRFC")',
+                data:
+                    {
+                        str: JSON.stringify(item.toObject())
+                    },
+                success: function (r) {
+                    if (r){
+                        item.fromObject(r);
 
+                        var tmp = self.items();
+                        self.items([]);
+                        self.items(tmp);
 
-    function WinesPageModel() {
-        var self = this;
+                    }
+                },
+                error: function (request, status, error) {
+                    alert("There is an error on the server while executing this operation.\nPlease report to admin.");
+                }
+            });
+        }
 
-        self.items = ko.observableArray();
-        self.searchString = ko.observable();
+        self.approveRFC = function(item){
+            if( !window.confirm("Do you want approve this RFC?")){
+                return false;
+            }
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/vin/ApproveRFC")',
+                data:
+                    {
+                        str: JSON.stringify(item.toObject())
+                    },
+                success: function (r) {
+                    if (r){
+                        item.fromObject(r);
+                        var tmp = self.items();
+                        self.items([]);
+                        self.items(tmp);
+                    }
+                },
+                error: function (request, status, error) {
+                    alert("There is an error on the server while executing this operation.\nPlease report to admin.");
+                }
+            });
+        }
+
 
 
 

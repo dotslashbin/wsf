@@ -58,10 +58,10 @@
         var publicationId = self.publicationId() || 0;
         var stateGroup = self.stateGroupId();
 
-        if (stateGroup != '1' && publicationId == 0) {
-            alert("Your choice is too broad. Please select a publication other than ALL");
-            return;
-        }
+        //if (stateGroup != '1' && publicationId == 0) {
+        //    alert("Your choice is too broad. Please select a publication other than ALL");
+        //    return;
+        //}
 
         self.load(publicationId,stateGroup );
     }

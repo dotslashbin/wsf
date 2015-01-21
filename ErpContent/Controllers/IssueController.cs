@@ -76,13 +76,9 @@ namespace ErpContent.Controllers
             // for now, this method will do that same as Issues, but in future we might filter out the issue
             // which do not have references to an user
             //
-            //int userId = (int)Membership.GetUser(User.Identity.Name).ProviderUserKey;
-            //
-            //
-            
-            Issue filter = publicationId == 0 ? null : new Issue() { publicationID = publicationId };
+            int userId = (int)Membership.GetUser(User.Identity.Name).ProviderUserKey;
 
-            var result = _issueStorage.Search(filter);
+            var result = _issueStorage.GetIssuesForUser( userId);
 
             //
             // apply filter by status
@@ -92,6 +88,13 @@ namespace ErpContent.Controllers
                 result = from r in result where EditorsCommon.WorkFlowState.IsInState(r.wfState, state) select r;
             }
 
+            //
+            // apply filter by publication
+            //
+            if (publicationId != 0)
+            {
+                result = from r in result where  r.publicationID == publicationId select r;
+            }
 
             //
             // sort by create date

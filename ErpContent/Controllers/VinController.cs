@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
+using System.Web.Security;
 
 namespace ErpContent.Controllers
 {
@@ -99,7 +100,11 @@ namespace ErpContent.Controllers
 
              IEnumerable<VinN> result;
 
-             if (String.IsNullOrEmpty(term) && state == EditorsCommon.WorkFlowState.STATE_GROUP_IN_PROCESS)
+             if (state == EditorsCommon.WorkFlowState.STATE_RFC)
+             {
+                 result = _vinStorage.LoadRFC();
+
+             } else if (String.IsNullOrEmpty(term) && state == EditorsCommon.WorkFlowState.STATE_GROUP_IN_PROCESS)
              {
                  result = _vinStorage.SearchNewWineN();
              }
@@ -157,11 +162,10 @@ namespace ErpContent.Controllers
          }
 
 
-
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="flag">flag will define set of bit and they define how similar VINs should  be</param>
+        /// <param name="str"></param>
         /// <returns></returns>
         [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
         [OutputCache(Duration = 0, VaryByParam = "none")]
@@ -176,7 +180,56 @@ namespace ErpContent.Controllers
 
 
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
+        [OutputCache(Duration = 0, VaryByParam = "none")]
+        public ActionResult CreateRFC(string str)
+        {
+            var o = new JavaScriptSerializer().Deserialize<VinN>(str);
+            var id = (int)Membership.GetUser(User.Identity.Name).ProviderUserKey;
 
+            var result = _vinStorage.CreateRFC(id,o);
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
+        [OutputCache(Duration = 0, VaryByParam = "none")]
+        public ActionResult DeleteRFC(string str)
+        {
+            var o = new JavaScriptSerializer().Deserialize<VinN_Ext_RFC>(str);
+
+            var result = _vinStorage.DeleteRFC( o);
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
+        [OutputCache(Duration = 0, VaryByParam = "none")]
+        public ActionResult ApproveRFC(string str)
+        {
+            var o = new JavaScriptSerializer().Deserialize<VinN_Ext_RFC>(str);
+
+            var result = _vinStorage.ApproveRFC( o);
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
 
 
 	}

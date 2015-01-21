@@ -25,7 +25,8 @@ function AssignmentModel(src) {
                     "editor",
                     "proofread"]
 
-
+                
+                , "UpdatedDate":   { create: dt2js }
                 , "CreatedDate":   { create: dt2js }
                 , "submitDate":    { create: dt2js }
                 , "proofreadDate": { create: dt2js }

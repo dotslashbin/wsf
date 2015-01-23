@@ -8,91 +8,9 @@ using EditorsCommon.Publication;
 using System.Data.SqlClient;
 using System.Data;
 
-namespace EditorsDbLayer.Data.Publication 
+namespace EditorsDbLayer 
 {
 
-    
-   /*
-    * still in development 
-    * 
-    * 
-    	select 
-		ID = a.ID,
-		Title = a.Title,
-		Notes = a.Notes,
-		created = a.created, 
-		updated = a.updated,
-		
-		WF_StatusID = isnull(wfs.ID, -1),
-		
-		IssueID = a.IssueID,
-		IssueTitle = i.Title,
-		PublicationID = p.ID,
-		PublicationName = p.Name
-		
-	from  
-
-	    Assignment a (nolock)
-	
-		join Issue i (nolock) on a.IssueID = i.ID
-		join Publication p (nolock) on i.PublicationID = p.ID
-		join WF_Statuses wfs (nolock) on a.WF_StatusID = wfs.ID
-
-	where a.IssueID = 311
-
-
----------------------------------------
-
-	select 
-		ID = a.ID,
-		IssueID = a.IssueID,
-		userId = u.UserId  ,
-		userRoleId = u.UserRoleID,
-		userFullName = uu.FullName
-		
-	from  
-
-	    Assignment a (nolock)
-		join Assignment_Resource u (nolock) on a.ID = u.AssignmentID
-		join Users uu (nolock) on u.UserId = uu.UserId
-
-	where a.IssueID = 311
-
-----------------------------------------
-
-select 
-		ID = a.ID,
-		IssueID = a.IssueID,
-		deadlineId = d.TypeID,
-		deadline = d.Deadline
-		
-	from Assignment a (nolock)
-		join Issue i (nolock) on a.IssueID = i.ID
-		join Assignment_ResourceD d (nolock) on a.ID = d.AssignmentID
-	where a.IssueID = 311
------------------------------------------------------------------
-
-		  select 
-		  SUM( case when tn.WF_StatusID < 100 then 1 else 0 end) as published,
-		  notesCount = COUNT(tn.ID), 
-		  AssignmentID = aa.ID 
-		  from Assignment as aa   
-		  left join Assignment_TastingEvent as ate on ate.AssignmentID = aa.ID
-		  left join TastingEvent_TasteNote  as ten on ten.TastingEventID = ate.TastingEventID
-		  left join TasteNote as tn on ten.TasteNoteID = tn.ID
-		  where aa.IssueID = 311
-		  group by aa.ID  
-
-
-    * * 
-    * 
-    * 
-    * 
-    */
-    
-    
-    
-    
     
     public class AssignmentStorage : IAssignmentStorage {
 
@@ -897,19 +815,18 @@ select
                 {
 
                     cmd.CommandText = @"
-                       
-update tn set tn.WF_StatusID = 10   from TasteNote tn
-join TastingEvent_TasteNote  te  on te.TasteNoteID = tn.ID
-join Assignment_TastingEvent ate on ate.TastingEventID = te.TastingEventID
-where ate.AssignmentID = @AssignmentID 
-and tn.WF_StatusID = 0
+                        update tn set tn.WF_StatusID = 10   from TasteNote tn
+                        join TastingEvent_TasteNote  te  on te.TasteNoteID = tn.ID
+                        join Assignment_TastingEvent ate on ate.TastingEventID = te.TastingEventID
+                        where ate.AssignmentID = @AssignmentID 
+                        and tn.WF_StatusID = 0
 
                     ";
 
                     cmd.Parameters.AddWithValue("@AssignmentID", assignmentId);
                     cmd.ExecuteNonQuery();
-                } // sqlCommand
-            } // sqlConn
+                } 
+            } 
         
         
         }
@@ -926,19 +843,60 @@ and tn.WF_StatusID = 0
                 {
 
                     cmd.CommandText = @"
-                       
-update tn set tn.WF_StatusID = 60   from TasteNote tn
-join TastingEvent_TasteNote  te  on te.TasteNoteID = tn.ID
-join Assignment_TastingEvent ate on ate.TastingEventID = te.TastingEventID
-where ate.AssignmentID = @AssignmentID 
-and tn.WF_StatusID = 10
-
+                        update tn set tn.WF_StatusID = 60   from TasteNote tn
+                        join TastingEvent_TasteNote  te  on te.TasteNoteID = tn.ID
+                        join Assignment_TastingEvent ate on ate.TastingEventID = te.TastingEventID
+                        where ate.AssignmentID = @AssignmentID 
+                        and tn.WF_StatusID = 10
                     ";
 
                     cmd.Parameters.AddWithValue("@AssignmentID", assignmentId);
                     cmd.ExecuteNonQuery();
                 } // sqlCommand
             } // sqlConn
+        }
+
+
+        public bool SetNoteState(int assignmentId, int stateId)
+        {
+
+            using (SqlConnection conn = _connFactory.GetConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("", conn))
+                {
+
+                    cmd.CommandText = @"
+                        update tn set tn.WF_StatusID = @NewStateID   from TasteNote tn
+                        join TastingEvent_TasteNote  te  on te.TasteNoteID = tn.ID
+                        join Assignment_TastingEvent ate on ate.TastingEventID = te.TastingEventID
+                        where ate.AssignmentID = @AssignmentID 
+                        and tn.WF_StatusID = @OldStateID
+
+                    ";
+
+
+                    int oldStateId = 0;
+                    switch (stateId)
+                    {
+                        case WorkFlowState.READY_FOR_REVIEW:
+                            oldStateId = WorkFlowState.DRAFT;
+                            break;
+                        case WorkFlowState.READY_FOR_PROOF_READ:
+                            oldStateId = WorkFlowState.READY_FOR_REVIEW;
+                            break;
+                        case WorkFlowState.READY_APPROVED:
+                            oldStateId = WorkFlowState.READY_FOR_PROOF_READ;
+                            break;
+
+                    }
+
+                    cmd.Parameters.AddWithValue("@OldStateID", oldStateId);
+                    cmd.Parameters.AddWithValue("@NewStateID", stateId);
+                    cmd.Parameters.AddWithValue("@AssignmentID", assignmentId);
+                    cmd.ExecuteNonQuery();
+                    return true;
+                }
+            }
         }
     }
 }

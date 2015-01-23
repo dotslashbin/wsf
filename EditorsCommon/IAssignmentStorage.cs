@@ -199,6 +199,14 @@ namespace EditorsCommon.Publication {
         /// </summary>
         /// <param name="assignmentId"></param>
        void SetApproved(int assignmentId);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="assignmentId"></param>
+        /// <param name="stateId"></param>
+        /// <returns></returns>
+       bool SetNoteState(int assignmentId, int stateId);
     }
 
 }

@@ -1,7 +1,7 @@
 ﻿using EditorsCommon;
 using EditorsCommon.Publication;
 using EditorsDbLayer;
-using EditorsDbLayer.Data.Publication;
+
 using log4net.Config;
 using Microsoft.Practices.Unity;
 using Microsoft.Practices.Unity.InterceptionExtension;

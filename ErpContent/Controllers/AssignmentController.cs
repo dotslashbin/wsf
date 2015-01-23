@@ -20,7 +20,7 @@ namespace ErpContent.Controllers
         private static ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 
-        private IAssignmentStorage _assignmentStorage;
+        private IAssignmentStorage _storage;
 
         /// <summary>
         /// IOC container should provide implementation of IAssignmentStorage
@@ -28,7 +28,7 @@ namespace ErpContent.Controllers
         /// <param name="assignmentStorage"></param>
         public AssignmentController(IAssignmentStorage assignmentStorage)
         {
-            _assignmentStorage = assignmentStorage;
+            _storage = assignmentStorage;
         }
         
         //
@@ -82,7 +82,7 @@ namespace ErpContent.Controllers
         [OutputCache(Duration = 0, VaryByParam = "none")]
         public ActionResult GetAssignmentsByIssue(int issueId)
         {
-            var result = _assignmentStorage.SearchByIssue(issueId);
+            var result = _storage.SearchByIssue(issueId);
 
             return Json(result, JsonRequestBehavior.AllowGet);
         }
@@ -92,7 +92,7 @@ namespace ErpContent.Controllers
         public ActionResult DeleteAssignment(int assignmentID)
         {
 
-            bool result = _assignmentStorage.DeleteAssignment(assignmentID);
+            bool result = _storage.DeleteAssignment(assignmentID);
 
             return Json(result, JsonRequestBehavior.AllowGet);
         }
@@ -107,7 +107,7 @@ namespace ErpContent.Controllers
             //
             // select all issues for a user
             //
-            var result = _assignmentStorage.SearchByUser(id);
+            var result = _storage.SearchByUser(id);
 
             //
             // filter out only assignment for that issue
@@ -130,7 +130,7 @@ namespace ErpContent.Controllers
             //
             // select all issues for a user
             //
-            var result = _assignmentStorage.SearchByUser(id);
+            var result = _storage.SearchByUser(id);
 
 
             //
@@ -159,7 +159,7 @@ namespace ErpContent.Controllers
             //
             // select all issues for a user
             //
-            var result = _assignmentStorage.SearchByUser(id);
+            var result = _storage.SearchByUser(id);
 
 
             //
@@ -189,7 +189,7 @@ namespace ErpContent.Controllers
             //
             // select all issues for a user
             //
-            var result = _assignmentStorage.SearchByUser(id);
+            var result = _storage.SearchByUser(id);
 
 
             //
@@ -213,7 +213,7 @@ namespace ErpContent.Controllers
         public ActionResult GetAssignmentsByUser(int publicationId, int state)
         {
             var id = (int)Membership.GetUser(User.Identity.Name).ProviderUserKey;
-            var result = _assignmentStorage.SearchByUser(id);
+            var result = _storage.SearchByUser(id);
 
             if (publicationId > 0)
             {
@@ -245,7 +245,7 @@ namespace ErpContent.Controllers
         public ActionResult GetAssignmentsForEditor(int publicationId, int state)
         {
             var id = (int)Membership.GetUser(User.Identity.Name).ProviderUserKey;
-            var result = _assignmentStorage.SearchByUser(id);
+            var result = _storage.SearchByUser(id);
 
             //
             // select only assignments where user is assigned as editot
@@ -281,7 +281,7 @@ namespace ErpContent.Controllers
         public ActionResult GetAssignmentsForProofreader(int publicationId, int state)
         {
             var id = (int)Membership.GetUser(User.Identity.Name).ProviderUserKey;
-            var result = _assignmentStorage.SearchByUser(id);
+            var result = _storage.SearchByUser(id);
 
             //
             // select only assignments where user is assigned as editot
@@ -321,9 +321,9 @@ namespace ErpContent.Controllers
             AssignmentItem o = new JavaScriptSerializer().Deserialize<AssignmentItem>(str);
 
 
-            var result = _assignmentStorage.Create(o);
+            var result = _storage.Create(o);
 
-            _assignmentStorage.AssignmentResources_AddActor(result.id, o.author);
+            _storage.AssignmentResources_AddActor(result.id, o.author);
 
             return Json(result, JsonRequestBehavior.AllowGet);
         }
@@ -345,16 +345,16 @@ namespace ErpContent.Controllers
             AssignmentItem o = new JavaScriptSerializer().Deserialize<AssignmentItem>(str);
 
 
-            var result = _assignmentStorage.Create(o);
+            var result = _storage.Create(o);
 
             // todo.  bulk does not work. stored procedure should be be changes
             //_assignmentStorage.AssignmentResources_AddActorBulk(result.id, o.actors);
             //
             //foreach (var actor in o.actors)
             //    _assignmentStorage.AssignmentResources_AddActor(result.id, actor); ;
-            _assignmentStorage.AssignmentResources_AddActor(result.id, o.author);
-            _assignmentStorage.AssignmentResources_AddActor(result.id, o.editor);
-            _assignmentStorage.AssignmentResources_AddActor(result.id, o.proofread);
+            _storage.AssignmentResources_AddActor(result.id, o.author);
+            _storage.AssignmentResources_AddActor(result.id, o.editor);
+            _storage.AssignmentResources_AddActor(result.id, o.proofread);
 
 
 
@@ -364,9 +364,9 @@ namespace ErpContent.Controllers
             //foreach (var deadline in o.deadlines)
             //    _assignmentStorage.AssignmentResources_AddDeadline(result.id, deadline); 
 
-            _assignmentStorage.AssignmentResources_AddDeadline(result.id, new AssignmentDeadline() { typeid = DeadlineType.submission, deadline = o.submitDate });
-            _assignmentStorage.AssignmentResources_AddDeadline(result.id, new AssignmentDeadline() { typeid = DeadlineType.proofread, deadline = o.proofreadDate });
-            _assignmentStorage.AssignmentResources_AddDeadline(result.id, new AssignmentDeadline() { typeid = DeadlineType.approve, deadline = o.approveDate }); 
+            _storage.AssignmentResources_AddDeadline(result.id, new AssignmentDeadline() { typeid = DeadlineType.submission, deadline = o.submitDate });
+            _storage.AssignmentResources_AddDeadline(result.id, new AssignmentDeadline() { typeid = DeadlineType.proofread, deadline = o.proofreadDate });
+            _storage.AssignmentResources_AddDeadline(result.id, new AssignmentDeadline() { typeid = DeadlineType.approve, deadline = o.approveDate }); 
 
 
             return Json(result, JsonRequestBehavior.AllowGet);
@@ -388,20 +388,20 @@ namespace ErpContent.Controllers
             AssignmentItem o = new JavaScriptSerializer().Deserialize<AssignmentItem>(str);
 
 
-            var result = _assignmentStorage.Update(o);
+            var result = _storage.Update(o);
 
 
-            _assignmentStorage.AssignmenetDeleteAllResources(result.id);
+            _storage.AssignmenetDeleteAllResources(result.id);
 
-            _assignmentStorage.AssignmentResources_AddActor(result.id, o.author);
-            _assignmentStorage.AssignmentResources_AddActor(result.id, o.editor);
-            _assignmentStorage.AssignmentResources_AddActor(result.id, o.proofread);
+            _storage.AssignmentResources_AddActor(result.id, o.author);
+            _storage.AssignmentResources_AddActor(result.id, o.editor);
+            _storage.AssignmentResources_AddActor(result.id, o.proofread);
 
 
 
-            _assignmentStorage.AssignmentResources_AddDeadline(result.id, new AssignmentDeadline() { typeid = DeadlineType.submission, deadline = o.submitDate });
-            _assignmentStorage.AssignmentResources_AddDeadline(result.id, new AssignmentDeadline() { typeid = DeadlineType.proofread, deadline = o.proofreadDate });
-            _assignmentStorage.AssignmentResources_AddDeadline(result.id, new AssignmentDeadline() { typeid = DeadlineType.approve, deadline = o.approveDate });
+            _storage.AssignmentResources_AddDeadline(result.id, new AssignmentDeadline() { typeid = DeadlineType.submission, deadline = o.submitDate });
+            _storage.AssignmentResources_AddDeadline(result.id, new AssignmentDeadline() { typeid = DeadlineType.proofread, deadline = o.proofreadDate });
+            _storage.AssignmentResources_AddDeadline(result.id, new AssignmentDeadline() { typeid = DeadlineType.approve, deadline = o.approveDate });
 
 
             return Json(result, JsonRequestBehavior.AllowGet);
@@ -422,7 +422,7 @@ namespace ErpContent.Controllers
         public ActionResult SetAssignmentReady(int assignmentId)
         {
 
-            _assignmentStorage.SetReady(assignmentId);
+            _storage.SetReady(assignmentId);
 
             return Json(true, JsonRequestBehavior.AllowGet);
         }
@@ -442,11 +442,27 @@ namespace ErpContent.Controllers
         public ActionResult SetAssignmentApproved(int assignmentId)
         {
 
-            _assignmentStorage.SetApproved(assignmentId);
+            _storage.SetApproved(assignmentId);
 
             return Json(true, JsonRequestBehavior.AllowGet);
         }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
+        [OutputCache(Duration = 0, VaryByParam = "none")]
+        [HttpPost]
+        public ActionResult SetTastingNoteState(int assignmentId, int stateId)
+        {
+
+            var result = _storage.SetNoteState(assignmentId, stateId);
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
 
 
 

@@ -91,6 +91,7 @@
                         <span data-bind="text: label().length == 0 ? '' : ', ' + label()"/>
                       </div>
                     </div>
+<!--
                    <div class='row'>
                       <div class='col-sm-1'>&nbsp;</div>
                       <div class='col-sm-11'>
@@ -101,9 +102,17 @@
                         <span data-bind="text: site().length == 0 ? '' : ', ' + site()"/>
                       </div>
                     </div>
+-->
                    <div class='row'>
                       <div class='col-sm-1' >&nbsp;</div>
-                      <div class='col-sm-11' >
+                      <div class='col-sm-6'>
+                        <span data-bind="text: country"/>
+                        <span data-bind="text: region().length == 0 ? '' : ', ' + region()"/>
+                        <span data-bind="text: location().length == 0 ? '' : ', ' + location()"/>
+                        <span data-bind="text: locale().length == 0 ? '' : ', ' + locale()"/>
+                        <span data-bind="text: site().length == 0 ? '' : ', ' + site()"/>
+                      </div>
+                      <div class='col-sm-5' >
                         <span data-bind="text: wineType"/>,
                         <span data-bind="text: variety"/>,
                         <span data-bind="text: colorClass"/>,

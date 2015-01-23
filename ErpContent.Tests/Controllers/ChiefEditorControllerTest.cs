@@ -10,7 +10,7 @@ using System.Web.Mvc;
 using EditorsCommon;
 using Newtonsoft.Json;
 using System.Web.Script.Serialization;
-using EditorsDbLayer.Data.Publication;
+
 using EditorsCommon.Publication;
 using Newtonsoft.Json.Linq;
 

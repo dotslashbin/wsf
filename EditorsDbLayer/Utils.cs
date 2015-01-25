@@ -34,6 +34,13 @@ namespace EditorsDbLayer
                 if (string.IsNullOrEmpty(search_parts[i]))
                     continue;
 
+                if (search_parts[i].CompareTo(",") == 0)
+                    continue;
+
+                if (search_parts[i].CompareTo("&") == 0)
+                    continue;
+
+
                 if (string.IsNullOrEmpty(result))
                 {
                         result = "\"" + search_parts[i] + "*\"";

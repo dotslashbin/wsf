@@ -108,7 +108,7 @@
                                     </select>
                 </div>
                 <div class="col-sm-5 pull-right">
-                    <button class="btn  btn-primary btn-xs inner-window-button" data-bind="click: createNoteFromExisting">Add New Note From Existing</button>
+                    <button class="btn  btn-primary btn-xs inner-window-button" data-bind="click: createNoteFromExisting">Add From Existing</button>
                     <button class="btn  btn-primary btn-xs inner-window-button" data-bind="click: createNote">Add New Note</button>
                 </div>
             </div>
@@ -316,21 +316,54 @@
 
 
 
+        <div class="row" >
+            <div class="row" >
+                <div class='col-sm-4  pull-right' >
+                    <span class='glyphicon glyphicon-shopping-cart'></span>&nbsp;
+                    <span data-bind="text: cart().length" ></span>
+                   &nbsp;<button class="btn  btn-primary btn-sm" style="cursor:pointer" data-bind="click: cartToTastingEvent">Add To Tasting Event</button>
+                   &nbsp;<button class="btn  btn-primary btn-sm" style="cursor:pointer" data-bind="click: clearCart">Clear</button>
+                </div>
+            </div>
+
+            <div class="row" style="height: 150px; overflow:auto; border: solid 1px gray">
+            <!-- ko foreach: cart -->
+               <div class='col-sm-1'>
+                   <span class='glyphicon glyphicon-trash' style='cursor:pointer'" data-bind="click: $parent.deleteFromCart"></span>
+                   &nbsp;
+                   <span class='glyphicon glyphicon-glass'  data-bind="style: { color: wineColor($data.color()) }" ></span>
+
+                </div>
+
+               <div class='col-sm-11'>
+                            <span data-bind="text: vintage"></span>
+                            <span data-bind="text: producer"></span>,
+                            <span data-bind="text: wineName().length == 0 ? '' : wineName() + ',' "></span>
+                            <span data-bind="text: coAppellation"></span>,
+                            <span data-bind="text: variety"></span>,
+                            <span data-bind="text: color"></span>,
+                            <span data-bind="text: wineType"></span>
+                </div>
+             <!-- /ko -->
+            </div>
+        </div>
+
+        <br />
          <div class="row">
             <div class="col-sm-4  input-group-md">
                 <input type="text"
                        data-bind="event: { keyup: searchWithEnter }, value: searchString, valueUpdate: 'blur'"
                        class="form-control"
                        id="note-edit-producer-search"
-                       placeholder="Producer" required />
+                       placeholder="Enter Wine To Search" required />
             </div>
             <div class="col-sm-1 input-group-md">
                 <button id="producer-search-button" class="btn  btn-primary btn-sm" data-bind="click: search">Search</button>
             </div>
 
-            &nbsp;<span data-bind="visible : items().length > 0">Sort Results By
+            &nbsp;<span data-bind="visible: items().length > 0">Sort Results By
             <select
-                data-bind="event:{ change: sortBy },
+                data-bind="event: { change: sortBy },
                 options: PAGE_CONTEXT.sortByOptionsVin,
                 optionsText: 'name',
                 optionsValue: 'id',
@@ -340,7 +373,8 @@
 
         </div>
 
-        <div class="row" style="height: 650px; overflow:auto">
+
+        <div class="row" style="height: 450px; overflow:auto; border: solid 1px gray">
 
             <!-- ko foreach: items -->
             <div class="row"  style="border-bottom: solid 1px gray">
@@ -1040,14 +1074,64 @@
 
 
         VinSearchModel.createNote = function(vin){
-            var m = new TastingEventModel(null);
-            m.createNote(VinSearchModel.tastingEvent,null,vin,null);
+//            var m = new TastingEventModel(null);
+//            m.createNote(VinSearchModel.tastingEvent, null, vin, null);
+
+            var vintage = "";
+
+            while (true) {
+                var vintage = window.prompt("Please enter Vintage (year like 2010 or NV) ",vintage);
+
+                // 
+                // user cancel operation
+                //
+                if (vintage == null) {
+                    return;
+                }
+
+                var valid = false;
+                valid = valid || /^[1-9][0-9][0-9][0-9]$/.test(vintage);
+                valid = valid || /^NV$/.test(vintage);
+
+                if (!valid) {
+                    alert("invalid vintage : " + vintage);
+                    continue;
+                }
+
+                var m = new TastingEventModel(null);
+                m.createBareNote(VinSearchModel.tastingEvent, function (r) {
+                    var m = new TastingNoteModel(r);
+                    m.vintage(vintage);
+                    m.loadFromVin(vin);
+
+
+                    VinSearchModel.cart.unshift(m);
+
+                    //alert('got note');
+                });
+
+                break;
+            }
+
+
         };
 
         VinSearchModel.createNoteVintage = function(vin, vintage){
 
+            //var m = new TastingEventModel(null);
+            //m.createNote(VinSearchModel.tastingEvent,null,vin, vintage);
+
             var m = new TastingEventModel(null);
-            m.createNote(VinSearchModel.tastingEvent,null,vin, vintage);
+            m.createBareNote(VinSearchModel.tastingEvent, function (r) {
+
+                var m = new TastingNoteModel(r);
+                m.vintage(vintage.vintage());
+                m.loadFromVin(vin);
+
+                VinSearchModel.cart.unshift(m);
+
+
+            });
 
         };
 
@@ -1107,6 +1191,54 @@
 
         VinSearchModel.searchString = ko.observable('');
         VinSearchModel.items = ko.observableArray([]);
+
+        VinSearchModel.cart = ko.observableArray([]);
+
+        VinSearchModel.deleteFromCart = function (item) {
+            VinSearchModel.cart.remove(item);
+        }
+
+        VinSearchModel.clearCart = function (item) {
+            if (!window.confirm("Do you really want delete all notes from the cart?")) {
+                return;
+            }
+
+            VinSearchModel.cart.removeAll();
+        }
+
+        VinSearchModel.cartToTastingEvent = function (item) {
+
+            if (!window.confirm("Do you want add all notes from the cart to tasting event?")) {
+                return;
+            }
+
+            var upper = VinSearchModel.cart().length;
+            for (var i = 0; i < upper; i++) {
+
+                $.ajax({
+                    type: 'POST',
+                    url: erp.wsf_path + 'TastingNote/AddTastingNote',
+                    data:
+                        {
+                            str: JSON.stringify(VinSearchModel.cart()[i].toObject())
+                        },
+                    success: function (r) {
+
+                        VinSearchModel.tastingEvent.notes.unshift(new TastingNoteModel(r));
+
+                    },
+                    error: function (request, status, error) {
+                        alert('Error while saving a tasting note. Please report to admin.');
+                    }
+                });
+
+
+            }
+
+            VinSearchModel.cart.removeAll();
+            pageData.drillUp();
+
+        }
 
 
 
@@ -1218,6 +1350,7 @@
         TastingEventModel.prototype.createNoteFromExisting = function (tastingEvent) {
 
             VinSearchModel.tastingEvent = tastingEvent;
+
             pageData.drillDownExt("search-tasting-note-template-window", VinSearchModel, "Search Existing Notes");
         }
 
@@ -1464,7 +1597,7 @@
              return 'maroon';
 
            if( color == "White" || color == "white"  )
-             return 'yellow';
+             return 'white';
 
            if( color == "Rose" || color == "rose"  )
              return 'red';

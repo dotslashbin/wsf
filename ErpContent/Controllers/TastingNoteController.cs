@@ -87,10 +87,37 @@ namespace ErpContent.Controllers
         [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
         [HttpPost]
         [OutputCache(Duration = 0, VaryByParam = "none")]
-        public ActionResult GetNewNoteForEvent(int eventId)
+        public ActionResult GetNewNoteForEvent(int eventId, string vin = null,string vintage = null)
         {
 
             var result = new TastingNote() { tastingEventId = eventId, tastingDate = DateTime.Now };
+
+            if (vin != null)
+            {
+                var v = new JavaScriptSerializer().Deserialize<VinN>(vin);
+
+                result.producer = v.producer;
+                result.wineName = v.label;
+
+                result.country = v.country;
+                result.region = v.region;
+                result.location = v.location;
+                result.locale = v.locale;
+                result.site = v.site;
+
+                result.variety = v.variety;
+                result.color = v.colorClass;
+                result.dryness = v.dryness;
+
+                result.wineType = v.wineType;
+            }
+
+            if (vintage != null)
+            {
+                result.vintage = vintage;
+            }
+
+
 
             return Json(result, JsonRequestBehavior.AllowGet);
         }

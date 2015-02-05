@@ -882,7 +882,7 @@
 
             self.exportAssignment = function () {
 
-                erp.utils.ajaxDownload('@Url.Content("~/Issue/ExportAssignment")', { issueId: self.issue.id(), assignmentId: self.assignment.id });
+                erp.utils.ajaxDownload('@Url.Content("~/Issue/ExportAssignmentAdmin")', { issueId: self.issue.id(), assignmentId: self.assignment.id });
 
             }
 

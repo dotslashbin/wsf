@@ -147,12 +147,23 @@
         self.fromObject(src);
 
 
-        self.createBareNote = function (tastingEvent, callback) {
+        self.createBareNote = function (tastingEvent,vin,vintage, callback) {
+
+            var postParams = {};
+
+            postParams.eventId = tastingEvent.id;
+
+            if( vin )
+                postParams.vin = JSON.stringify(vin.toObject());
+
+            if (vintage)
+                postParams.vintage = vintage;
+
 
             $.ajax({
                 type: 'POST',
                 url: erp.wsf_path + 'TastingNote/GetNewNoteForEvent',
-                data: { eventId: tastingEvent.id},
+                data: postParams,
                 success: function (r) {
                         callback(r);
                 },
@@ -167,7 +178,7 @@
 
         self.createNote = function (tastingEvent,event, vin, vintage) {
 
-            self.createBareNote(tastingEvent, function (r) {
+            self.createBareNote(tastingEvent,vin,vintage, function (r) {
                 //
                 // use return value as template
                 //
@@ -176,7 +187,6 @@
 
 
                 if (vin) {
-                    m.loadFromVin(vin);
                     m.vinEditable(false);
                     m.vintageEditable(true);
 
@@ -200,7 +210,6 @@
                 }
 
                 if (vintage) {
-                    m.vintage(vintage.vintage());
                     m.vintageEditable(false);
                 }
 

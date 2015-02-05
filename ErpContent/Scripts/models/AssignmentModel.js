@@ -55,6 +55,11 @@ function AssignmentModel(src) {
 
 
 
+    self.exportAdmin = function () {
+        erp.utils.ajaxDownload(erp.wsf_path + 'Issue/ExportAssignmentAdmin', { issueId: self.issueId(), assignmentId: self.id() });
+    }
+
+
 
     self.createTastingEvent = function () {
 

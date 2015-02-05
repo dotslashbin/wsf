@@ -118,20 +118,20 @@
                             <div class='col-sm-2'>&nbsp;
                              </div>
                             <div class='col-sm-10'>
-                                <span data-bind="text: rfc.country"/>
-                                <span data-bind="text: rfc.region().length == 0 ? '' : ', ' + rfc.region()"/>
-                                <span data-bind="text: rfc.location().length == 0 ? '' : ', ' + rfc.location()"/>
-                                <span data-bind="text: rfc.locale().length == 0 ? '' : ', ' + rfc.locale()"/>
-                                <span data-bind="text: rfc.site().length == 0 ? '' : ', ' + rfc.site()"/>
+                                <span data-bind="text: rfc.country, style : {color: country() != rfc.country() ? 'red' : 'black'}"/>
+                                <span data-bind="text: rfc.region().length == 0 ? '' : ', ' + rfc.region(), style : {color: region() != rfc.region() ? 'red' : 'black'}"/>
+                                <span data-bind="text: rfc.location().length == 0 ? '' : ', ' + rfc.location(), style : {color: location() != rfc.location() ? 'red' : 'black'}"/>
+                                <span data-bind="text: rfc.locale().length == 0 ? '' : ', ' + rfc.locale(), style : {color: locale() != rfc.locale() ? 'red' : 'black'}"/>
+                                <span data-bind="text: rfc.site().length == 0 ? '' : ', ' + rfc.site(), style : {color: site() != rfc.site() ? 'red' : 'black'}"/>
                             </div>
                         </div> 
                         <div class="row">
                             <div class='col-sm-2'>&nbsp;
                              </div>
                             <div class='col-sm-10'>
-                                <span data-bind="text: rfc.variety"></span>, 
-                                <span data-bind="text: rfc.colorClass"></span>, 
-                                <span data-bind="text: rfc.dryness"></span>
+                                <span data-bind="text: rfc.variety, style : {color: variety() != rfc.variety() ? 'red' : 'black'}"></span>, 
+                                <span data-bind="text: rfc.colorClass, style : {color: colorClass() != rfc.colorClass() ? 'red' : 'black'}"></span>, 
+                                <span data-bind="text: rfc.dryness, style : {color: dryness() != rfc.dryness() ? 'red' : 'black'}"></span>
                              </div>
                         </div> 
 

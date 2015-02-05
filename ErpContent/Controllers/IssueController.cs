@@ -238,6 +238,37 @@ namespace ErpContent.Controllers
 
 
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
+        [HttpPost]
+        [OutputCache(Duration = 5, VaryByParam = "none")]
+        public ActionResult ExportAssignmentAdmin(int issueId, int assignmentId)
+        {
+
+            var result = _issueStorage.LoadIssueComplete(issueId, -1);
+
+
+            foreach (var a in result.assignments)
+            {
+                if (a.tastingEvents != null && a.tastingEvents.Count() > 0)
+                {
+                    a.tastingEvents = from e in a.tastingEvents orderby e.title select e;
+                }
+            }
+
+
+            result.assignments = from a in result.assignments where a.id == assignmentId select a;
+
+
+            Response.AddHeader("Content-Disposition", "attachment; filename=issue" + issueId + "_" + assignmentId + ".html");
+            Response.ContentType = " text/html;";
+
+            return View("Export2Doc", result);
+        }
 
         /// <summary>
         /// 

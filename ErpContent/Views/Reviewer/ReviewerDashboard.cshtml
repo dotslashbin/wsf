@@ -108,7 +108,7 @@
                                     </select>
                 </div>
                 <div class="col-sm-5 pull-right">
-                    <button class="btn  btn-primary btn-xs inner-window-button" data-bind="click: createNoteFromExisting">Add From Existing</button>
+                    <button class="btn  btn-primary btn-xs inner-window-button" data-bind="click: createNoteFromExisting">Add Wines</button>
                     <button class="btn  btn-primary btn-xs inner-window-button" data-bind="click: createNote">Add New Note</button>
                 </div>
             </div>
@@ -164,7 +164,7 @@
 
         <div class="row">
             <div class="col-sm-10">
-                <h4><span>Tasting Events</span></h4>
+                <h4><span>Tasting Records</span></h4>
             </div>
 
            <div class="col-sm-2 pull-right">
@@ -189,7 +189,7 @@
         <div class="row" data-bind="visible: assignment.events().length > 0" >
             <div class="panel panel-success">
                     <div class="row   panel-heading">
-                         <div class="col-sm-6">Title</div>
+                         <div class="col-sm-5">Title</div>
                          <div class="col-sm-3">Location</div>
                          <div class="col-sm-1">Notes</div>
                          <div class="col-sm-1">Waiting</div>
@@ -197,17 +197,15 @@
                     </div>
                 <div style="max-height:650px; overflow:auto">
             <!-- ko foreach: assignment.events -->
-
-
                     <div class="row" data-bind="style: { color: draftCount() > 0 ? 'red' : 'black' }" >
-                        <div class="col-sm-6" data-bind="click : showNotesExt.bind($data, $parent.assignment)" style="cursor: pointer">
+                        <div class="col-sm-5" data-bind="click : showNotesExt.bind($data, $parent.assignment)" style="cursor: pointer">
                             <strong><span data-bind="text: title"></span></strong>
                         </div>
                         <div class="col-sm-3"><span data-bind="text: location"></span></div>
                         <div class="col-sm-1"><span data-bind="text: notesCount"></span></div>
                         <div class="col-sm-1"><span data-bind="text: draftCount"></span></div>
 
-                        <div class="col-sm-1 pull-right">
+                        <div class="col-sm-1">
                             <span data-bind="click: $parent.assignment.editTastingEvent"
                                 class="glyphicon glyphicon-list-alt"
                                 style="cursor: pointer"
@@ -228,7 +226,7 @@
 
                     </div>
 
-                    <!-- /ko -->
+            <!-- /ko -->
                 </div>
             </div>
         </div>
@@ -321,7 +319,7 @@
                 <div class='col-sm-4  pull-right' >
                     <span class='glyphicon glyphicon-shopping-cart'></span>&nbsp;
                     <span data-bind="text: cart().length" ></span>
-                   &nbsp;<button class="btn  btn-primary btn-sm" style="cursor:pointer" data-bind="click: cartToTastingEvent">Add To Tasting Event</button>
+                   &nbsp;<button class="btn  btn-primary btn-sm" style="cursor:pointer" data-bind="click: cartToTastingEvent">Add To Tasting Record</button>
                    &nbsp;<button class="btn  btn-primary btn-sm" style="cursor:pointer" data-bind="click: clearCart">Clear</button>
                 </div>
             </div>
@@ -331,18 +329,24 @@
                <div class='col-sm-1'>
                    <span class='glyphicon glyphicon-trash' style='cursor:pointer'" data-bind="click: $parent.deleteFromCart"></span>
                    &nbsp;
-                   <span class='glyphicon glyphicon-glass'  data-bind="style: { color: wineColor($data.color()) }" ></span>
+                   <span class='glyphicon glyphicon-glass'  data-bind="style: { color: wineColor($data.vin.colorClass()) }" ></span>
 
                 </div>
 
                <div class='col-sm-11'>
                             <span data-bind="text: vintage"></span>
-                            <span data-bind="text: producer"></span>,
-                            <span data-bind="text: wineName().length == 0 ? '' : wineName() + ',' "></span>
-                            <span data-bind="text: coAppellation"></span>,
-                            <span data-bind="text: variety"></span>,
-                            <span data-bind="text: color"></span>,
-                            <span data-bind="text: wineType"></span>
+                            <span data-bind="text: vin.producer"></span>,
+                            <span data-bind="text: vin.label().length == 0 ? '' : vin.label() + ',' "></span>
+                            <span data-bind="text: vin.country().length == 0 ? '' : vin.country() + ','"></span> 
+                            <span data-bind="text: vin.region().length == 0 ? '' : vin.region() + ','"></span> 
+                            <span data-bind="text: vin.location().length == 0 ? '' : vin.location() + ','"></span> 
+                            <span data-bind="text: vin.locale().length == 0 ? '' : vin.locale() + ','"></span> 
+                            <span data-bind="text: vin.site().length == 0 ? '' : vin.site() + ','"></span> 
+                            <span data-bind="text: vin.variety().length == 0 ? '' : vin.variety() + ','"></span>
+                            <span data-bind="text: vin.colorClass().length == 0 ? '' : vin.colorClass() + ','"></span>
+                            <span data-bind="text: vin.wineType().length == 0 ? '' : vin.wineType() + ','"></span>
+                            <span data-bind="text: vin.dryness"></span>
+
                 </div>
              <!-- /ko -->
             </div>
@@ -379,26 +383,43 @@
             <!-- ko foreach: items -->
             <div class="row"  style="border-bottom: solid 1px gray">
                 <div class='col-sm-9'>
+                    <div class="row">
+                        <span class="col-sm-1">
                         <span class='glyphicon glyphicon-glass' data-bind="style: { color: wineColor($data.colorClass()) }" ></span>&nbsp;
                         <span class='glyphicon glyphicon-pencil' data-bind="click: $parent.editVin.bind($data), visible : false" ></span>&nbsp;
-
+                        </span>
+                        <span class="col-sm-11">
                         <b><span data-bind="text: producer"></span>
-                        <span data-bind="text: label"></span></b>, 
-                        <!--<span data-bind="text: appellation"></span>,--> 
-                        <span data-bind="text: country"></span>, 
-                        <span data-bind="text: region"></span>, 
-                        <span data-bind="text: location"></span>, 
-                        <span data-bind="text: locale"></span>, 
-                        <span data-bind="text: site"></span>, 
-                        <span data-bind="text: variety"></span>, 
+                        <span data-bind="text: label"></span></b> 
+                        </span>
+                    </div>
+                    <div class="row">
+                        <span class="col-sm-1">&nbsp;
+                        </span>
+                        
+                        
+                        <span class="col-sm-11">
+
+                        <span data-bind="text: country().length == 0 ? '' : country() + ','"></span> 
+                        <span data-bind="text: region().length == 0 ? '' : region() + ','"></span> 
+                        <span data-bind="text: location().length == 0 ? '' : location() + ','"></span> 
+                        <span data-bind="text: locale().length == 0 ? '' : locale() + ','"></span> 
+                        <span data-bind="text: site().length == 0 ? '' : site() + ','"></span> 
+                        <span data-bind="text: variety().length == 0 ? '' : variety() + ','"></span>, 
                         <span data-bind="text: colorClass"></span>, 
                         <span data-bind="text: dryness"></span>
+                        </span>
+                    </div>
                 </div>
                 <div class='col-sm-3' >
-                 <button class="btn  btn-success btn-xs" style="cursor:pointer" data-bind="click : $parent.createNote.bind($data)">Add New</button>
+                    <div class="row">
+                       <button class="btn  btn-success btn-xs" style="cursor:pointer" data-bind="click: $parent.newVinAndVintage.bind($data)">New Vintage or Wine</button>
+                    </div>
+                    <div class="row">
             <!-- ko foreach: wines -->
                  <button class="btn  btn-primary btn-xs" style="cursor:pointer" data-bind="text: vintage, click : $parents[1].createNoteVintage.bind($data,$parent,$data)"></button>
             <!-- /ko -->
+                    </div>
                  </div>
             </div>
             <!-- /ko -->
@@ -478,6 +499,159 @@
 
     </script>
 
+
+    
+    <script id="new-wine-and-vintage-template" type="text/html">
+
+       <form id="new-wine-and-vintage-form-validation"  name="new-wine-and-vintage-form-validation">
+
+        <div class="row">
+            <div class="col-sm-2  input-group-md">
+                Vintage
+            </div>
+            <div class="col-sm-5 input-group-md">
+              <input type="text" 
+                    data-bind="value: vintage, valueUpdate: 'blur'" 
+                    class="form-control" 
+                    name="vin-edit-vintage" 
+                    id="vin-edit-vintage" 
+                    placeholder="vintage" required/>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-2  input-group-md">
+                Producer
+            </div>
+            <div class="col-sm-5 input-group-md">
+              <input type="text" 
+                    data-bind="value: vin.producer, valueUpdate: 'blur'" 
+                    class="form-control" 
+                    name="vin-edit-producer" 
+                    id="vin-edit-producer" 
+                    placeholder="Producer" required/>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-2  input-group-md">
+                Label
+            </div>
+            <div class="col-sm-5 input-group-md">
+              <input type="text" 
+                    data-bind="value: vin.label, valueUpdate: 'blur'" 
+                    class="form-control" 
+                    name="vin-edit-label" 
+                    id="vin-edit-label" 
+                    placeholder="Label"/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-2  input-group-md">
+                Wine Type
+            </div>
+            <div class="col-sm-5 input-group-md">
+               <select  name="vin-edit-color"
+                    class="form-control"
+                    data-bind="options: vin.wineTypeLookup,
+    optionsText: 'name',
+    optionsValue: 'name',
+    value: vin.wineType,
+    valueUpdate: 'blur'" required></select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-2  input-group-md">
+                Variety
+            </div>
+            <div class="col-sm-5 input-group-md">
+              <input type="text" 
+                    data-bind="value: vin.variety, valueUpdate: 'blur'" 
+                    class="form-control" 
+                    name="vin-edit-variety" 
+                    id="vin-edit-variety" 
+                    placeholder="Variety" required/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-2  input-group-md">
+                Color
+            </div>
+            <div class="col-sm-5 input-group-md">
+            <select  name="vin-edit-color"
+                    class="form-control"
+                    data-bind="options: vin.wineColorLookup,
+    optionsText: 'name',
+    optionsValue: 'name',
+    value: vin.colorClass,
+    valueUpdate: 'blur'" required></select>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-2  input-group-md">
+                Dryness
+            </div>
+            <div class="col-sm-5 input-group-md">
+
+            <select  name="vin-edit-dryness"
+                    class="form-control"
+                    data-bind="options: vin.wineDrynessLookup,
+    optionsText: 'name',
+    optionsValue: 'name',
+    value: vin.dryness,
+    valueUpdate: 'blur'" required></select>
+
+
+            </div>
+        </div>
+
+
+      <div class="row">
+            <label class="col-sm-2 control-label">Country:</label>
+            <div class="col-sm-5">
+                <input type="text" 
+                    id="vin-edit-location-country" data-bind="value: vin.country, valueUpdate: 'blur'" class="form-control" placeholder="Country" required/>
+            </div>
+        </div>
+
+        <div class="row">
+            <label class="col-sm-2 control-label">Region:</label>
+            <div class="col-sm-5">
+                <input type="text" id="vin-edit-location-region" data-bind="value: vin.region, valueUpdate: 'blur'" class="form-control" placeholder="Region" />
+            </div>
+        </div>
+
+        <div class="row">
+            <label class="col-sm-2 control-label">Location:</label>
+            <div class="col-sm-5">
+                <input type="text" id="vin-edit-location-location" data-bind="value: vin.location, valueUpdate: 'blur'" class="form-control" placeholder="Location"/>
+            </div>
+        </div>
+
+        <div class="row">
+            <label class="col-sm-2 control-label">Locale:</label>
+            <div class="col-sm-5">
+                <input type="text" id="vin-edit-location-locale" data-bind="value: vin.locale, valueUpdate: 'blur'" class="form-control" placeholder="Locale" />
+            </div>
+        </div>
+
+        <div class="row">
+            <label class="col-sm-2 control-label">Site:</label>
+            <div class="col-sm-5">
+                <input type="text" id="note-edit-location-site" data-bind="value: vin.site, valueUpdate: 'blur'" class="form-control" placeholder="Site" />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12">
+                 Start typing into the fields and select from dropdown choices that appear.  Avoid copying and pasting into the fields.
+            </div>
+        </div>
+
+
+      </form>
+    </script>
 
 
 
@@ -983,7 +1157,56 @@
 
 
 
+        VinSearchModel.newVinAndVintage = function (item) {
 
+            var model = {};
+
+            model.vin = new VinModel(item.toObject());
+            model.vintage = "";
+
+
+            model.init = function (elements) {
+
+                model.validator = $("#new-wine-and-vintage-form-validation").validate(
+                    {
+                        debug: true,
+                        rules:
+                            {
+                                'vin-edit-vintage': {
+                                    required: true,
+                                    vintage: true
+                                }
+                            }
+                    }
+                    );
+
+
+            };
+
+            model.validate = function () {
+                var result = true;
+                result = model.validator.form();
+                if (!result)
+                    model.validator.showErrors();
+                return result;
+            }
+
+            model.save = function () {
+
+                if (!model.validate())
+                    return;
+
+                VinSearchModel.cart.unshift(model);
+                return true;
+            }
+
+
+            var d = pageData.OpenDialog(model, model, "new-wine-and-vintage-template");
+            d.dialog("option", "title", "Create New Wine & Vintage").
+                dialog("option", "width", 860).
+                dialog("option", "height", 600);
+            ;
+        }
 
         VinSearchModel.editVin = function (item) {
 
@@ -1073,65 +1296,10 @@
         }
 
 
-        VinSearchModel.createNote = function(vin){
-//            var m = new TastingEventModel(null);
-//            m.createNote(VinSearchModel.tastingEvent, null, vin, null);
-
-            var vintage = "";
-
-            while (true) {
-                var vintage = window.prompt("Please enter Vintage (year like 2010 or NV) ",vintage);
-
-                // 
-                // user cancel operation
-                //
-                if (vintage == null) {
-                    return;
-                }
-
-                var valid = false;
-                valid = valid || /^[1-9][0-9][0-9][0-9]$/.test(vintage);
-                valid = valid || /^NV$/.test(vintage);
-
-                if (!valid) {
-                    alert("invalid vintage : " + vintage);
-                    continue;
-                }
-
-                var m = new TastingEventModel(null);
-                m.createBareNote(VinSearchModel.tastingEvent, function (r) {
-                    var m = new TastingNoteModel(r);
-                    m.vintage(vintage);
-                    m.loadFromVin(vin);
-
-
-                    VinSearchModel.cart.unshift(m);
-
-                    //alert('got note');
-                });
-
-                break;
-            }
-
-
-        };
 
         VinSearchModel.createNoteVintage = function(vin, vintage){
 
-            //var m = new TastingEventModel(null);
-            //m.createNote(VinSearchModel.tastingEvent,null,vin, vintage);
-
-            var m = new TastingEventModel(null);
-            m.createBareNote(VinSearchModel.tastingEvent, function (r) {
-
-                var m = new TastingNoteModel(r);
-                m.vintage(vintage.vintage());
-                m.loadFromVin(vin);
-
-                VinSearchModel.cart.unshift(m);
-
-
-            });
+            VinSearchModel.cart.unshift({ vin: vin, vintage: vintage.vintage() });
 
         };
 
@@ -1213,24 +1381,40 @@
             }
 
             var upper = VinSearchModel.cart().length;
+
+
+            var te = new TastingEventModel(null);
+
+
             for (var i = 0; i < upper; i++) {
 
-                $.ajax({
-                    type: 'POST',
-                    url: erp.wsf_path + 'TastingNote/AddTastingNote',
-                    data:
-                        {
-                            str: JSON.stringify(VinSearchModel.cart()[i].toObject())
+                var item = VinSearchModel.cart()[i];
+
+                //
+                // two ajax calls here. not good
+                //
+                te.createBareNote(VinSearchModel.tastingEvent,item.vin,item.vintage, function (r) {
+
+                    //var m = new TastingNoteModel(r);
+
+                    $.ajax({
+                        type: 'POST',
+                        url: erp.wsf_path + 'TastingNote/AddTastingNote',
+                        data: {
+                            str: JSON.stringify(new TastingNoteModel(r).toObject())
+                            },
+                        success: function (r) {
+                            VinSearchModel.tastingEvent.notes.unshift(new TastingNoteModel(r));
                         },
-                    success: function (r) {
+                        error: function (request, status, error) {
+                            alert('Error while saving a tasting note. Please report to admin.');
+                        }
+                    });
 
-                        VinSearchModel.tastingEvent.notes.unshift(new TastingNoteModel(r));
 
-                    },
-                    error: function (request, status, error) {
-                        alert('Error while saving a tasting note. Please report to admin.');
-                    }
                 });
+
+
 
 
             }
@@ -1351,7 +1535,7 @@
 
             VinSearchModel.tastingEvent = tastingEvent;
 
-            pageData.drillDownExt("search-tasting-note-template-window", VinSearchModel, "Search Existing Notes");
+            pageData.drillDownExt("search-tasting-note-template-window", VinSearchModel, "Add Wines");
         }
 
 

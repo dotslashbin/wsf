@@ -218,7 +218,7 @@
                                 title="move tasting record to other assignment"></span>
 
 
-                            <span data-bind="visible: notesCount == 0, click: $parent.assignment.deleteTastingEvent"
+                            <span data-bind="visible: notesCount() == 0, click: $parent.assignment.deleteTastingEvent"
                                 class="glyphicon glyphicon-trash"
                                 style="cursor: pointer"
                                 title="delete tasting record (if empty)"></span>

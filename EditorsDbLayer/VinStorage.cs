@@ -350,7 +350,7 @@ namespace EditorsDbLayer
                           order by v.Wine_VinN_ID
 
  
-                         select top 1000 
+                         select top 3000 
                          v.Wine_VinN_ID
                         , w.ID 
                         , wv.name 

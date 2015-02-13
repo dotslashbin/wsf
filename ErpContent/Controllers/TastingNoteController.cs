@@ -111,10 +111,31 @@ namespace ErpContent.Controllers
 
                 result.wineType = v.wineType;
             }
+            else
+            {
+                result.producer = "";
+                result.wineName = "";
+
+                result.country = "";
+                result.region = "";
+                result.location = "";
+                result.locale = "";
+                result.site = "";
+
+                result.variety = "";
+                result.color = "";
+                result.dryness = "";
+
+                result.wineType = "";
+            }
 
             if (vintage != null)
             {
                 result.vintage = vintage;
+            }
+            else
+            {
+                result.vintage = "";
             }
 
 

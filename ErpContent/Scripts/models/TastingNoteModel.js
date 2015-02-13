@@ -397,12 +397,12 @@
               }, minLength: 1
           }).data("ui-autocomplete")._renderItem = function (ul, i) {
 
-              var c = null;
+              var c = '';
 
               if (i.region  != null &&  i.region.length > 0) c = i.region;
               if (i.country != null && i.country.length > 0) c = i.country + (c.length > 0 ? (', ' + c) : '');
 
-              if (c) {
+              if (c.length > 0) {
                   c = " (" + c + ")";
               } else {
                   c = "";
@@ -447,13 +447,13 @@
               }, minLength: 1
           }).data("ui-autocomplete")._renderItem = function (ul, i) {
 
-              var c = null;
+              var c = '';
 
               if (i.location != null && i.location.length > 0) c = i.location;
               if (i.region != null   && i.region.length > 0)   c = i.region + (c.length > 0 ? (', ' + c) : '');
               if (i.country != null  && i.country.length > 0)  c = i.country + (c.length > 0 ? (', ' + c) : '');
 
-              if (c) {
+              if (c.length > 0) {
                   c = " (" + c + ")";
               } else {
                   c = "";
@@ -501,14 +501,14 @@
               }, minLength: 1
          }).data("ui-autocomplete")._renderItem = function (ul, i) {
 
-             var c = null;
+             var c = '';
 
              if (i.locale != null && i.locale.length > 0)     c = i.locale ;
              if (i.location != null && i.location.length > 0) c = i.location + (c.length > 0 ? (', ' + c) : '');
              if (i.region != null && i.region.length > 0)     c = i.region + (c.length > 0 ? (', ' + c) : '');
              if (i.country != null && i.country.length > 0)   c = i.country + (c.length > 0 ? (', ' + c) : '');
 
-             if (c) {
+             if (c.length > 0) {
                  c = " (" + c + ")";
              } else {
                  c = "";

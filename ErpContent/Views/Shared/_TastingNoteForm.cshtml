@@ -46,7 +46,7 @@
             </div>
             <div class="col-sm-5">
                 <input type="text" 
-                    data-bind="value: wineName, valueUpdate: 'blur'" 
+                    data-bind="value: wineName, valueUpdate: 'blur',uniqueName: true" 
                     class="form-control input-sm" 
                     id="note-edit-label" 
                     placeholder="Label"  />
@@ -59,7 +59,7 @@
             </div>
             <div class="col-sm-5">
                 <input type="text" 
-                    data-bind="value: coAppellation, valueUpdate: 'blur'" 
+                    data-bind="value: $data.coLocation(), valueUpdate: 'blur'" 
                     class="form-control input-sm" 
                     id="note-edit-location" 
                     name="note-edit-location" 
@@ -75,7 +75,8 @@
                                 optionsText: 'name',
                                 optionsValue: 'name',
                                 value: wineType,
-                                valueUpdate: 'blur'"></select>
+                                valueUpdate: 'blur',
+                                uniqueName: true"></select>
                     </div>
                 </div>
             </div>
@@ -178,7 +179,8 @@
                             optionsText: 'name',
                             optionsValue: 'name',
                             value: ratingQ,
-                            valueUpdate: 'blur'"></select>
+                            valueUpdate: 'blur',
+                            uniqueName: true"></select>
                     </div>
                     </div>
                 </div>
@@ -252,7 +254,7 @@
         <div class="row">
                 <div class="col-sm-2 input-sm">&nbsp;</div>
                 <div class="col-sm-1 input-sm">
-                    <input type="checkbox" data-bind="checked: isBarrelTasting, valueUpdate: 'blur'"  /> Barrel 
+                    <input type="checkbox" data-bind="checked: isBarrelTasting, valueUpdate: 'blur',uniqueName: true"  /> Barrel 
                 </div>
 <!--
                 <div class="col-sm-1 input-sm">

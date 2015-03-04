@@ -1270,7 +1270,6 @@
 
                 m.init = function (elements) {
                     initNoteEditForm(elements, m, '@Url.Content("~")');
-
                     m.validator = $("#tasting-note-popup-form-validation").validate(
                         {
                             debug: true,
@@ -1300,7 +1299,6 @@
                 if (m.wineN() > 0) {
                     $.get('@Url.Content("~/TastingNote/GetNotesByWineN")', { wineN: m.wineN() },
                         function (result) {
-
                             var t = ko.mapping.fromJS(
                                 { 'children': result },
                                 {
@@ -1326,20 +1324,37 @@
                     if (!m.validate())
                         return false;
                     
-                    note.fromObject(o.toObject());
-                    VinSearchModel.cart.unshift(note);
+                    //note.fromObject(o.toObject());
+                    //VinSearchModel.cart.unshift(note);
+
+
+                    $.ajax({
+                        type: 'POST',
+                        url: erp.wsf_path + 'TastingNote/AddTastingNoteToCart',
+                        data: {
+                            str: JSON.stringify(o.toObject())
+                        },
+                        success: function (r) {
+                            VinSearchModel.cart.unshift(new TastingNoteModel(r));
+                        },
+                        error: function (request, status, error) {
+                            alert('Error while saving tasting note to cart. Please report to admin.');
+                        }
+                    });
+
+
 
                     return true;
                 };
 
                 var dlg = pageData.OpenDialog(m, m, "tasting-note-popup-template");
 
-                dlg.dialog("option", "title", "Edit Tasting Note").
+                dlg.dialog("option", "title", "Add Tasting Note To Cart").
                     dialog("option", "width", 900).
                     dialog("option", "height", 700);
 
             } catch (e) {
-                alert(e);
+                alert('Error while adding a tasting note to cart. Please report to admin.');
             }
 
         }
@@ -1374,30 +1389,20 @@
             //
 
             $.get('@Url.Content("~/vin/SearchWineN")', { term:  VinSearchModel.searchString() },
-                                 function (result) {
+                    function (result) {
 
-                                     var t = ko.mapping.fromJS(
-                                         {'children' : result}, 
-                                         {'children': 
-                                             {
-                                                 create: function(options) {
+                        var t = ko.mapping.fromJS(
+                            {'children' : result}, 
+                            {'children': 
+                                {
+                                    create: function(options) {
+                                        return new VinModel(options.data);
+                                    }
+                                }},{} );
 
-                                                     return new VinModel(options.data);
-                                                     /*
-                                                     var result = {};
-                                                     ko.mapping.fromJS(options.data  // source
-                                                        , {}
-                                                        , result    // target
-                                                        );
-                                                     return result;
-                                                     */
-
-                                                 }
-                                             }},{} );
-
-                                     VinSearchModel.items(t.children());
-                                     VinSearchModel.sort();
-                                 });
+                        VinSearchModel.items(t.children());
+                        VinSearchModel.sort();
+                    });
         };
 
         VinSearchModel.searchString = ko.observable('');
@@ -1406,7 +1411,38 @@
         VinSearchModel.cart = ko.observableArray([]);
 
         VinSearchModel.deleteFromCart = function (item) {
-            VinSearchModel.cart.remove(item);
+
+            $.ajax({
+                type: 'POST',
+                url: erp.wsf_path + 'TastingNote/DeleteTastingNoteFromCart',
+                data: {
+                    str: JSON.stringify(item.toObject())
+                },
+                success: function (r) {
+                    VinSearchModel.cart.remove(item);
+                },
+                error: function (request, status, error) {
+                    alert('Error while delete tasting note from cart. Please report to admin.');
+                }
+            });
+
+
+
+        }
+
+
+
+        function ClearCart() {
+            $.ajax({
+                type: 'POST',
+                url: erp.wsf_path + 'TastingNote/DeleteAllTastingNotesFromCart',
+                success: function (r) {
+                    VinSearchModel.cart.removeAll();
+                },
+                error: function (request, status, error) {
+                    alert('Error while clear the cart. Please report to admin.');
+                }
+            });
         }
 
         VinSearchModel.clearCart = function (item) {
@@ -1414,7 +1450,7 @@
                 return;
             }
 
-            VinSearchModel.cart.removeAll();
+            ClearCart();
         }
 
         VinSearchModel.cartToTastingEvent = function (item) {
@@ -1448,42 +1484,10 @@
                 });
 
 
-                //
-                // two ajax calls here. not good
-                //
-
-
-                //
-                // todo - remove this logic. because note already been created
-                //
-                /*
-                te.createBareNote(VinSearchModel.tastingEvent,item.vin,item.vintage, function (r) {
-
-                    //var m = new TastingNoteModel(r);
-
-                    $.ajax({
-                        type: 'POST',
-                        url: erp.wsf_path + 'TastingNote/AddTastingNote',
-                        data: {
-                            str: JSON.stringify(new TastingNoteModel(r).toObject())
-                            },
-                        success: function (r) {
-                            VinSearchModel.tastingEvent.notes.unshift(new TastingNoteModel(r));
-                        },
-                        error: function (request, status, error) {
-                            alert('Error while saving a tasting note. Please report to admin.');
-                        }
-                    });
-
-
-                });
-                */
-
-
-
             }
 
-            VinSearchModel.cart.removeAll();
+
+            ClearCart();
             pageData.drillUp();
 
         }
@@ -1575,6 +1579,32 @@
             PAGE_CONTEXT.publications = ko.observableArray();
 
             pageData.loadPublications();
+
+            //
+            // load cart
+            //
+
+            $.ajax({
+                type: 'POST',
+                url: erp.wsf_path + 'TastingNote/GetTastingNoteCart',
+                success: function (r) {
+
+                    var t = ko.mapping.fromJS(
+                        { 'items': r },
+                        {
+                            'items':
+                               {
+                                   create: function (options) {
+                                       return new TastingNoteModel(options.data);
+                                   }
+                               }
+                        }, {});
+                    VinSearchModel.cart(t.items());
+                },
+                error: function (request, status, error) {
+                    alert('Error while loading cart. Please report to admin.');
+                }
+            });
         }
 
 

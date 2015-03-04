@@ -163,6 +163,101 @@ namespace ErpContent.Controllers
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
+        private static int tmpNoteId = 0;
+        private static string cartSessionName = "tastingNodeCart";
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
+        [OutputCache(Duration = 0, VaryByParam = "none")]
+        [HttpPost]
+        public ActionResult AddTastingNoteToCart(String str)
+        {
+            var tn = new JavaScriptSerializer().Deserialize<TastingNote>(str);
+            tn.id = tmpNoteId++;
+
+            List<TastingNote> cart = Session[cartSessionName] as List<TastingNote>;
+
+            if (cart == null)
+            {
+                cart = new List<TastingNote>();
+                Session[cartSessionName] = cart;
+            }
+
+            cart.Add(tn);
+
+            return Json(tn, JsonRequestBehavior.AllowGet);
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
+        [OutputCache(Duration = 0, VaryByParam = "none")]
+        [HttpPost]
+        public ActionResult GetTastingNoteCart()
+        {
+            List<TastingNote> cart = Session[cartSessionName] as List<TastingNote>;
+
+            if (cart == null)
+            {
+                cart = new List<TastingNote>();
+                Session[cartSessionName] = cart;
+            }
+
+            return Json(cart, JsonRequestBehavior.AllowGet);
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
+        [OutputCache(Duration = 0, VaryByParam = "none")]
+        [HttpPost]
+        public ActionResult DeleteTastingNoteFromCart(String str)
+        {
+            var tn = new JavaScriptSerializer().Deserialize<TastingNote>(str);
+
+            List<TastingNote> cart = Session[cartSessionName] as List<TastingNote>;
+            if (cart == null || cart.RemoveAll(t => t.id == tn.id) != 1)
+            {
+                tn = null;
+            }
+
+            return Json(tn, JsonRequestBehavior.AllowGet);
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
+        [OutputCache(Duration = 0, VaryByParam = "none")]
+        [HttpPost]
+        public ActionResult DeleteAllTastingNotesFromCart()
+        {
+            List<TastingNote> cart = Session[cartSessionName] as List<TastingNote>;
+            if (cart != null)
+            {
+                cart.Clear();
+                return Json(true, JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                return Json(false, JsonRequestBehavior.AllowGet);
+            }
+        }
+
 
 
         /// <summary>
@@ -243,10 +338,6 @@ namespace ErpContent.Controllers
 
             var result = _storage.Delete(o);
 
-            //if (result.id != result.noteId) //
-            //{
-            //    result = _storage.SearchTastingNoteById(o.noteId);
-            //}
 
 
             return Json(result, JsonRequestBehavior.AllowGet);

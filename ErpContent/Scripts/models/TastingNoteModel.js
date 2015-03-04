@@ -178,7 +178,8 @@
 
         self.coLocation = ko.computed(function () {
 
-            var r = self.country;
+            var r = self.country();
+
             if (self.region && self.region() && self.region().length > 0)
                 r += ", " + self.region();
             if (self.location && self.location() && self.location().length > 0)

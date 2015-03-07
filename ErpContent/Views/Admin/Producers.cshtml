@@ -12,15 +12,6 @@
 
 
 
-<div class="row panel-heading">
-        <!-- ko foreach: treeItemArray -->
-        <b>
-            <button type="button" class="btn " data-bind="text: name, click: $root.drillDownTo, attr: { 'class': $index() == ($parent.treeItemArray().length - 1) ? 'btn-info' : 'btn-primary' } "></button>
-        </b>
-        <!-- /ko -->
-</div>
-
-
 <div data-bind="template: { name: mv().view, data: mv().model, afterRender: $root.modelInit } ">
 ... loading
 </div>
@@ -144,7 +135,7 @@
          <div class="row">
             <div class="col-sm-4  input-group-md">
                 <input type="text" 
-                    data-bind="value: searchString, valueUpdate: 'blur'" 
+                    data-bind="event: { keyup: searchWithEnter }, value: searchString, valueUpdate: 'blur'" 
                     class="form-control" 
                     id="note-edit-producer-search" 
                     placeholder="Search String" required />
@@ -463,10 +454,17 @@
         self.items = ko.observableArray();
         self.searchString = ko.observable();
 
+        
+        self.searchWithEnter = function (data, event) {
+
+            if ((event.keyCode == 13 || event.keyCode == "13")) {
+                self.search();
+            }
+            return true;
+        }
 
         self.search = function () {
-            // do nothing at the moment
-            //
+
             $.get('@Url.Content("~/Producer/SearchProducer")', { term: self.searchString(), state : self.stateGroupId() },
                 function (result) {
 

@@ -37,7 +37,7 @@
          <div class="row">
             <div class="col-sm-4  input-group-md">
                 <input type="text" 
-                    data-bind="value: searchString, valueUpdate: 'blur'" 
+                    data-bind="event: { keyup: searchWithEnter }, value: searchString, valueUpdate: 'blur'" 
                     class="form-control" 
                     id="note-edit-producer-search" 
                     placeholder="Search String" required />
@@ -264,10 +264,23 @@
         self.items = ko.observableArray();
         self.searchString = ko.observable();
 
+        self.searchWithEnter = function (data, event) {
+
+            if ((event.keyCode == 13 || event.keyCode == "13")) {
+                self.search();
+            }
+            return true;
+        }
+
 
         self.search = function () {
-            // do nothing at the moment
-            //
+
+            if (self.searchString() || self.searchString().trim().length == 0) {
+                window.alert("Search string is empty. Please enter something.");
+                return;
+            }
+
+
             $.get('@Url.Content("~/Importer/SearchByName")', { term: self.searchString() },
                 function (result) {
 
@@ -287,6 +300,7 @@
                     self.items(t.children());
                 });
         }
+
 
         self.addImporter = function () {
 

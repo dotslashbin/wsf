@@ -11,8 +11,6 @@
 
 
 
-<h2>Importers</h2>
-
 
 <div data-bind="template: { name: mv().view, data: mv().model, afterRender: $root.modelInit } ">
 ... loading
@@ -38,7 +36,7 @@
          <div class="row">
             <div class="col-sm-4  input-group-md">
                 <input type="text" 
-                    data-bind="value: searchString, valueUpdate: 'blur'" 
+                    data-bind="event: { keyup: searchWithEnter }, value: searchString, valueUpdate: 'blur'" 
                     class="form-control" 
                     id="note-edit-producer-search" 
                     placeholder="Search String" required />
@@ -272,9 +270,19 @@
         self.searchString = ko.observable();
 
 
+
+
+        self.searchWithEnter = function (data, event) {
+
+            if ((event.keyCode == 13 || event.keyCode == "13")) {
+                self.search();
+            }
+            return true;
+        }
+
+
         self.search = function () {
-            // do nothing at the moment
-            //
+
             $.get('@Url.Content("~/Importer/SearchByName")', { term: self.searchString() },
                 function (result) {
 

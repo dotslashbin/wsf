@@ -71,23 +71,35 @@
                 <div class='col-sm-1'>&nbsp;</div>
             </div>
             <!-- ko foreach: items -->
-            <div class="row"  style="border-bottom: solid 1px gray;">
-                <div class='col-sm-1'>
-                      <span data-bind="click: edit" class='glyphicon glyphicon-pencil' style="cursor:pointer" title="Start editing"></span>
-                </div>  
-                <div class='col-sm-3' >
-                      <span data-bind="text: name"></span>
+            <div class="row" style="border-bottom: solid 1px gray;">
+                <div class="row">
+                    <div class='col-sm-1'>
+                        <span data-bind="click: edit" class='glyphicon glyphicon-pencil' style="cursor: pointer" title="Start editing"></span>
+                    </div>
+                    <div class='col-sm-3'>
+                        <span data-bind="text: name"></span>
+                    </div>
+                    <div class='col-sm-4'>
+                        <span data-bind="text: address"></span>
+                    </div>
+                    <div class='col-sm-3'>
+                        <span data-bind="text: url"></span>
+                    </div>
+                    <div class='col-sm-1 pull-right'>
+                        <span data-bind="click: $parent.remove, visible: linkImportersCount() == 0 " class='glyphicon glyphicon-trash' style="cursor: pointer" title="Delete Importer's record"></span>
+                    </div>
                 </div>
-                <div class='col-sm-4' >
-                      <span data-bind="text: address"></span>
+                <div class="row" data-bind="visible: notes().length > 0">
+                    <div class='col-sm-1'>
+                        &nbsp;
+                    </div>
+                    <div class='col-sm-1'>
+                        Notes:
+                    </div>
+                    <div class='col-sm-10'>
+                        <span data-bind="text: notes"></span>
+                    </div>
                 </div>
-                <div class='col-sm-2' >
-                      <span data-bind="text: url"></span>
-                </div>
-                <div class='col-sm-1'>
-                      <span data-bind="click: $parent.remove, visible: linkImportersCount() == 0 " class='glyphicon glyphicon-trash' style="cursor:pointer" title="Delete Importer's record"></span>
-                </div>  
-
             </div>
             <!-- /ko -->
         </div>
@@ -101,7 +113,7 @@
                 <div class="col-sm-2">Name: </div>
                 <div class="col-sm-6">
                     <input class="form-control input-sm" 
-                        id="importerName" 
+                        id="importerName"  maxlength="100"
                         name="importerName" 
                         data-bind="value:name, valueUpdate: 'blur'" placeholder="Importer's name" required />
                 </div>
@@ -110,7 +122,7 @@
                 <div class="col-sm-2">Address: </div>
                 <div class="col-sm-6">
                     <input class="form-control input-sm" 
-                        id="importerAddress" 
+                        id="importerAddress"  maxlength="100"
                         name="importerAddress" 
                         data-bind="value: address, valueUpdate: 'blur'" placeholder="Address" />
                 </div>
@@ -118,7 +130,7 @@
             <div class="row form-group">
                 <div class="col-sm-2">URL: </div>
                 <div class="col-sm-6">
-                    <input class="form-control input-sm" 
+                    <input class="form-control input-sm"  maxlength="64"
                         id="importerUrl" 
                         name="importerUrl" 
                         data-bind="value: url, valueUpdate: 'blur'" placeholder="Address"  />
@@ -128,7 +140,7 @@
             <div class="row form-group">
                 <div class="col-sm-2">Email: </div>
                 <div class="col-sm-6">
-                    <input class="form-control input-sm" 
+                    <input class="form-control input-sm"  maxlength="64"
                         id="importerEmail" 
                         name="importerEmail" 
                         data-bind="value: email, valueUpdate: 'blur'" placeholder="Email"  />
@@ -139,7 +151,7 @@
             <div class="row form-group">
                 <div class="col-sm-2">Phone1: </div>
                 <div class="col-sm-6">
-                    <input class="form-control input-sm" 
+                    <input class="form-control input-sm"  maxlength="32"
                         id="importerPhone1" 
                         name="importerPhone1" 
                         data-bind="value: phone1, valueUpdate: 'blur'" placeholder="Phone1"  />
@@ -150,12 +162,23 @@
             <div class="row form-group">
                 <div class="col-sm-2">Phone2: </div>
                 <div class="col-sm-6">
-                    <input class="form-control input-sm" 
+                    <input class="form-control input-sm"  maxlength="32" 
                         id="importerPhone2" 
                         name="importerPhone2" 
                         data-bind="value: phone2, valueUpdate: 'blur'" placeholder="Phone2"  />
                 </div>
             </div>
+
+            <div class="row form-group">
+                <div class="col-sm-2">Notes: </div>
+                <div class="col-sm-6">
+                    <input class="form-control input-sm" maxlength="100" 
+                        id="importerNotes" 
+                        name="importerNotes" 
+                        data-bind="value: notes, valueUpdate: 'blur'" placeholder="Notes"  />
+                </div>
+            </div>
+
 
 
         </form>

@@ -632,6 +632,10 @@ select
                           when LEN( isnull(URL,'')) > 0 then (', ' + URL)
                          else ''
                         end   
+                     +  case
+                          when LEN( isnull(Notes,'')) > 0 then (', ' + Notes)
+                         else ''
+                        end   
                     from WineImporter wi
                     join WineProducer_WineImporter wpi  (nolock) on wpi.ImporterId  = wi.ID
                     where 

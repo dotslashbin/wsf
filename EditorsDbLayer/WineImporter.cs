@@ -53,9 +53,9 @@ namespace EditorsDbLayer
      set nocount on;
 
      insert into WineImporter 
-     ([Name],[Address],[Phone1],[Phone2],[Fax],[Email],[URL],[Notes])
+     ([Name],[Address],[Phone1],[Phone2],[Fax],[Email],[URL])
      values
-     (@Name,@Address,@Phone1,@Phone2,@Fax,@Email,@URL,@Notes);
+     (@Name,@Address,@Phone1,@Phone2,@Fax,@Email,@URL);
 
      select id = scope_identity();
 
@@ -69,7 +69,6 @@ namespace EditorsDbLayer
                     cmd.Parameters.AddWithValue("@Fax", String.IsNullOrEmpty(e.fax) ? "" : e.fax);
                     cmd.Parameters.AddWithValue("@Email", String.IsNullOrEmpty(e.email) ? "" : e.email);
                     cmd.Parameters.AddWithValue("@Url", String.IsNullOrEmpty(e.url) ? "" : e.url);
-                    cmd.Parameters.AddWithValue("@Notes", String.IsNullOrEmpty(e.notes) ? "" : e.notes);
 
                     using (SqlDataReader dr = cmd.ExecuteReader())
                     {
@@ -109,8 +108,7 @@ namespace EditorsDbLayer
                 Phone2  = wp.Phone2,
                 Fax     = wp.Fax,
                 Email   = wp.Email,
-                URL     = wp.URL,
-                Notes   = wp.Notes,
+                URL     = wp.URL
 	            SortOrder = case when wp.Name like right(@SearchString, len(@SearchString)-1) then 0 else 20 end,
                 linkCount = (select count(*) from WineProducer_WineImporter where ImporterId = wp.ID)
 
@@ -136,9 +134,8 @@ namespace EditorsDbLayer
                             item.fax = (dr.IsDBNull(5) ? "" : dr.GetString(5));
                             item.email = (dr.IsDBNull(6) ? "" : dr.GetString(6));
                             item.url = (dr.IsDBNull(7) ? "" : dr.GetString(7));
-                            item.notes = (dr.IsDBNull(8) ? "" : dr.GetString(8));
 
-                            item.linkImportersCount = dr.GetInt32(10); 
+                            item.linkImportersCount = dr.GetInt32(9); 
 
                             res.Add(item);
                         }
@@ -164,8 +161,7 @@ namespace EditorsDbLayer
      [Phone2] = @Phone2,
      [Fax]    = @Fax,
      [Email]  = @Email,
-     [URL]    = @URL,
-     [notes]  = @Notes
+     [URL]    = @URL
      where
      ID = @ID
 ";
@@ -178,7 +174,6 @@ namespace EditorsDbLayer
                     cmd.Parameters.AddWithValue("@Fax", String.IsNullOrEmpty(e.fax) ? "" : e.fax);
                     cmd.Parameters.AddWithValue("@Email", String.IsNullOrEmpty(e.email) ? "" : e.email);
                     cmd.Parameters.AddWithValue("@Url", String.IsNullOrEmpty(e.url) ? "" : e.url);
-                    cmd.Parameters.AddWithValue("@Notes", String.IsNullOrEmpty(e.notes) ? "" : e.notes);
                     cmd.Parameters.AddWithValue("@ID", e.id);
                     
                     
@@ -237,8 +232,7 @@ namespace EditorsDbLayer
                 Phone2  = wp.Phone2,
                 Fax     = wp.Fax,
                 Email   = wp.Email,
-                URL     = wp.URL,
-                Notes   = wp.Notes,
+                URL     = wp.URL
                 linkCount = (select count(*) from WineProducer_WineImporter where ImporterId = wp.ID)
 
             from WineImporter wp (nolock)
@@ -262,9 +256,8 @@ namespace EditorsDbLayer
                             item.fax = (dr.IsDBNull(5) ? "" : dr.GetString(5));
                             item.email = (dr.IsDBNull(6) ? "" : dr.GetString(6));
                             item.url = (dr.IsDBNull(7) ? "" : dr.GetString(7));
-                            item.notes = (dr.IsDBNull(8) ? "" : dr.GetString(8));
 
-                            item.linkImportersCount = dr.GetInt32(9); 
+                            item.linkImportersCount = dr.GetInt32(8); 
 
                             res.Add(item);
                         }
@@ -304,8 +297,7 @@ namespace EditorsDbLayer
                         Phone2  = wp.Phone2,
                         Fax     = wp.Fax,
                         Email   = wp.Email,
-                        URL     = wp.URL,
-                        Notes   = wp.Notes
+                        URL     = wp.URL
                     from WineImporter wp (nolock)
                     where wp.ID = @ImporterId
 ";
@@ -326,7 +318,6 @@ namespace EditorsDbLayer
                             item.fax = (dr.IsDBNull(5) ? "" : dr.GetString(5));
                             item.email = (dr.IsDBNull(6) ? "" : dr.GetString(6));
                             item.url = (dr.IsDBNull(7) ? "" : dr.GetString(7));
-                            item.notes = (dr.IsDBNull(8) ? "" : dr.GetString(8));
 
                             return item;
                         }
@@ -367,8 +358,7 @@ namespace EditorsDbLayer
                         Phone2  = wp.Phone2,
                         Fax     = wp.Fax,
                         Email   = wp.Email,
-                        URL     = wp.URL,
-                        Notes   = wp.Notes
+                        URL     = wp.URL
                     from WineImporter wp (nolock)
                     where wp.ID = @ImporterId
 ";
@@ -389,7 +379,6 @@ namespace EditorsDbLayer
                             item.fax = (dr.IsDBNull(5) ? "" : dr.GetString(5));
                             item.email = (dr.IsDBNull(6) ? "" : dr.GetString(6));
                             item.url = (dr.IsDBNull(7) ? "" : dr.GetString(7));
-                            item.notes = (dr.IsDBNull(8) ? "" : dr.GetString(8));
 
                             return item;
                         }

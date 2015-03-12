@@ -19,7 +19,6 @@ namespace EditorsCommon
         public string fax;
         public string email;
         public string url;
-        public string notes;
 
         public int linkImportersCount;
 

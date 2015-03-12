@@ -59,7 +59,7 @@
                         if(  !String.IsNullOrEmpty( t.comments )){
                             string notes = NotesHelper.applyFormatting(t.comments);
 
-                            <div  style="text-indent: 4em;">@Html.Raw(notes)</div>                        
+                            <div>&nbsp;&nbsp;&nbsp;@Html.Raw(notes)</div>                        
                         }
 
 
@@ -120,7 +120,7 @@
 
                                 </b>
                             </div>
-                            <div style="text-indent: 4em;">@Html.Raw(output)</div>
+                            <div>&nbsp;&nbsp;&nbsp;@Html.Raw(output)</div>
                         }
                     }
                 }

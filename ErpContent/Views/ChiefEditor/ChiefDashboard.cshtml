@@ -1051,6 +1051,7 @@
                                      $.get('@Url.Content("~/TastingNote/GetNotesByTastingEvent")', { eventId: item.id },
                                       function (result) {
                                           item.notes(result);
+                                          item.loaded(true);
                                           item.open(!item.open());
                                       });
                                  } else {

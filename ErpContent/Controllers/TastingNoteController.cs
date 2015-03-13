@@ -48,26 +48,17 @@ namespace ErpContent.Controllers
         {
 
             var result = _storage.SearchTastingNoteByTastingEvent(eventId);
-            result = from r in result orderby r.producer select r;
 
-            var list = result.ToList<TastingNote>();
-            list.Sort(delegate(TastingNote x, TastingNote y)
-            {
-                if (x.vintage == y.vintage)
-                {
-                    if (x.color == y.color)
-                    {
-                        return x.wineName.CompareTo(y.wineName);
-                    }
-                    else
-                       return 0;
-                }
-                else return y.vintage.CompareTo(x.vintage); // descending order
-            });
+            //result = from r in result orderby r.producer select r;
+            //
+            // implicitly use IComparable<TastingNote>, so, notes would be sorted how it is defined
+            // in  public int CompareTo(TastingNote other) method of the TastingNote
+            //
+            result = from r in result orderby r select r;
 
 
-            //return Json(result, JsonRequestBehavior.AllowGet);
-            return Json(list, JsonRequestBehavior.AllowGet);
+            return Json(result, JsonRequestBehavior.AllowGet);
+
         }
 
 

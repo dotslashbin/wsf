@@ -45,7 +45,7 @@
                 foreach (var t in a.tastingEvents)
                 {
             
-                    if (t.tastingNotes != null && t.tastingNotes.Count > 0)
+                    if (t.tastingNotes != null )
                     {
                         <br />
                         foreach (var n in t.tastingNotes)
@@ -65,7 +65,7 @@
                         <br />
                     }
                     
-                    if (t.tastingNotes != null && t.tastingNotes.Count > 0)
+                    if (t.tastingNotes != null )
                     {
                         int cnt = 0;
                         if(  !String.IsNullOrEmpty( t.comments )){

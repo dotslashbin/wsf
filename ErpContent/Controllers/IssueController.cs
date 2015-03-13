@@ -232,6 +232,22 @@ namespace ErpContent.Controllers
                 }
             }
 
+            //
+            // sorts note within tasting record
+            //
+            foreach (var a in result.assignments)
+            {
+                foreach (var e in a.tastingEvents)
+                {
+                    if (e.tastingNotes != null && e.tastingNotes.Count() > 0)
+                    {
+                        e.tastingNotes = (from n in e.tastingNotes orderby n select n).ToList();
+                    }
+                }
+            }
+
+
+
 
             return View("Export2Doc", result);
         }
@@ -263,6 +279,20 @@ namespace ErpContent.Controllers
 
             result.assignments = from a in result.assignments where a.id == assignmentId select a;
 
+            //
+            // sorts note within tasting record
+            //
+            foreach (var a in result.assignments)
+            {
+                foreach (var e in a.tastingEvents)
+                {
+                    if (e.tastingNotes != null && e.tastingNotes.Count() > 0)
+                    {
+                        e.tastingNotes = (from n in e.tastingNotes orderby n select n).ToList();
+                    }
+                }
+            }
+
 
             Response.AddHeader("Content-Disposition", "attachment; filename=issue" + issueId + "_" + assignmentId + ".html");
             Response.ContentType = " text/html;";
@@ -293,7 +323,23 @@ namespace ErpContent.Controllers
             }
 
 
-            result.assignments = from a in result.assignments where a.id == assignmentId select a; 
+            result.assignments = from a in result.assignments where a.id == assignmentId select a;
+
+
+            //
+            // sorts note within tasting record
+            //
+            foreach (var a in result.assignments)
+            {
+                foreach (var e in a.tastingEvents)
+                {
+
+                    if (e.tastingNotes != null && e.tastingNotes.Count() > 0)
+                    {
+                        e.tastingNotes = (from n in e.tastingNotes orderby n select n).ToList();
+                    }
+                }
+            }
 
 
             Response.AddHeader("Content-Disposition", "attachment; filename=issue" + issueId + "_" + assignmentId + ".html");

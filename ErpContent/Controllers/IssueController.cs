@@ -348,8 +348,23 @@ namespace ErpContent.Controllers
                     // <Table xmlns:aid="http://ns.adobe.com/AdobeInDesign/4.0/" aid:table="table" aid:trows="2" aid:tcols="7">
                     XmlNode table = tr.AppendChild(xml.CreateElement("Table"));
                     table.Attributes.Append(xml.CreateAttribute("aid", "table", ns)).Value = "table";
+
+                    if (t.tastingNotes == null)
+                    {
+                        continue; 
+                    }
+
                     table.Attributes.Append(xml.CreateAttribute("aid", "trows", ns)).Value =  t.tastingNotes.Count().ToString();
                     table.Attributes.Append(xml.CreateAttribute("aid", "tcols", ns)).Value = "7";
+
+                    XmlNode producerNote = tr.AppendChild(xml.CreateElement("producer-note"));
+                    //
+                    // Producer Note first
+                    //
+                    if (!String.IsNullOrEmpty(t.comments))
+                    {
+                        producerNote.InnerText = t.comments;
+                    }
 
                     foreach (var n in t.tastingNotes)
                     {
@@ -359,14 +374,14 @@ namespace ErpContent.Controllers
                         cell.Attributes.Append(xml.CreateAttribute("aid", "table", ns)).Value = "cell";
                         cell.Attributes.Append(xml.CreateAttribute("aid", "crows", ns)).Value = "1";
                         cell.Attributes.Append(xml.CreateAttribute("aid", "ccols", ns)).Value = "1";
-                        cell.Attributes.Append(xml.CreateAttribute("aid", "ccolwidth", ns)).Value = "99.28571428571429";
+                        cell.Attributes.Append(xml.CreateAttribute("aid", "ccolwidth", ns)).Value = "135";
                         cell.InnerText = n.producer.ToUpper();
 
                         cell = table.AppendChild(xml.CreateElement("Cell"));
                         cell.Attributes.Append(xml.CreateAttribute("aid", "table", ns)).Value = "cell";
                         cell.Attributes.Append(xml.CreateAttribute("aid", "crows", ns)).Value = "1";
                         cell.Attributes.Append(xml.CreateAttribute("aid", "ccols", ns)).Value = "1";
-                        cell.Attributes.Append(xml.CreateAttribute("aid", "ccolwidth", ns)).Value = "99.28571428571429";
+                        cell.Attributes.Append(xml.CreateAttribute("aid", "ccolwidth", ns)).Value = "65";
                         cell.InnerText = n.vintage.ToUpper();
 
 
@@ -375,7 +390,7 @@ namespace ErpContent.Controllers
                         cell.Attributes.Append(xml.CreateAttribute("aid", "table", ns)).Value = "cell";
                         cell.Attributes.Append(xml.CreateAttribute("aid", "crows", ns)).Value = "1";
                         cell.Attributes.Append(xml.CreateAttribute("aid", "ccols", ns)).Value = "1";
-                        cell.Attributes.Append(xml.CreateAttribute("aid", "ccolwidth", ns)).Value = "99.28571428571429";
+                        cell.Attributes.Append(xml.CreateAttribute("aid", "ccolwidth", ns)).Value = "135";
                         cell.InnerText = n.wineName.ToUpper();
 
 
@@ -384,7 +399,7 @@ namespace ErpContent.Controllers
                         cell.Attributes.Append(xml.CreateAttribute("aid", "table", ns)).Value = "cell";
                         cell.Attributes.Append(xml.CreateAttribute("aid", "crows", ns)).Value = "1";
                         cell.Attributes.Append(xml.CreateAttribute("aid", "ccols", ns)).Value = "1";
-                        cell.Attributes.Append(xml.CreateAttribute("aid", "ccolwidth", ns)).Value = "99.28571428571429";
+                        cell.Attributes.Append(xml.CreateAttribute("aid", "ccolwidth", ns)).Value = "65";
                         cell.InnerText = t.NoteAppellation(n).ToUpper();
 
 
@@ -393,7 +408,7 @@ namespace ErpContent.Controllers
                         cell.Attributes.Append(xml.CreateAttribute("aid", "table", ns)).Value = "cell";
                         cell.Attributes.Append(xml.CreateAttribute("aid", "crows", ns)).Value = "1";
                         cell.Attributes.Append(xml.CreateAttribute("aid", "ccols", ns)).Value = "1";
-                        cell.Attributes.Append(xml.CreateAttribute("aid", "ccolwidth", ns)).Value = "99.28571428571429";
+                        cell.Attributes.Append(xml.CreateAttribute("aid", "ccolwidth", ns)).Value = "65";
                         cell.InnerText = "("+ t.NotePrice(n) + ")";
 
 
@@ -402,7 +417,7 @@ namespace ErpContent.Controllers
                         cell.Attributes.Append(xml.CreateAttribute("aid", "table", ns)).Value = "cell";
                         cell.Attributes.Append(xml.CreateAttribute("aid", "crows", ns)).Value = "1";
                         cell.Attributes.Append(xml.CreateAttribute("aid", "ccols", ns)).Value = "1";
-                        cell.Attributes.Append(xml.CreateAttribute("aid", "ccolwidth", ns)).Value = "99.28571428571429";
+                        cell.Attributes.Append(xml.CreateAttribute("aid", "ccolwidth", ns)).Value = "65";
                         cell.InnerText = n.color.ToUpper();
 
 
@@ -411,25 +426,13 @@ namespace ErpContent.Controllers
                         cell.Attributes.Append(xml.CreateAttribute("aid", "table", ns)).Value = "cell";
                         cell.Attributes.Append(xml.CreateAttribute("aid", "crows", ns)).Value = "1";
                         cell.Attributes.Append(xml.CreateAttribute("aid", "ccols", ns)).Value = "1";
-                        cell.Attributes.Append(xml.CreateAttribute("aid", "ccolwidth", ns)).Value = "99.28571428571429";
+                        cell.Attributes.Append(xml.CreateAttribute("aid", "ccolwidth", ns)).Value = "65";
                         cell.InnerText = n.encodeRatingForPrinting();
 
 
 
                         XmlNode paragraph = tr.AppendChild(xml.CreateElement("p"));
                         paragraph.InnerText = n.note;
-                    }
-
-
-
-
-                    XmlNode producerNote = tr.AppendChild(xml.CreateElement("producer-note"));
-                    //
-                    // Producer Note first
-                    //
-                    if (!String.IsNullOrEmpty(t.comments))
-                    {
-                        producerNote.InnerText = t.comments;
                     }
 
                     foreach (var n in t.tastingNotes)
@@ -587,13 +590,13 @@ namespace ErpContent.Controllers
                 case 1066597:
                     return 1063518;
                 case 1066598:
-                    return 1063524;
+                    return 1063654;
                 case 1067242:
                     return 1063532;
                 case 1067986:
                     return 1063533;
                 case 1074793:
-                    return 1063525;
+                    return 1063655;
                 case 1074948:
                     return 1063581;
 

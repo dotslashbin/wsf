@@ -135,7 +135,7 @@ namespace EditorsDbLayer
                             item.email = (dr.IsDBNull(6) ? "" : dr.GetString(6));
                             item.url = (dr.IsDBNull(7) ? "" : dr.GetString(7));
 
-                            item.linkImportersCount = dr.GetInt32(8); 
+                            item.linkImportersCount = dr.GetInt32(9); 
 
                             res.Add(item);
                         }
@@ -155,13 +155,13 @@ namespace EditorsDbLayer
 
                     cmd.CommandText = @"
      update WineImporter set  
-     [Name]=@Name,
-     [Address]=@Address,
-     [Phone1]=@Phone1,
-     [Phone2]=@Phone2,
-     [Fax]=@Fax,
-     [Email]=@Email,
-     [URL]=@URL
+     [Name]   = @Name,
+     [Address]= @Address,
+     [Phone1] = @Phone1,
+     [Phone2] = @Phone2,
+     [Fax]    = @Fax,
+     [Email]  = @Email,
+     [URL]    = @URL
      where
      ID = @ID
 ";

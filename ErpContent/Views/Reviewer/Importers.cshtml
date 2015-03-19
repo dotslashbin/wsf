@@ -66,27 +66,32 @@
                 <div class='col-sm-4'>
                       Address
                 </div>
-                <div class='col-sm-2'>
+                <div class='col-sm-3'>
                       URL
                 </div>
             </div>
-            <!-- ko foreach: items -->
-            <div class="row"  style="border-bottom: solid 1px gray;">
-                <div class='col-sm-1'>
-                      <span data-bind="click: edit" class='glyphicon glyphicon-pencil' style="cursor:pointer" title="Start editing"></span>
-                </div>  
-                <div class='col-sm-3' >
-                      <span data-bind="text: name"></span>
-                </div>
-                <div class='col-sm-4' >
-                      <span data-bind="text: address"></span>
-                </div>
-                <div class='col-sm-2' >
-                      <span data-bind="text: url"></span>
+             <!-- ko foreach: items -->
+            <div class="row" style="border-bottom: solid 1px gray;">
+                <div class="row">
+                    <div class='col-sm-1'>
+                        <span data-bind="click: edit" class='glyphicon glyphicon-pencil' style="cursor: pointer" title="Start editing"></span>
+                    </div>
+                    <div class='col-sm-3'>
+                        <span data-bind="text: name"></span>
+                    </div>
+                    <div class='col-sm-4'>
+                        <span data-bind="text: address"></span>
+                    </div>
+                    <div class='col-sm-3'>
+                        <span data-bind="text: url"></span>
+                    </div>
+                    <div class='col-sm-1 pull-right'>
+                        <span data-bind="click: $parent.remove, visible: linkImportersCount() == 0 " class='glyphicon glyphicon-trash' style="cursor: pointer" title="Delete Importer's record"></span>
+                    </div>
                 </div>
             </div>
             <!-- /ko -->
-        </div>
+       </div>
     </script>
 
 
@@ -97,16 +102,16 @@
                 <div class="col-sm-2">Name: </div>
                 <div class="col-sm-6">
                     <input class="form-control input-sm" 
-                        id="importerName" 
+                        id="importerName"  maxlength="100"
                         name="importerName" 
-                        data-bind="value:name, valueUpdate: 'blur'" placeholder="Importer's name" required />
+                        data-bind="value: name, valueUpdate: 'blur'" placeholder="Importer's name" required />
                 </div>
             </div>
             <div class="row form-group">
                 <div class="col-sm-2">Address: </div>
                 <div class="col-sm-6">
                     <input class="form-control input-sm" 
-                        id="importerAddress" 
+                        id="importerAddress"  maxlength="100"
                         name="importerAddress" 
                         data-bind="value: address, valueUpdate: 'blur'" placeholder="Address" />
                 </div>
@@ -114,7 +119,7 @@
             <div class="row form-group">
                 <div class="col-sm-2">URL: </div>
                 <div class="col-sm-6">
-                    <input class="form-control input-sm" 
+                    <input class="form-control input-sm"  maxlength="64"
                         id="importerUrl" 
                         name="importerUrl" 
                         data-bind="value: url, valueUpdate: 'blur'" placeholder="Address"  />
@@ -124,7 +129,7 @@
             <div class="row form-group">
                 <div class="col-sm-2">Email: </div>
                 <div class="col-sm-6">
-                    <input class="form-control input-sm" 
+                    <input class="form-control input-sm"  maxlength="64"
                         id="importerEmail" 
                         name="importerEmail" 
                         data-bind="value: email, valueUpdate: 'blur'" placeholder="Email"  />
@@ -135,7 +140,7 @@
             <div class="row form-group">
                 <div class="col-sm-2">Phone1: </div>
                 <div class="col-sm-6">
-                    <input class="form-control input-sm" 
+                    <input class="form-control input-sm"  maxlength="32"
                         id="importerPhone1" 
                         name="importerPhone1" 
                         data-bind="value: phone1, valueUpdate: 'blur'" placeholder="Phone1"  />
@@ -146,7 +151,7 @@
             <div class="row form-group">
                 <div class="col-sm-2">Phone2: </div>
                 <div class="col-sm-6">
-                    <input class="form-control input-sm" 
+                    <input class="form-control input-sm"  maxlength="32" 
                         id="importerPhone2" 
                         name="importerPhone2" 
                         data-bind="value: phone2, valueUpdate: 'blur'" placeholder="Phone2"  />
@@ -266,7 +271,15 @@
 
         self.searchWithEnter = function (data, event) {
 
+            var searchStringValue = $("#note-edit-producer-search").val();
+
             if ((event.keyCode == 13 || event.keyCode == "13")) {
+                if (searchStringValue == "" || searchStringValue == null) {
+                    alert("Please enter a search string.");
+                    return true;
+                }
+
+                self.searchString(searchStringValue);
                 self.search();
             }
             return true;
@@ -275,7 +288,7 @@
 
         self.search = function () {
 
-            if (self.searchString() || self.searchString().trim().length == 0) {
+            if (!self.searchString() || self.searchString().trim().length == 0) {
                 window.alert("Search string is empty. Please enter something.");
                 return;
             }
@@ -300,6 +313,32 @@
                     self.items(t.children());
                 });
         }
+
+
+
+        self.remove = function (item) {
+
+            var result = window.confirm("You are about to remove importer\r\n'" + item.name() + "'\r\nDo you wish to continue?");
+            if (!result)
+                return;
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Importer/Remove")',
+                data:
+                    {
+                        str: JSON.stringify(item.toObject())
+                    },
+                success: function (r) {
+                    self.items.remove(item);
+                },
+                error: function (request, status, error) {
+                    alert('error while removing importer record');
+                }
+            });
+        }
+
+
 
 
         self.addImporter = function () {
@@ -366,6 +405,9 @@
 
                 var similar = null;
 
+
+                jQuery.ajaxSetup({ async: false });
+
                 $.ajax({
                     type: 'POST',
                     url: '@Url.Content("~/Importer/SearchByName")',
@@ -389,40 +431,44 @@
                                     }, {});
 
                         similar = t.children();
+
+                        if (similar != null && similar.length > 0) {
+                            for (var i = 0; i < similar.length; i++) {
+                                if (o.name().toLowerCase().trim() == similar[i].name().toLowerCase().trim()) {
+
+                                    alert("Importer '" + similar[i].name() + "' already exists in database.");
+                                    return false;
+                                }
+                            }
+                        }
+
+                        similar = null;
+                        $.ajax({
+                            type: 'POST',
+                            url: '@Url.Content("~/Importer/Insert")',
+                            data:
+                                {
+                                    str: JSON.stringify(m.toObject())
+                                },
+                            success: function (r) {
+                                self.items.unshift(new ImporterModel(r));
+                            },
+                            error: function (request, status, error) {
+                                alert('error while inserting importer record');
+                            }
+                        });
                     },
                     error: function (request, status, error) {
                         alert('error while searching similar importer record');
                     }
                 });
 
+                jQuery.ajaxSetup({ async: true });
 
-                if (similar != null && similar.length > 0) {
-                    for (var i = 0; i < similar.length - 1; i++) {
-                        if (o.name().toLowerCase().trim() == similar[i].name().toLowerCase().trim()) {
-
-                            alert("Importer '" + similar[i].name() + "' already exists in database.");
-                            return;
-                        }
-                    }
-                }
-
-
-                $.ajax({
-                    type: 'POST',
-                    url: '@Url.Content("~/Importer/Insert")',
-                    data:
-                        {
-                            str: JSON.stringify(m.toObject())
-                        },
-                    success: function (r) {
-                        self.items.unshift(new ImporterModel(r));
-                    },
-                    error: function (request, status, error) {
-                        alert('error while inserting importer record');
-                    }
-                });
-
-                return true;
+                if (similar == null)
+                    return true;
+                else
+                    return false;
             };
 
 

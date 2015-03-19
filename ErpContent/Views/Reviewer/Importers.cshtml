@@ -271,7 +271,15 @@
 
         self.searchWithEnter = function (data, event) {
 
+            var searchStringValue = $("#note-edit-producer-search").val();
+
             if ((event.keyCode == 13 || event.keyCode == "13")) {
+                if (searchStringValue == "" || searchStringValue == null) {
+                    alert("Please enter a search string.");
+                    return true;
+                }
+
+                self.searchString(searchStringValue);
                 self.search();
             }
             return true;
@@ -305,6 +313,32 @@
                     self.items(t.children());
                 });
         }
+
+
+
+        self.remove = function (item) {
+
+            var result = window.confirm("You are about to remove importer\r\n'" + item.name() + "'\r\nDo you wish to continue?");
+            if (!result)
+                return;
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Importer/Remove")',
+                data:
+                    {
+                        str: JSON.stringify(item.toObject())
+                    },
+                success: function (r) {
+                    self.items.remove(item);
+                },
+                error: function (request, status, error) {
+                    alert('error while removing importer record');
+                }
+            });
+        }
+
+
 
 
         self.addImporter = function () {
@@ -371,6 +405,9 @@
 
                 var similar = null;
 
+
+                jQuery.ajaxSetup({ async: false });
+
                 $.ajax({
                     type: 'POST',
                     url: '@Url.Content("~/Importer/SearchByName")',
@@ -394,40 +431,44 @@
                                     }, {});
 
                         similar = t.children();
+
+                        if (similar != null && similar.length > 0) {
+                            for (var i = 0; i < similar.length; i++) {
+                                if (o.name().toLowerCase().trim() == similar[i].name().toLowerCase().trim()) {
+
+                                    alert("Importer '" + similar[i].name() + "' already exists in database.");
+                                    return false;
+                                }
+                            }
+                        }
+
+                        similar = null;
+                        $.ajax({
+                            type: 'POST',
+                            url: '@Url.Content("~/Importer/Insert")',
+                            data:
+                                {
+                                    str: JSON.stringify(m.toObject())
+                                },
+                            success: function (r) {
+                                self.items.unshift(new ImporterModel(r));
+                            },
+                            error: function (request, status, error) {
+                                alert('error while inserting importer record');
+                            }
+                        });
                     },
                     error: function (request, status, error) {
                         alert('error while searching similar importer record');
                     }
                 });
 
+                jQuery.ajaxSetup({ async: true });
 
-                if (similar != null && similar.length > 0) {
-                    for (var i = 0; i < similar.length - 1; i++) {
-                        if (o.name().toLowerCase().trim() == similar[i].name().toLowerCase().trim()) {
-
-                            alert("Importer '" + similar[i].name() + "' already exists in database.");
-                            return;
-                        }
-                    }
-                }
-
-
-                $.ajax({
-                    type: 'POST',
-                    url: '@Url.Content("~/Importer/Insert")',
-                    data:
-                        {
-                            str: JSON.stringify(m.toObject())
-                        },
-                    success: function (r) {
-                        self.items.unshift(new ImporterModel(r));
-                    },
-                    error: function (request, status, error) {
-                        alert('error while inserting importer record');
-                    }
-                });
-
-                return true;
+                if (similar == null)
+                    return true;
+                else
+                    return false;
             };
 
 

@@ -108,7 +108,7 @@ namespace EditorsDbLayer
                 Phone2  = wp.Phone2,
                 Fax     = wp.Fax,
                 Email   = wp.Email,
-                URL     = wp.URL
+                URL     = wp.URL,
 	            SortOrder = case when wp.Name like right(@SearchString, len(@SearchString)-1) then 0 else 20 end,
                 linkCount = (select count(*) from WineProducer_WineImporter where ImporterId = wp.ID)
 
@@ -232,7 +232,7 @@ namespace EditorsDbLayer
                 Phone2  = wp.Phone2,
                 Fax     = wp.Fax,
                 Email   = wp.Email,
-                URL     = wp.URL
+                URL     = wp.URL,
                 linkCount = (select count(*) from WineProducer_WineImporter where ImporterId = wp.ID)
 
             from WineImporter wp (nolock)

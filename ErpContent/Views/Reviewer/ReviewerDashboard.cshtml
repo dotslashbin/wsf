@@ -107,7 +107,7 @@
                 <span class="col-sm-11  pull-right" data-bind="html: erp.utils.Str2Html(comments())"></span>
             </div>
             <div class="row">
-                <div class="col-sm-6" data-bind="visible: notesCount() > 1">
+                <div class="col-sm-12" data-bind="visible: notesCount() > 1">
                     &nbsp;Sort Notes By
                                     <select data-bind="event: { change: sortBy },
                                     options: PAGE_CONTEXT.sortByOptions,
@@ -116,11 +116,13 @@
                                     value: sortById,
                                     valueUpdate: 'blur'">
                                     </select>
-                </div>
-                <div class="col-sm-5 pull-right">
-                    <button class="btn  btn-primary btn-xs inner-window-button" data-bind="click: createNoteFromExisting">Add Wines</button>
+
+                    &nbsp;<button class="btn  btn-primary btn-xs inner-window-button" data-bind="click: createNoteFromExisting">Add Wines</button>
+<!--
                     <button class="btn  btn-primary btn-xs inner-window-button" data-bind="click: createNote">Add New Note</button>
+-->
                 </div>
+
             </div>
             <br />
             <!-- ko foreach: notes -->
@@ -326,15 +328,18 @@
 
         <div class="row" >
             <div class="row" >
-                <div class='col-sm-4  pull-right' >
-                    <span class='glyphicon glyphicon-shopping-cart'></span>&nbsp;
-                    <span data-bind="text: cart().length" ></span>
+                <div class='col-sm-6' >
+                   <input type="checkbox" data-bind="checked: passThru" >&nbsp;Pass Note Thru Cart
+                </div>
+                <div class='col-sm-6  pull-right' data-bind="visible: passThru() == false" >
+                   &nbsp;<span class='glyphicon glyphicon-shopping-cart'></span>
+                   &nbsp;<span data-bind="text: cart().length" ></span>
                    &nbsp;<button class="btn  btn-primary btn-sm" style="cursor:pointer" data-bind="click: cartToTastingEvent">Add To Tasting Record</button>
                    &nbsp;<button class="btn  btn-primary btn-sm" style="cursor:pointer" data-bind="click: clearCart">Clear</button>
                 </div>
             </div>
 
-            <div class="row" style="height: 150px; overflow:auto; border: solid 1px gray">
+            <div class="row" style="height: 150px; overflow:auto; border: solid 1px gray" data-bind="visible: passThru() == false">
             <!-- ko foreach: cart -->
                <div class='col-sm-1'>
                    <span class='glyphicon glyphicon-trash' style='cursor:pointer'" data-bind="click: $parent.deleteFromCart"></span>
@@ -1247,8 +1252,6 @@
 
 
         VinSearchModel.createNoteVintage = function(vin, vintage){
-
-
             var te = new TastingEventModel(null);
 
             te.createBareNote(VinSearchModel.tastingEvent, vin, vintage.vintage(), function (r) {
@@ -1323,25 +1326,36 @@
 
                     if (!m.validate())
                         return false;
-                    
-                    //note.fromObject(o.toObject());
-                    //VinSearchModel.cart.unshift(note);
 
-
-                    $.ajax({
-                        type: 'POST',
-                        url: erp.wsf_path + 'TastingNote/AddTastingNoteToCart',
-                        data: {
-                            str: JSON.stringify(o.toObject())
-                        },
-                        success: function (r) {
-                            VinSearchModel.cart.unshift(new TastingNoteModel(r));
-                        },
-                        error: function (request, status, error) {
-                            alert('Error while saving tasting note to cart. Please report to admin.');
-                        }
-                    });
-
+                    if (VinSearchModel.passThru) {
+                        $.ajax({
+                            type: 'POST',
+                            url: erp.wsf_path + 'TastingNote/AddTastingNote',
+                            data: {
+                                str: JSON.stringify(o.toObject())
+                            },
+                            success: function (r) {
+                                VinSearchModel.tastingEvent.notes.unshift(new TastingNoteModel(r));
+                            },
+                            error: function (request, status, error) {
+                                alert('Error while saving a tasting note. Please report to admin.');
+                            }
+                        });
+                    } else {
+                        $.ajax({
+                            type: 'POST',
+                            url: erp.wsf_path + 'TastingNote/AddTastingNoteToCart',
+                            data: {
+                                str: JSON.stringify(o.toObject())
+                            },
+                            success: function (r) {
+                                    VinSearchModel.cart.unshift(new TastingNoteModel(r));
+                            },
+                            error: function (request, status, error) {
+                                alert('Error while saving tasting note to cart. Please report to admin.');
+                            }
+                        });
+                    }
 
 
                     return true;
@@ -1366,19 +1380,18 @@
          * "Enter" key is pressed.
          */
         VinSearchModel.searchWithEnter = function(data, event) {
-
             var searchStringValue = $("#note-edit-producer-search").val();
 
             var message = "Please enter a search string."; 
 
             if ((event.keyCode == 13 || event.keyCode == "13")) {
-                if ((searchStringValue == "" || searchStringValue == null) || searchStringValue == message) {
-                    $("#note-edit-producer-search").val(message);
+                if (searchStringValue == "" || searchStringValue == null ) {
+                    alert(message);
+                    return true;
                 }
-
+                VinSearchModel.searchString(searchStringValue);
                 VinSearchModel.search();
             }
-
             return true; 
         }
 
@@ -1407,8 +1420,9 @@
 
         VinSearchModel.searchString = ko.observable('');
         VinSearchModel.items = ko.observableArray([]);
-
         VinSearchModel.cart = ko.observableArray([]);
+        VinSearchModel.passThru = ko.observableArray(false);
+
 
         VinSearchModel.deleteFromCart = function (item) {
 
@@ -1429,8 +1443,6 @@
 
 
         }
-
-
 
         function ClearCart() {
             $.ajax({

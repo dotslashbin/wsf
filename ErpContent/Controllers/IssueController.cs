@@ -1,5 +1,6 @@
 ﻿using EditorsCommon;
 using EditorsCommon.Publication;
+using ErpContent.Views.Helpers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -362,6 +363,7 @@ namespace ErpContent.Controllers
                     // Producer Note first
                     //
                     if (!String.IsNullOrEmpty(t.comments))
+
                     {
                         producerNote.InnerText = t.comments;
                     }
@@ -438,7 +440,11 @@ namespace ErpContent.Controllers
                     foreach (var n in t.tastingNotes)
                     {
                         XmlNode paragraph = tr.AppendChild(xml.CreateElement("p"));
-                        paragraph.InnerText = n.note;
+                        //paragraph.InnerText = "<b>JOSHUA</b>" + n.note;
+
+                        string output = NotesHelper.applyFormatting(n.note);
+
+                        paragraph.InnerText = output; 
                     }
                 }
             }

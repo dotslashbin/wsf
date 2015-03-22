@@ -440,9 +440,29 @@ namespace ErpContent.Controllers
                     foreach (var n in t.tastingNotes)
                     {
                         XmlNode paragraph = tr.AppendChild(xml.CreateElement("p"));
-                        //paragraph.InnerText = "<b>JOSHUA</b>" + n.note;
 
-                        string output = NotesHelper.applyFormatting(n.note);
+                        var noteText = n.note;
+                        //
+                        // if vintage+label can be find within tasting note body, make it bold
+                        // 
+                        if (!String.IsNullOrEmpty(n.wineName))
+                        {
+                            var vintagePlusWineName = n.vintage.ToUpper() + ' ' + n.wineName;
+                            noteText = noteText.Replace(vintagePlusWineName, "<b>" + vintagePlusWineName + "</b>");
+
+                            //
+                            // in case if name has been accented in the note
+                            //
+                            string vintagePlusWineNameAccent = NotesHelper.ReplaceToAccent(vintagePlusWineName);
+                            if (vintagePlusWineNameAccent.CompareTo(vintagePlusWineName) != 0)
+                            {
+                                noteText = noteText.Replace(vintagePlusWineNameAccent, "<b>" + vintagePlusWineNameAccent + "</b>");
+                            }
+
+                        }
+
+
+                        string output = NotesHelper.applyFormatting(noteText);
 
                         paragraph.InnerText = output; 
                     }

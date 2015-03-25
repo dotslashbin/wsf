@@ -124,17 +124,17 @@ namespace EditorsDbLayer
 		EstimatedCost_Hi 
 
         ,RatingQ
-        ,Importers =  REPLACE(  (select '+++IMPORTER+++'+'---new-line---'+ Name 
+        ,Importers =  REPLACE(  (select '+++IMPORTER+++'+'---new-line---'+ RTRIM(LTRIM(Name)) 
                      +  case
-                          when LEN( isnull(Address,'')) > 0 then (', ' + Address )
+                          when LEN( isnull(Address,'')) > 0 then (', ' + RTRIM(LTRIM(Address)) )
                           else ''
                         end   
                      +  case
-                          when LEN( isnull(Phone1,'')) > 0 then (', ' + Phone1 )
+                          when LEN( isnull(Phone1,'')) > 0 then (', ' + RTRIM(LTRIM(Phone1)) )
                           else ''
                         end   
                      +  case
-                          when LEN( isnull(URL,'')) > 0 then (', ' + URL)
+                          when LEN( isnull(URL,'')) > 0 then (', ' + RTRIM(LTRIM(URL)) )
                           else ''
                         end   
                     from WineImporter wi
@@ -234,17 +234,17 @@ namespace EditorsDbLayer
 		EstimatedCost_Hi 
 
         ,RatingQ
-        ,Importers =  REPLACE(  (select '+++IMPORTER+++'+'---new-line---'+ Name 
+        ,Importers =  REPLACE(  (select '+++IMPORTER+++'+'---new-line---'+ RTRIM(LTRIM(Name)) 
                      +  case
-                          when LEN( isnull(Address,'')) > 0 then (', ' + Address )
+                          when LEN( isnull(Address,'')) > 0 then (', ' + RTRIM(LTRIM( Address)) )
                           else ''
                         end   
                      +  case
-                          when LEN( isnull(Phone1,'')) > 0 then (', ' + Phone1 )
+                          when LEN( isnull(Phone1,'')) > 0 then (', ' + RTRIM(LTRIM(Phone1)) )
                           else ''
                         end   
                      +  case
-                          when LEN( isnull(URL,'')) > 0 then (', ' + URL)
+                          when LEN( isnull(URL,'')) > 0 then (', ' + RTRIM(LTRIM(URL)) )
                           else ''
                         end   
                     from WineImporter wi
@@ -343,17 +343,17 @@ namespace EditorsDbLayer
 		EstimatedCost_Hi 
 
         ,RatingQ
-        ,Importers =  REPLACE(  (select '+++IMPORTER+++'+'---new-line---'+ Name 
+        ,Importers =  REPLACE(  (select '+++IMPORTER+++'+'---new-line---'+ RTRIM(LTRIM(Name)) 
                      +  case
-                          when LEN( isnull(Address,'')) > 0 then (', ' + Address )
+                          when LEN( isnull(Address,'')) > 0 then (', ' + RTRIM(LTRIM(Address)) )
                           else ''
                         end   
                      +  case
-                          when LEN( isnull(Phone1,'')) > 0 then (', ' + Phone1 )
+                          when LEN( isnull(Phone1,'')) > 0 then (', ' + RTRIM(LTRIM(Phone1)) )
                           else ''
                         end   
                      +  case
-                          when LEN( isnull(URL,'')) > 0 then (', ' + URL)
+                          when LEN( isnull(URL,'')) > 0 then (', ' + RTRIM(LTRIM(URL)) )
                           else ''
                         end   
                     from WineImporter wi
@@ -1241,17 +1241,17 @@ select  top 200
 		EstimatedCost_Hi 
 
         ,RatingQ
-        ,Importers =  REPLACE(  (select '+++IMPORTER+++'+'---new-line---'+ Name 
+        ,Importers =  REPLACE(  (select '+++IMPORTER+++'+'---new-line---'+ RTRIM(LTRIM(Name)) 
                      +  case
-                          when LEN( isnull(Address,'')) > 0 then (', ' + Address )
+                          when LEN( isnull(Address,'')) > 0 then (', ' + RTRIM(LTRIM(Address)) )
                           else ''
                         end   
                      +  case
-                          when LEN( isnull(Phone1,'')) > 0 then (', ' + Phone1 )
+                          when LEN( isnull(Phone1,'')) > 0 then (', ' + RTRIM(LTRIM(Phone1)) )
                           else ''
                         end   
                      +  case
-                          when LEN( isnull(URL,'')) > 0 then (', ' + URL)
+                          when LEN( isnull(URL,'')) > 0 then (', ' + RTRIM(LTRIM(URL)) )
                           else ''
                         end   
                     from WineImporter wi

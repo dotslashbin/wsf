@@ -63,12 +63,12 @@ namespace EditorsDbLayer
 ";
 
                     cmd.Parameters.AddWithValue("@Name", e.name);
-                    cmd.Parameters.AddWithValue("@Address", String.IsNullOrEmpty(e.address) ? "" : e.address);
-                    cmd.Parameters.AddWithValue("@Phone1", String.IsNullOrEmpty(e.phone1) ? "" : e.phone1);
-                    cmd.Parameters.AddWithValue("@Phone2", String.IsNullOrEmpty(e.phone2) ? "" : e.phone2);
-                    cmd.Parameters.AddWithValue("@Fax", String.IsNullOrEmpty(e.fax) ? "" : e.fax);
-                    cmd.Parameters.AddWithValue("@Email", String.IsNullOrEmpty(e.email) ? "" : e.email);
-                    cmd.Parameters.AddWithValue("@Url", String.IsNullOrEmpty(e.url) ? "" : e.url);
+                    cmd.Parameters.AddWithValue("@Address", String.IsNullOrEmpty(e.address) ? "" : e.address.Trim());
+                    cmd.Parameters.AddWithValue("@Phone1", String.IsNullOrEmpty(e.phone1) ? "" : e.phone1.Trim());
+                    cmd.Parameters.AddWithValue("@Phone2", String.IsNullOrEmpty(e.phone2) ? "" : e.phone2.Trim());
+                    cmd.Parameters.AddWithValue("@Fax", String.IsNullOrEmpty(e.fax) ? "" : e.fax.Trim());
+                    cmd.Parameters.AddWithValue("@Email", String.IsNullOrEmpty(e.email) ? "" : e.email.Trim());
+                    cmd.Parameters.AddWithValue("@Url", String.IsNullOrEmpty(e.url) ? "" : e.url.Trim());
 
                     using (SqlDataReader dr = cmd.ExecuteReader())
                     {
@@ -250,12 +250,12 @@ namespace EditorsDbLayer
                             WineImporterItem item = new WineImporterItem();
                             item.id = dr.GetInt32(0);
                             item.name = dr.GetString(1);
-                            item.address = (dr.IsDBNull(2) ? "" : dr.GetString(2));
-                            item.phone1 = (dr.IsDBNull(3) ? "" : dr.GetString(3));
-                            item.phone2 = (dr.IsDBNull(4) ? "" : dr.GetString(4));
-                            item.fax = (dr.IsDBNull(5) ? "" : dr.GetString(5));
-                            item.email = (dr.IsDBNull(6) ? "" : dr.GetString(6));
-                            item.url = (dr.IsDBNull(7) ? "" : dr.GetString(7));
+                            item.address = (dr.IsDBNull(2) ? "" : dr.GetString(2).Trim());
+                            item.phone1 = (dr.IsDBNull(3) ? "" : dr.GetString(3).Trim());
+                            item.phone2 = (dr.IsDBNull(4) ? "" : dr.GetString(4).Trim());
+                            item.fax = (dr.IsDBNull(5) ? "" : dr.GetString(5).Trim());
+                            item.email = (dr.IsDBNull(6) ? "" : dr.GetString(6).Trim());
+                            item.url = (dr.IsDBNull(7) ? "" : dr.GetString(7).Trim());
 
                             item.linkImportersCount = dr.GetInt32(8); 
 
@@ -312,12 +312,12 @@ namespace EditorsDbLayer
                             WineImporterItem item = new WineImporterItem();
                             item.id = dr.GetInt32(0);
                             item.name = dr.GetString(1);
-                            item.address = (dr.IsDBNull(2) ? "" : dr.GetString(2));
-                            item.phone1 = (dr.IsDBNull(3) ? "" : dr.GetString(3));
-                            item.phone2 = (dr.IsDBNull(4) ? "" : dr.GetString(4));
-                            item.fax = (dr.IsDBNull(5) ? "" : dr.GetString(5));
-                            item.email = (dr.IsDBNull(6) ? "" : dr.GetString(6));
-                            item.url = (dr.IsDBNull(7) ? "" : dr.GetString(7));
+                            item.address = (dr.IsDBNull(2) ? "" : dr.GetString(2).Trim());
+                            item.phone1 = (dr.IsDBNull(3) ? "" : dr.GetString(3).Trim());
+                            item.phone2 = (dr.IsDBNull(4) ? "" : dr.GetString(4).Trim());
+                            item.fax = (dr.IsDBNull(5) ? "" : dr.GetString(5).Trim());
+                            item.email = (dr.IsDBNull(6) ? "" : dr.GetString(6).Trim());
+                            item.url = (dr.IsDBNull(7) ? "" : dr.GetString(7).Trim());
 
                             return item;
                         }

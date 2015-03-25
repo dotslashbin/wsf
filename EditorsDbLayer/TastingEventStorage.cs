@@ -74,9 +74,9 @@ group by t.ID, t.Title, t.Location,t.notes, t.created";
 
                             evt.id = rdr.GetInt32(0);
                             evt.assignmentId = assignmentId;
-                            evt.title = rdr.IsDBNull(1) ? "" : rdr.GetString(1);
-                            evt.location = rdr.IsDBNull(2) ? "" : rdr.GetString(2);
-                            evt.comments = rdr.IsDBNull(3) ? "" : rdr.GetString(3);
+                            evt.title = rdr.IsDBNull(1) ? "" : rdr.GetString(1).Trim();
+                            evt.location = rdr.IsDBNull(2) ? "" : rdr.GetString(2).Trim();
+                            evt.comments = rdr.IsDBNull(3) ? "" : rdr.GetString(3).Trim();
                             evt.created = rdr.GetDateTime(4);
                             evt.notesCount = rdr.GetInt32(5);
                             evt.draftCount = rdr.GetInt32(6);

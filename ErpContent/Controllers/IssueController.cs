@@ -1,5 +1,6 @@
 ﻿using EditorsCommon;
 using EditorsCommon.Publication;
+using ErpContent.Views.Helpers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -349,6 +350,179 @@ namespace ErpContent.Controllers
         }
 
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
+        [HttpPost]
+        [OutputCache(Duration = 5, VaryByParam = "none")]
+        public ActionResult ExportAssignment2Xml(int issueId, int assignmentId)
+        {
+
+            var result = _issueStorage.LoadIssueComplete(issueId, -1);
+
+            foreach (var a in result.assignments)
+            {
+                if (a.tastingEvents != null && a.tastingEvents.Count() > 0)
+                {
+                    a.tastingEvents = from e in a.tastingEvents orderby e.title select e;
+                }
+            }
+
+
+            result.assignments = from a in result.assignments where a.id == assignmentId select a;
+
+            String ns = "http://ns.adobe.com/AdobeInDesign/4.0/";
+            XmlDocument xml = new XmlDocument();
+            
+            XmlNode issue = xml.AppendChild(xml.CreateElement("issue"));
+            xml.DocumentElement.SetAttribute("xmlns:aid", ns);
+
+
+
+            foreach(var a in result.assignments ){
+
+                XmlNode assignment = issue.AppendChild(xml.CreateElement("assignment"));
+
+                foreach (var t in a.tastingEvents)
+                {
+                    XmlNode tr = assignment.AppendChild(xml.CreateElement("tasting-record"));
+
+
+
+                    // <Table xmlns:aid="http://ns.adobe.com/AdobeInDesign/4.0/" aid:table="table" aid:trows="2" aid:tcols="7">
+                    XmlNode table = tr.AppendChild(xml.CreateElement("Table"));
+                    table.Attributes.Append(xml.CreateAttribute("aid", "table", ns)).Value = "table";
+
+                    if (t.tastingNotes == null)
+                    {
+                        continue; 
+                    }
+
+                    table.Attributes.Append(xml.CreateAttribute("aid", "trows", ns)).Value =  t.tastingNotes.Count().ToString();
+                    table.Attributes.Append(xml.CreateAttribute("aid", "tcols", ns)).Value = "7";
+
+                    XmlNode producerNote = tr.AppendChild(xml.CreateElement("producer-note"));
+                    //
+                    // Producer Note first
+                    //
+                    if (!String.IsNullOrEmpty(t.comments))
+
+                    {
+                        producerNote.InnerText = t.comments;
+                    }
+
+                    foreach (var n in t.tastingNotes)
+                    {
+                         //  <Cell aid:table="cell" aid:crows="1" aid:ccols="1" aid:ccolwidth="99.28571428571429">Name 1</Cell>
+
+                        XmlNode cell = table.AppendChild(xml.CreateElement("Cell"));
+                        cell.Attributes.Append(xml.CreateAttribute("aid", "table", ns)).Value = "cell";
+                        cell.Attributes.Append(xml.CreateAttribute("aid", "crows", ns)).Value = "1";
+                        cell.Attributes.Append(xml.CreateAttribute("aid", "ccols", ns)).Value = "1";
+                        cell.Attributes.Append(xml.CreateAttribute("aid", "ccolwidth", ns)).Value = "135";
+                        cell.InnerText = n.producer.ToUpper();
+
+                        cell = table.AppendChild(xml.CreateElement("Cell"));
+                        cell.Attributes.Append(xml.CreateAttribute("aid", "table", ns)).Value = "cell";
+                        cell.Attributes.Append(xml.CreateAttribute("aid", "crows", ns)).Value = "1";
+                        cell.Attributes.Append(xml.CreateAttribute("aid", "ccols", ns)).Value = "1";
+                        cell.Attributes.Append(xml.CreateAttribute("aid", "ccolwidth", ns)).Value = "65";
+                        cell.InnerText = n.vintage.ToUpper();
+
+
+
+                        cell = table.AppendChild(xml.CreateElement("Cell"));
+                        cell.Attributes.Append(xml.CreateAttribute("aid", "table", ns)).Value = "cell";
+                        cell.Attributes.Append(xml.CreateAttribute("aid", "crows", ns)).Value = "1";
+                        cell.Attributes.Append(xml.CreateAttribute("aid", "ccols", ns)).Value = "1";
+                        cell.Attributes.Append(xml.CreateAttribute("aid", "ccolwidth", ns)).Value = "135";
+                        cell.InnerText = n.wineName.ToUpper();
+
+
+
+                        cell = table.AppendChild(xml.CreateElement("Cell"));
+                        cell.Attributes.Append(xml.CreateAttribute("aid", "table", ns)).Value = "cell";
+                        cell.Attributes.Append(xml.CreateAttribute("aid", "crows", ns)).Value = "1";
+                        cell.Attributes.Append(xml.CreateAttribute("aid", "ccols", ns)).Value = "1";
+                        cell.Attributes.Append(xml.CreateAttribute("aid", "ccolwidth", ns)).Value = "65";
+                        cell.InnerText = t.NoteAppellation(n).ToUpper();
+
+
+
+                        cell = table.AppendChild(xml.CreateElement("Cell"));
+                        cell.Attributes.Append(xml.CreateAttribute("aid", "table", ns)).Value = "cell";
+                        cell.Attributes.Append(xml.CreateAttribute("aid", "crows", ns)).Value = "1";
+                        cell.Attributes.Append(xml.CreateAttribute("aid", "ccols", ns)).Value = "1";
+                        cell.Attributes.Append(xml.CreateAttribute("aid", "ccolwidth", ns)).Value = "65";
+                        cell.InnerText = "("+ t.NotePrice(n) + ")";
+
+
+
+                        cell = table.AppendChild(xml.CreateElement("Cell"));
+                        cell.Attributes.Append(xml.CreateAttribute("aid", "table", ns)).Value = "cell";
+                        cell.Attributes.Append(xml.CreateAttribute("aid", "crows", ns)).Value = "1";
+                        cell.Attributes.Append(xml.CreateAttribute("aid", "ccols", ns)).Value = "1";
+                        cell.Attributes.Append(xml.CreateAttribute("aid", "ccolwidth", ns)).Value = "65";
+                        cell.InnerText = n.color.ToUpper();
+
+
+
+                        cell = table.AppendChild(xml.CreateElement("Cell"));
+                        cell.Attributes.Append(xml.CreateAttribute("aid", "table", ns)).Value = "cell";
+                        cell.Attributes.Append(xml.CreateAttribute("aid", "crows", ns)).Value = "1";
+                        cell.Attributes.Append(xml.CreateAttribute("aid", "ccols", ns)).Value = "1";
+                        cell.Attributes.Append(xml.CreateAttribute("aid", "ccolwidth", ns)).Value = "65";
+                        cell.InnerText = n.encodeRatingForPrinting();
+
+
+
+                        XmlNode paragraph = tr.AppendChild(xml.CreateElement("p"));
+                        paragraph.InnerText = n.note;
+                    }
+
+                    foreach (var n in t.tastingNotes)
+                    {
+                        XmlNode paragraph = tr.AppendChild(xml.CreateElement("p"));
+
+                        var noteText = n.note;
+                        //
+                        // if vintage+label can be find within tasting note body, make it bold
+                        // 
+                        if (!String.IsNullOrEmpty(n.wineName))
+                        {
+                            var vintagePlusWineName = n.vintage.ToUpper() + ' ' + n.wineName;
+                            noteText = noteText.Replace(vintagePlusWineName, "<b>" + vintagePlusWineName + "</b>");
+
+                            //
+                            // in case if name has been accented in the note
+                            //
+                            string vintagePlusWineNameAccent = NotesHelper.ReplaceToAccent(vintagePlusWineName);
+                            if (vintagePlusWineNameAccent.CompareTo(vintagePlusWineName) != 0)
+                            {
+                                noteText = noteText.Replace(vintagePlusWineNameAccent, "<b>" + vintagePlusWineNameAccent + "</b>");
+                            }
+
+                        }
+
+
+                        string output = NotesHelper.applyFormatting(noteText);
+
+                        paragraph.InnerText = output; 
+                    }
+                }
+            }
+
+
+            MemoryStream ms = new MemoryStream();
+            xml.Save(ms);
+            return File(new MemoryStream(ms.ToArray()), "text/xml", "issue_" + issueId + ".xml");
+        }
+
+
+
 
         /// <summary>
         /// 
@@ -488,13 +662,13 @@ namespace ErpContent.Controllers
                 case 1066597:
                     return 1063518;
                 case 1066598:
-                    return 1063524;
+                    return 1063654;
                 case 1067242:
                     return 1063532;
                 case 1067986:
                     return 1063533;
                 case 1074793:
-                    return 1063525;
+                    return 1063655;
                 case 1074948:
                     return 1063581;
 

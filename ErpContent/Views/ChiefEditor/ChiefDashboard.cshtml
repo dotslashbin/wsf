@@ -228,6 +228,9 @@
                     <div class="col-sm-12">
                         <a href="#" class="btn btn-xs" data-bind="click: exportAssignment"><span class='glyphicon glyphicon-list-alt' title="Export to Doc"></span>&nbsp;Export to Doc</a>
                     </div>
+                    <div class="col-sm-12">
+                        <a href="#" class="btn btn-xs" data-bind="click: exportAssignment2Xml"><span class='glyphicon glyphicon-list-alt' title="Export to XML"></span>&nbsp;Export to XML</a>
+                    </div>
 
                 </div>
 
@@ -885,6 +888,16 @@
                 erp.utils.ajaxDownload('@Url.Content("~/Issue/ExportAssignmentAdmin")', { issueId: self.issue.id(), assignmentId: self.assignment.id });
 
             }
+
+            self.exportAssignment2Xml = function () {
+
+                erp.utils.ajaxDownload('@Url.Content("~/Issue/ExportAssignment2Xml")', { issueId: self.issue.id(), assignmentId: self.assignment.id });
+
+            }
+
+            
+
+
 
 
             self.edit = function () {

@@ -307,6 +307,9 @@
            },
            focus: function (event, ui) {
                $(this).val(ui.item.country);
+
+               self.model.country(ui.item.country);
+
                return false;
            },
            select: function (event, ui) {
@@ -342,8 +345,11 @@
               select: function (event, ui) {
                   $(this).val(ui.item.region);
 
+                  self.model.region(ui.item.region);
+
                   if (ui.item.country != null && ui.item.country.length > 0) {
                       $("#note-edit-location-country").val(ui.item.country);
+                      self.model.country(ui.item.country);
                   }
 
                   return false;
@@ -385,12 +391,15 @@
               select: function (event, ui) {
                   $(this).val(ui.item.location);
 
+                  self.model.location(ui.item.location);
 
                   if (ui.item.region != null && ui.item.region.length > 0) {
                       $("#note-edit-location-region").val(ui.item.region);
+                      self.model.region(ui.item.region);
                   }
                   if (ui.item.country != null && ui.item.country.length > 0) {
                       $("#note-edit-location-country").val(ui.item.country);
+                      self.model.country(ui.item.country);
                   }
 
 
@@ -433,14 +442,20 @@
               select: function (event, ui) {
                   $(this).val(ui.item.locale);
 
+                  self.model.locale(ui.item.locale);
+
+
                   if (ui.item.location != null && ui.item.location.length > 0) {
                       $("#note-edit-location-location").val(ui.item.location);
+                      self.model.location(ui.item.location);
                   }
                   if (ui.item.region != null && ui.item.region.length > 0) {
                       $("#note-edit-location-region").val(ui.item.region);
+                      self.model.region(ui.item.region);
                   }
                   if (ui.item.country != null && ui.item.country.length > 0) {
                       $("#note-edit-location-country").val(ui.item.country);
+                      self.model.country(ui.item.country);
                   }
 
 
@@ -484,17 +499,24 @@
                   $(this).val(ui.item.site);
 
 
+                  self.model.site(ui.item.site);
+
+
                   if (ui.item.locale != null && ui.item.locale.length > 0) {
                       $("#note-edit-location-locale").val(ui.item.locale);
+                      self.model.locale(ui.item.locale);
                   }
                   if (ui.item.location != null && ui.item.location.length > 0) {
                       $("#note-edit-location-location").val(ui.item.location);
+                      self.model.location(ui.item.location);
                   }
                   if (ui.item.region != null && ui.item.region.length > 0) {
                       $("#note-edit-location-region").val(ui.item.region);
+                      self.model.region(ui.item.region);
                   }
                   if (ui.item.country != null && ui.item.country.length > 0) {
                       $("#note-edit-location-country").val(ui.item.country);
+                      self.model.country(ui.item.country);
                   }
 
 

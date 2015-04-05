@@ -107,9 +107,9 @@
                 <span class="col-sm-11  pull-right" data-bind="html: erp.utils.Str2Html(comments())"></span>
             </div>
             <div class="row">
-                <div class="col-sm-12" data-bind="visible: notesCount() > 1">
+                <div class="col-sm-3">
                     &nbsp;Sort Notes By
-                                    <select data-bind="event: { change: sortBy },
+                                    <select data-bind="enable: notesCount() > 1,  event: { change: sortBy },
                                     options: PAGE_CONTEXT.sortByOptions,
                                     optionsText: 'name',
                                     optionsValue: 'id',
@@ -117,11 +117,15 @@
                                     valueUpdate: 'blur'">
                                     </select>
 
-                    &nbsp;<button class="btn  btn-primary btn-xs inner-window-button" data-bind="click: createNoteFromExisting">Add Wines</button>
 <!--
                     <button class="btn  btn-primary btn-xs inner-window-button" data-bind="click: createNote">Add New Note</button>
 -->
                 </div>
+
+                <div class="col-sm-9" >
+                    &nbsp;<button class="btn  btn-primary btn-xs inner-window-button" data-bind="click: createNoteFromExisting">Add Wines</button>
+               </div>
+
 
             </div>
             <br />
@@ -1327,7 +1331,7 @@
                     if (!m.validate())
                         return false;
 
-                    if (VinSearchModel.passThru) {
+                    if (VinSearchModel.passThru()) {
                         $.ajax({
                             type: 'POST',
                             url: erp.wsf_path + 'TastingNote/AddTastingNote',
@@ -1421,7 +1425,7 @@
         VinSearchModel.searchString = ko.observable('');
         VinSearchModel.items = ko.observableArray([]);
         VinSearchModel.cart = ko.observableArray([]);
-        VinSearchModel.passThru = ko.observableArray(false);
+        VinSearchModel.passThru = ko.observable(false);
 
 
         VinSearchModel.deleteFromCart = function (item) {

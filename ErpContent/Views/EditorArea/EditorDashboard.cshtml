@@ -47,12 +47,10 @@
             <div class="row" style="border-bottom: solid 1px gray;">
                 <span class="col-sm-11  pull-right" data-bind="html: erp.utils.Str2Html(comments())"></span>
             </div>
-
-            <div style="max-height:700px; overflow:auto">
             <!-- ko foreach: notes -->
-            <div style="border-bottom: solid 1px gray;">
-
+            <div class="well">
             <div class="row  panel-heading">
+
                 <div class="col-sm-1" style="margin-bottom: 5px; cursor: pointer">
                     <div class='glyphicon glyphicon-flag col-sm-1' data-bind="value:note,style: { color:statusColor($data.wfState()) }, attr : {title : statusName($data.wfState()) }" title="Status"></div>
                 </div>
@@ -79,14 +77,13 @@
                 </div>
             </div>
 
-            <div class="row" style="border-bottom: solid 1px gray">
+            <div class="row">
                 <div class="col-sm-11  pull-right" style="cursor:pointer" data-bind="click: editNote,visible : wfState() < '@EditorsCommon.WorkFlowState.READY_APPROVED    ' ">
                     <span data-bind="html: erp.utils.Str2Html($data.noteFormated()) "></span>
                 </div>
             </div>
             </div>
             <!-- /ko -->
-            </div>
         </div>
     </script>
 
@@ -122,7 +119,7 @@
                     </div>
                 <div style="max-height:700px; overflow:auto">
             <!-- ko foreach: assignment.events -->
-                    <div class="row" style="border-bottom: solid 1px gray;" data-bind="style : { color : editorCount() > 0 ? 'red' : 'black' }">
+                    <div class="row"  data-bind="style : { color : (editorCount() > 0 ||  draftCount() > 0) ? 'red' : 'black' }">
                         <div class="col-sm-6" data-bind="click: showNotesExt" style="cursor: pointer">
                             <strong><span data-bind="text: title"></span></strong>
                         </div>

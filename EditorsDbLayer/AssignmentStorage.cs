@@ -802,63 +802,75 @@ namespace EditorsDbLayer
             return LoadByUserId(id);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="assignmentId"></param>
-        public void SetReady(int assignmentId)
-        {
+//        /// <summary>
+//        /// 
+//        /// </summary>
+//        /// <param name="assignmentId"></param>
+//        public void SetReady(int assignmentId)
+//        {
 
-            using (SqlConnection conn = _connFactory.GetConnection())
-            {
-                using (SqlCommand cmd = new SqlCommand("", conn))
-                {
+//            using (SqlConnection conn = _connFactory.GetConnection())
+//            {
+//                using (SqlCommand cmd = new SqlCommand("", conn))
+//                {
 
-                    cmd.CommandText = @"
-                        update tn set tn.WF_StatusID = 10   from TasteNote tn
-                        join TastingEvent_TasteNote  te  on te.TasteNoteID = tn.ID
-                        join Assignment_TastingEvent ate on ate.TastingEventID = te.TastingEventID
-                        where ate.AssignmentID = @AssignmentID 
-                        and tn.WF_StatusID = 0
+//                    cmd.CommandText = @"
+//                        update tn set tn.WF_StatusID = 10   from TasteNote tn
+//                        join TastingEvent_TasteNote  te  on te.TasteNoteID = tn.ID
+//                        join Assignment_TastingEvent ate on ate.TastingEventID = te.TastingEventID
+//                        where ate.AssignmentID = @AssignmentID 
+//                        and tn.WF_StatusID = 0
+//
+//                    ";
 
-                    ";
-
-                    cmd.Parameters.AddWithValue("@AssignmentID", assignmentId);
-                    cmd.ExecuteNonQuery();
-                } 
-            } 
+//                    cmd.Parameters.AddWithValue("@AssignmentID", assignmentId);
+//                    cmd.ExecuteNonQuery();
+//                } 
+//            } 
         
         
-        }
+//        }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="assignmentId"></param>
-        public void SetApproved(int assignmentId)
+
+
+
+
+//        /// <summary>
+//        /// 
+//        /// </summary>
+//        /// <param name="assignmentId"></param>
+//        public void SetApproved(int assignmentId)
+//        {
+//            using (SqlConnection conn = _connFactory.GetConnection())
+//            {
+//                using (SqlCommand cmd = new SqlCommand("", conn))
+//                {
+
+//                    cmd.CommandText = @"
+//                        update tn set tn.WF_StatusID = 60   from TasteNote tn
+//                        join TastingEvent_TasteNote  te  on te.TasteNoteID = tn.ID
+//                        join Assignment_TastingEvent ate on ate.TastingEventID = te.TastingEventID
+//                        where ate.AssignmentID = @AssignmentID 
+//                        and tn.WF_StatusID = 50
+//                    ";
+
+//                    cmd.Parameters.AddWithValue("@AssignmentID", assignmentId);
+//                    cmd.ExecuteNonQuery();
+//                } // sqlCommand
+//            } // sqlConn
+//        }
+
+
+        public bool SetAssignmentState(int assignmentId, int stateId)
         {
-            using (SqlConnection conn = _connFactory.GetConnection())
+
+            if (stateId == WorkFlowState.READY_FOR_REVIEW)
             {
-                using (SqlCommand cmd = new SqlCommand("", conn))
-                {
-
-                    cmd.CommandText = @"
-                        update tn set tn.WF_StatusID = 60   from TasteNote tn
-                        join TastingEvent_TasteNote  te  on te.TasteNoteID = tn.ID
-                        join Assignment_TastingEvent ate on ate.TastingEventID = te.TastingEventID
-                        where ate.AssignmentID = @AssignmentID 
-                        and tn.WF_StatusID = 10
-                    ";
-
-                    cmd.Parameters.AddWithValue("@AssignmentID", assignmentId);
-                    cmd.ExecuteNonQuery();
-                } // sqlCommand
-            } // sqlConn
-        }
-
-
-        public bool SetNoteState(int assignmentId, int stateId)
-        {
+                //
+                // need set note individually
+                //
+                return SetAssignmentStateForNotes(assignmentId, stateId);
+            }
 
             using (SqlConnection conn = _connFactory.GetConnection())
             {
@@ -895,6 +907,50 @@ namespace EditorsDbLayer
                     cmd.Parameters.AddWithValue("@AssignmentID", assignmentId);
                     cmd.ExecuteNonQuery();
                     return true;
+                }
+            }
+        }
+
+        private bool SetAssignmentStateForNotes(int assignmentId, int stateId)
+        {
+            using (SqlConnection conn = _connFactory.GetConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("", conn))
+                {
+
+                    cmd.CommandText = @"
+                        update tn set tn.WF_StatusID = @NewStateID   from TasteNote tn
+                        join TastingEvent_TasteNote  te  on te.TasteNoteID = tn.ID
+                        join Assignment_TastingEvent ate on ate.TastingEventID = te.TastingEventID
+                        where ate.AssignmentID = @AssignmentID 
+
+                        and tn.WF_StatusID = @OldStateID
+                        and len( tn.Notes) > 0
+                        and tn.DrinkDate_Lo is not null
+                        and tn.DrinkDate_Hi is not null
+                        and (Rating_Lo > 0  or Rating_Hi > 0)
+
+                        select COUNT(*)    from TasteNote tn
+                        join TastingEvent_TasteNote  te  on te.TasteNoteID = tn.ID
+                        join Assignment_TastingEvent ate on ate.TastingEventID = te.TastingEventID
+                        where ate.AssignmentID = @AssignmentID 
+                        and tn.WF_StatusID = @OldStateID
+                    ";
+
+
+                    cmd.Parameters.AddWithValue("@OldStateID", WorkFlowState.DRAFT);
+                    cmd.Parameters.AddWithValue("@NewStateID", WorkFlowState.READY_FOR_REVIEW);
+                    cmd.Parameters.AddWithValue("@AssignmentID", assignmentId);
+
+
+                    using (var rdr = cmd.ExecuteReader())
+                    {
+                        if (rdr.Read())
+                        {
+                            return rdr.GetInt32(0) == 0;
+                        }
+                    }
+                    return false;
                 }
             }
         }

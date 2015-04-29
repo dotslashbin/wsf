@@ -422,10 +422,37 @@ namespace ErpContent.Controllers
         public ActionResult SetAssignmentReady(int assignmentId)
         {
 
-            _storage.SetReady(assignmentId);
+            //_storage.SetReady(assignmentId);
+
+            _storage.SetAssignmentState(assignmentId, EditorsCommon.WorkFlowState.READY_FOR_REVIEW);
+
+
 
             return Json(true, JsonRequestBehavior.AllowGet);
         }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="assignmentId"></param>
+        /// <returns></returns>
+        [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameChiefEditor
+            + "," + EditorsCommon.Constants.roleNameReviewer
+            + "," + EditorsCommon.Constants.roleNameEditor
+            + "," + EditorsCommon.Constants.roleNameSubEditor
+            + "," + EditorsCommon.Constants.roleNameAdmin)]
+        [OutputCache(Duration = 0, VaryByParam = "none")]
+        [HttpPost]
+        public ActionResult SetAssignmentProofreaded(int assignmentId)
+        {
+
+
+            _storage.SetAssignmentState(assignmentId, EditorsCommon.WorkFlowState.READY_FOR_PROOF_READ);
+
+            return Json(true, JsonRequestBehavior.AllowGet);
+        }
+
 
         /// <summary>
         /// 
@@ -442,10 +469,16 @@ namespace ErpContent.Controllers
         public ActionResult SetAssignmentApproved(int assignmentId)
         {
 
-            _storage.SetApproved(assignmentId);
+            //_storage.SetApproved(assignmentId);
+
+            _storage.SetAssignmentState(assignmentId, EditorsCommon.WorkFlowState.READY_APPROVED);
 
             return Json(true, JsonRequestBehavior.AllowGet);
         }
+
+
+       
+
 
 
         /// <summary>
@@ -456,10 +489,10 @@ namespace ErpContent.Controllers
         [System.Web.Mvc.Authorize(Roles = EditorsCommon.Constants.roleNameAll)]
         [OutputCache(Duration = 0, VaryByParam = "none")]
         [HttpPost]
-        public ActionResult SetTastingNoteState(int assignmentId, int stateId)
+        public ActionResult SetAssignmentState(int assignmentId, int stateId)
         {
 
-            var result = _storage.SetNoteState(assignmentId, stateId);
+            var result = _storage.SetAssignmentState(assignmentId, stateId);
 
             return Json(result, JsonRequestBehavior.AllowGet);
         }

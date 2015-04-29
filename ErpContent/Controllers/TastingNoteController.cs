@@ -281,10 +281,9 @@ namespace ErpContent.Controllers
         }
 
         /**
-         * This method was executes the process of creating a new 
-         * tasting note record
+         * Create a new  tasting note record
          * 
-         * @param       String      stringOject         String representation of a string
+         * @param       String      stringOject         String representation of a note
          * @param       Boolean     isImport            This is a boolean value to toggle if this call is being called by the import process, or not. 
          */
         private TastingNote CreateNewTastingNoteRecord(string stringObject, Boolean isImport = false) {
@@ -341,7 +340,7 @@ namespace ErpContent.Controllers
         {
             var o = new JavaScriptSerializer().Deserialize<TastingNote>(str);
 
-            o.userId = (int)Membership.GetUser(User.Identity.Name).ProviderUserKey;
+            //o.userId = (int)Membership.GetUser(User.Identity.Name).ProviderUserKey;
 
             var result = _storage.Delete(o);
 

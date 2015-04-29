@@ -1676,7 +1676,6 @@
 
         AssignmentModel.prototype.setReadyForApproval = function (item)
         {
-            //alert('Approve whole assignments. Not yet implemented. Comming soon.');
 
             if (!window.confirm("All notes in Draft state will be sent for review.\nDo you want proceed?")) {
                 return false;
@@ -1685,31 +1684,16 @@
 
             $.ajax({
                 type: 'POST',
-                url: '@Url.Content("~/Assignment/SetTastingNoteState")',
+                url: '@Url.Content("~/Assignment/SetAssignmentState")',
                 data:
                     { assignmentId: item.assignment.id, stateId: '@EditorsCommon.WorkFlowState.READY_FOR_REVIEW' },
                 success: function (result) {
-                    var top = item.assignment.events().length;
-                    var notesTop = 0;
-                    var te = null;
-                    var note = null;
+                    item.assignment.load();
 
-                    for (var i = 0; i < top; i++) {
-                        te = item.assignment.events()[i];
-                        if (te != null && te.loaded()) {
-
-
-                            var notesTop = te.notes().length;
-                            for (var k = 0; k < notesTop; k++) {
-                                if (te.notes()[k].wfState() == '@EditorsCommon.WorkFlowState.DRAFT') {
-                                    te.notes()[k].wfState('@EditorsCommon.WorkFlowState.READY_FOR_REVIEW')
-                                }
-                            }
-                        }
-
-                        te.draftCount(0);
-
+                    if (result != true) {
+                        alert("Some notes could not be sent for review. Please review them individually.");
                     }
+
                 },
                 error: function (request, status, error) {
                     alert("System error while executing last ooperation. Please report to admin");

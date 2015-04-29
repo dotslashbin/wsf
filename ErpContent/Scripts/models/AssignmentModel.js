@@ -284,9 +284,6 @@ function AssignmentModel(src) {
         if (!result)
             return;
 
-
-
-
         $.ajax({
             type: 'POST',
             url: erp.wsf_path + 'Assignment/SetAssignmentApproved',
@@ -304,6 +301,29 @@ function AssignmentModel(src) {
 
     }
 
+    self.setProofreaded = function () {
+
+
+        var result = window.confirm("You are about to set all notes in this\r\nassignment as 'proofreaded'.\r\n\r\nDo you wish to continue?");
+        if (!result)
+            return;
+
+        $.ajax({
+            type: 'POST',
+            url: erp.wsf_path + 'Assignment/SetAssignmentProofreaded',
+            data:
+                {
+                    assignmentId: self.id
+                },
+            success: function (r) {
+                //
+                // reload
+                //
+                self.load();
+            }
+        });
+
+    }
 
   
 

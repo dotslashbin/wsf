@@ -187,18 +187,18 @@ namespace EditorsCommon.Publication {
        bool DeleteAssignment(int assignmentID); 
 
 
-        /// <summary>
-        /// Set 'Ready' status for all notes withing the assignment.
-        /// </summary>
-        /// <param name="assignmentId"></param>
-       void SetReady(int assignmentId);
+       // /// <summary>
+       // /// Set 'Ready' status for all notes withing the assignment.
+       // /// </summary>
+       // /// <param name="assignmentId"></param>
+       //void SetReady(int assignmentId);
 
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="assignmentId"></param>
-       void SetApproved(int assignmentId);
+       // /// <summary>
+       // /// 
+       // /// </summary>
+       // /// <param name="assignmentId"></param>
+       //void SetApproved(int assignmentId);
 
         /// <summary>
         /// 
@@ -206,7 +206,7 @@ namespace EditorsCommon.Publication {
         /// <param name="assignmentId"></param>
         /// <param name="stateId"></param>
         /// <returns></returns>
-       bool SetNoteState(int assignmentId, int stateId);
+       bool SetAssignmentState(int assignmentId, int stateId);
     }
 
 }

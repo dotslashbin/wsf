@@ -73,7 +73,7 @@
                 </div>
             </div>
 
-            <div class="row" style="border-bottom: solid 1px gray">
+            <div class="row" >
                 <div class="col-sm-11  pull-right" style="cursor:pointer" data-bind="click: editNote,visible : wfState() < '@EditorsCommon.WorkFlowState.READY_APPROVED' ">
                     <span data-bind="html: erp.utils.Str2Html($data.noteFormated()) "></span>
                 </div>
@@ -103,7 +103,7 @@
            <div class="col-sm-2 pull-right">
                 <div class="row">
                     <div class="col-sm-12">
-                        <a href="#" class="btn btn-xs" data-bind="click: assignment.setApproved"><span class='glyphicon glyphicon-ok' title="Approve For Publishing"></span>&nbsp;Approve For Publishing</a>
+                        <a href="#" class="btn btn-xs" data-bind="click: assignment.setProofreaded"><span class='glyphicon glyphicon-ok' title="Approve For Editing"></span>&nbsp;Approve For Editing</a>
                     </div>
                 </div>
             </div>
@@ -122,7 +122,7 @@
                     </div>
                 <div style="max-height:700px; overflow:auto">
             <!-- ko foreach: assignment.events -->
-                    <div class="row" data-bind="style : { color : proofreadCount() > 0 ? 'red' : 'black' }" >
+                    <div class="row" data-bind="style : { color : (proofreadCount() > 0 || draftCount() > 0 ) ? 'red' : 'black' }" >
                         <div class="col-sm-6" data-bind="click: showNotesExt" style="cursor: pointer">
                             <strong><span data-bind="text: title"></span></strong>
                         </div>
@@ -697,8 +697,9 @@
         if (state == '@EditorsCommon.WorkFlowState.READY_FOR_REVIEW')
             return 'red';
 
-         if (state == '@EditorsCommon.WorkFlowState.READY_APPROVED' || state == '@EditorsCommon.WorkFlowState.READY_FOR_PROOF_READ')
+         if (state == '@EditorsCommon.WorkFlowState.READY_APPROVED' ||   state == '@EditorsCommon.WorkFlowState.READY_FOR_PROOF_READ')
             return 'blue';
+      
 
         return 'black';
      };
@@ -716,6 +717,7 @@
 
             if (state == '@EditorsCommon.WorkFlowState.READY_APPROVED' || state == '@EditorsCommon.WorkFlowState.READY_FOR_PROOF_READ')
                 return 'Approved';
+
 
             return 'Unknown';
         }
